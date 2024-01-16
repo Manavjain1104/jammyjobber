@@ -3,26 +3,29 @@ import os
 from dotenv import load_dotenv
 
 base_url = "https://semadb.p.rapidapi.com/collections"
-points_url = "https://semadb.p.rapidapi.com/collections/mycollection/points"
 
+# Get variables from the environment
 load_dotenv()
 KEY = os.getenv('RAPID_API_KEY')
 HOST = os.getenv('RAPID_API_HOST')
 
 
+# Url used to access a collection
 def collection_url(collection):
     return base_url + "/" + collection
 
 
-# url to work with separate points from a collection
+# Url used to add points to a collection
 def points_url(collection):
     return collection_url(collection) + "/points"
 
+
+# Url used to search for points
 def search_url(collection):
     return points_url(collection) + "/search"
 
 
-# function to create a new collection of points
+# Create a new collection of points
 def create_collection(id, vectorSize, distanceMetric="euclidean"):
     payload = {
         "id": id,
@@ -37,9 +40,14 @@ def create_collection(id, vectorSize, distanceMetric="euclidean"):
     requests.post(base_url, json=payload, headers=headers)
 
 
+# Given vector representation and SQLite id, return json representation
+# of a point
 def new_point(vector, externalId):
     return {"vector": vector, "metadata": {"externalId": externalId}}
 
+
+# Given vector representation of a point and an id used in SQLite,
+# add the point to the specified collection
 # example: add_points("testcollection", [new_point([4.2, 2.4], 23)])
 def add_points(collection, points):
     payload = {"points": points}
@@ -51,6 +59,7 @@ def add_points(collection, points):
     requests.post(points_url(collection), json=payload, headers=headers)
 
 
+# Given a collection name, retrieve basic information about the collection
 def get_collection(collection):
     headers = {
         "X-RapidAPI-Key": KEY,
@@ -59,6 +68,8 @@ def get_collection(collection):
     requests.get(collection_url(collection), headers=headers)
 
 
+# Given a vector representation of a point, search for limit nearest points
+# in the database. Returns a list of job ids, used in SQLite
 def search_points(collection, vector, limit=10):
     payload = {
         "vector": vector,
