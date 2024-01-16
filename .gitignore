@@ -1,0 +1,7 @@
+# To stop me from accidentally uploading a 5GB file to GitLab
+*.llamafile
+
+temp/
+
+.vscode/
+.idea/
