@@ -6,3 +6,4 @@ temp/
 .vscode/
 .idea/
 .env
+env/
