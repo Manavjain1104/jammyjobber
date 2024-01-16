@@ -18,6 +18,9 @@ def collection_url(collection):
 def points_url(collection):
     return collection_url(collection) + "/points"
 
+def search_url(collection):
+    return points_url(collection) + "/search"
+
 
 # function to create a new collection of points
 def create_collection(id, vectorSize, distanceMetric="euclidean"):
@@ -45,7 +48,7 @@ def add_points(collection, points):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST
     }
-    response = requests.post(points_url(collection), json=payload, headers=headers)
+    requests.post(points_url(collection), json=payload, headers=headers)
 
 
 def get_collection(collection):
@@ -53,9 +56,23 @@ def get_collection(collection):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST
     }
-    response = requests.get(collection_url(collection), headers=headers)
+    requests.get(collection_url(collection), headers=headers)
 
-    print(response.json())
 
-get_collection("testcollection")
+def search_points(collection, vector, limit=10):
+    payload = {
+        "vector": vector,
+        "limit": limit
+    }
+    headers = {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": KEY,
+        "X-RapidAPI-Host": HOST
+    }
+    response = requests.post(search_url(collection), json=payload, headers=headers)
 
+    point_ids = []
+    for point in response.json()['points']:
+        point_ids.append(point['metadata']['externalId'])
+
+    return point_ids
