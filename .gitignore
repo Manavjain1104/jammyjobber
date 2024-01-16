@@ -12,6 +12,3 @@ temp/
 .vscode/
 .idea/
 .env
-env/
-venv/
-.DS_Store
