@@ -2,20 +2,25 @@ import requests
 import os
 from dotenv import load_dotenv
 
-url = "https://semadb.p.rapidapi.com/collections"
+base_url = "https://semadb.p.rapidapi.com/collections"
 
 load_dotenv()
+KEY = os.getenv('RAPID_API_KEY')
+HOST = os.getenv('RAPID_API_HOST')
 
-RAPID_API_KEY = os.getenv('RAPID_API_KEY')
-RAPID_API_HOST = os.getenv('RAPID_API_HOST')
 
-print(RAPID_API_KEY)
-print(RAPID_API_HOST)
-headers = {
-    "X-RapidAPI-Key": f"{RAPID_API_KEY}",
-    "X-RapidAPI-Host": f"{RAPID_API_HOST}"
-}
+def create_collection(id, vectorSize, distanceMetric="euclidean"):
+    payload = {
+        "id": id,
+        "vectorSize": vectorSize,
+        "distanceMetric": distanceMetric
+    }
+    headers = {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": KEY,
+        "X-RapidAPI-Host": HOST
+    }
+    response = requests.post(base_url, json=payload, headers=headers)
+    print(response.json())
 
-response = requests.get(url, headers=headers)
-
-print(response.json())
+create_collection("testcollection", 2)
