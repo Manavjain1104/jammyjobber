@@ -105,12 +105,3 @@ def job_search(request):
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
 
-=======
-from django.shortcuts import render
-from django.http import HttpResponse
-
-
-# Create your views here.
-def home_page_view(request):
-    return HttpResponse("Hello, World!")
->>>>>>> 5b3a689 (Set up hello world django app)
