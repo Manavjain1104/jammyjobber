@@ -2,7 +2,7 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer('all-MiniLM-L12-v2')
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # create one vector embedding given a description in form of a string
 # example: create_embedding("some job")

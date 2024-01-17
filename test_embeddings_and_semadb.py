@@ -1,5 +1,6 @@
 from semadb_utils import *
 from embeddings_utils import *
+import numpy as np
 
 # create_collection("testJobs", 384, "cosine")
 jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
@@ -16,7 +17,7 @@ jobs = ["This is a Software Engineering job.", "You will be a receptionist at ou
 
 job = "Only London"
 print(job)
-#
+# #
 request_embedding = create_embedding(job)
 closest = search_points("testJobs", request_embedding, 1)
 print(jobs[closest[0]])
