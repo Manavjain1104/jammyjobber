@@ -50,6 +50,7 @@ sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+<<<<<<< HEAD
 
 unit-test:
   image: python:3.12
@@ -57,3 +58,5 @@ unit-test:
   script:
     - python3 test.py
 >>>>>>> a087294 (Try unit testing)
+=======
+>>>>>>> 0765dc7 (Remove tests)
