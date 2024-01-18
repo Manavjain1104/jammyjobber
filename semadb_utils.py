@@ -26,7 +26,7 @@ def search_url(collection):
 
 
 # Create a new collection of points
-def create_collection(id, vectorSize, distanceMetric="euclidean"):
+def create_collection(id, vectorSize, distanceMetric="cosine"):
     payload = {
         "id": id,
         "vectorSize": vectorSize,
@@ -37,7 +37,8 @@ def create_collection(id, vectorSize, distanceMetric="euclidean"):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST
     }
-    requests.post(base_url, json=payload, headers=headers)
+    response = requests.post(base_url, json=payload, headers=headers)
+    print(response.json())
 
 
 # Given vector representation and SQLite id, return json representation
@@ -59,13 +60,22 @@ def add_points(collection, points):
     requests.post(points_url(collection), json=payload, headers=headers)
 
 
+# Add points to a collection given a list of vector embeddings and their external ids
+def bulk_add_points(collection, vectors, ids):
+    points = []
+    for point in zip(vectors, ids):
+        points.append(new_point(point[0], point[1]))
+    add_points(collection, points)
+
+
 # Given a collection name, retrieve basic information about the collection
 def get_collection(collection):
     headers = {
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST
     }
-    requests.get(collection_url(collection), headers=headers)
+    response = requests.get(collection_url(collection), headers=headers)
+    print(response.json())
 
 
 # Given a vector representation of a point, search for limit nearest points
