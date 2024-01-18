@@ -9,24 +9,17 @@ def home_page_view(request):
 
 
 def submitted_search_view(request):
-    return render(request, "pages/submitted_search.html", {})
+    query = request.GET.get('query', '')
 
-
-def my_view(request):
-    return render(request, 'my_template.html')
-
-
-def my_function(request):
-    # Your function logic here
     jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
             "We are looking for a python developer. We can offer a competetive salary", "Charity worker needed.",
             "Dog sitter job in Manchester"]
 
-    job = "Only London"
-
-    request_embedding = create_embedding(job)
+    request_embedding = create_embedding(query)
     closest = search_points("testJobs", request_embedding, 1)
 
-    print(jobs[closest[0]])
+    result = jobs[closest[0]]
 
-    return HttpResponse("Function called successfully!")
+
+    return render(request, "pages/submitted_search.html", {'result': result})
+
