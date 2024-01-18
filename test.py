@@ -1,5 +1,4 @@
-def test_always_passes():
+
+def test_urls():
     assert False
 
-
-test_always_passes()
