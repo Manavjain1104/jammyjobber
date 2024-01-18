@@ -9,5 +9,28 @@
         <input type="search" name="query" placeholder="Search here...">
         <button type="submit">Submit</button>
     </form>
+
+    <button id="myButton">Click me</button>
+    <script>
+        document.getElementById('myButton').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Make an AJAX request to call the Django function
+            fetch('{% url "my_function" %}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);  // Log the response from the server
+                // You can update the UI or perform other actions as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 </html>
