@@ -2,9 +2,10 @@ import openai
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:8080/v1", # "http://<Your api-server IP>:port"
-    api_key = "sk-no-key-required"
+    base_url="http://192.168.76.1:8080/v1",  # "http://<Your api-server IP>:port"
+    api_key="sk-no-key-required",
 )
+
 
 def generate_summary(job_description):
     """Generates a summary from a job description using LLaMafile via the local API server."""
@@ -15,18 +16,21 @@ def generate_summary(job_description):
     ]
 
     # Call the local API server to generate the summary
-    response = client.chat.completions.create(model="LLaMA_CPP",
-    messages=messages,
-    max_tokens=1000,  # Adjust max_tokens as needed
-    n=1,
-    stop=None,
-    temperature=0.0)
+    response = client.chat.completions.create(
+        model="LLaMA_CPP",
+        messages=messages,
+        max_tokens=1000,  # Adjust max_tokens as needed
+        n=1,
+        stop=None,
+        temperature=0.0,
+    )
 
     summary = response.choices[0].message.content.strip()
 
     # Prepare the summary for embedding in a vector database (details omitted for brevity)
 
     return summary
+
 
 # Example usage:
 job_description = """
