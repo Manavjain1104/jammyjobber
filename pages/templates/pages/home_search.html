@@ -9,6 +9,7 @@
     <title>JammyJobber Search</title>
 </head>
 <body>
+<<<<<<< HEAD
 
     <header>
         <h1>🍓 Welcome to JammyJobber! 🍓</h1>
@@ -58,6 +59,36 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>
+=======
+    <h3>Enter your query</h3>
+    <form action="/search/" method="get">
+        <input type="search" name="query" placeholder="Search here...">
+        <button type="submit">Submit</button>
+    </form>
+
+    <button id="myButton">Click me</button>
+    <script>
+        document.getElementById('myButton').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Make an AJAX request to call the Django function
+            fetch('{% url "my_function" %}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);  // Log the response from the server
+                // You can update the UI or perform other actions as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+>>>>>>> 96da412 (Add a button that runs predefined embeddings)
 </body>
 </html>
 

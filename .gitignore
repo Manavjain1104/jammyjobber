@@ -2,6 +2,7 @@
 
 # To stop me from accidentally uploading a 5GB file to GitLab
 *.llamafile
+*.pyc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -13,9 +14,13 @@ temp/
 .vscode/
 .idea/
 .env
+<<<<<<< HEAD
 env
 venv
 .venv
 
 Pipfile
 Pipfile.lock
+=======
+env/
+>>>>>>> 96da412 (Add a button that runs predefined embeddings)
