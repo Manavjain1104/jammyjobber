@@ -7,33 +7,21 @@ body, h1, h2, p, ul, li {
 /* Apply a basic styling to the body */
 body {
     font-family: Arial, sans-serif;
-    background-color: #efd1a3;
+    background-color: #f5f5f5;
 }
 
 /* Style the header section */
 header {
-    background-color: #6b003a;
+    background-color: #333;
     color: #fff;
     padding: 10px;
     text-align: center;
-}
-
-.catchline {
-    color: #fff;
-    font-size: 18px;
-    margin-top: 10px;
 }
 
 /* Style the search box */
 .search-box {
     margin: 20px auto;
     width: 60%;
-}
-
-.search-box label {
-    display: block;
-    font-size: 16px;
-    margin-bottom: 5px;
 }
 
 .search-box input[type="text"] {
@@ -45,7 +33,7 @@ header {
 .search-box button {
     padding: 8px 12px;
     font-size: 16px;
-    background-color: #f01d7a;
+    background-color: #4caf50;
     color: #fff;
     border: none;
     cursor: pointer;
