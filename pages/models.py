@@ -16,3 +16,6 @@ class Job(models.Model):
 
 class CV(models.Model):
     pdf = models.FileField()
+
+    def __str__(self):
+        return self.title
