@@ -1,7 +1,6 @@
-from .utils import semadb_utils
-from utils.semadb_utils import *
+import utils.semadb_utils as semadb
 
 def test_url_generation():
-    assert collection_url("test_collection") == "https://semadb.p.rapidapi.com/collections/test_collection"
+    assert semadb.collection_url("test_collection") == "https://semadb.p.rapidapi.com/collections/test_collection"
 
 test_url_generation()
