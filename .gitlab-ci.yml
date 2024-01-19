@@ -15,9 +15,6 @@
       - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
 
-
-
-
   stages:
     # - test
     - publicDeploy
