@@ -1,103 +1,46 @@
-import openai
-from openai import OpenAI
+from transformers import pipeline
+from sentence_transformers import SentenceTransformer
+from typing import List
 
-client = OpenAI(
-    base_url="http://192.168.76.1:8080/v1",  # "http://<Your api-server IP>:port"
-    api_key="sk-no-key-required",
-)
+summariser = pipeline("summarization", model="Falconsai/text_summarization")
+embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
 
-
-def generate_summary(job_description):
-    """Generates a summary from a job description using LLaMafile via the local API server."""
-
-    messages = [
-        {"role": "system", "content": "Summarize the following job description:"},
-        {"role": "user", "content": job_description},
-    ]
-
-    # Call the local API server to generate the summary
-    response = client.chat.completions.create(
-        model="LLaMA_CPP",
-        messages=messages,
-        max_tokens=1000,  # Adjust max_tokens as needed
-        n=1,
-        stop=None,
-        temperature=0.0,
-    )
-
-    summary = response.choices[0].message.content.strip()
-
-    # Prepare the summary for embedding in a vector database (details omitted for brevity)
-
+def create_summary(text: str) -> str:
+    summariser_output = summariser(
+            text, max_length=230, min_length=30, do_sample=False
+            )
+    summary = summariser_output[0]['summary_text']
     return summary
 
+def create_embedding(text: str) -> List[int]:
+    return embedder.encode(summary)
 
-# Example usage:
-job_description = """
-We are tooth - an exceptional, award winning fully private surgery in the heart of Waterloo SE1 with two branches (general and specialist). We are looking for a new full time Dental Receptionist to join our amazing team.
-
-We have won and been recognised at multiple awards, including Best Dental Practice in London and we have hundreds of 5 star reviews on Google. The real secret of our success is our team!
-
-Our team is important to us – we only employ people with the right skills, the right drive and the right attitude – people that care as much as we do about doing the best for our customers.
-
-The role:
-
-Receptionist (35hrs-40hrs average per week - made up of 6-8hrs per day Mon to Friday PLUS at least one in every three Saturdays (more Saturdays may be available if wanted).
-
-Salary: Very competitive Salary for great candidates
-
-Hours: On Mondays to Fridays you will be needed every day from either 8.00am - 2.00pm or 2.00pm to 8.00pm - this will be on rota with the other receptionists. On some days you may be needed from 9.00am to 6.00pm. On Saturdays (at least one in three) the hours are 10.00am - 4.00pm.
-
-If you cannot do the above shifts from Monday to Friday please do not apply. There is no flexibility in the timings of the shifts.
-
-You will be the face of our business, so you must be very presentable, friendly and approachable and offer exceptional customer service - face to face, on the phone and on emails. It is therefore essential that you have fluent English language skills - written and spoken, and that you are a confident and friendly communicator and great on the phone.
-
-Full training will be given, dental reception experience required. You will need to enjoy learning new things, be quick to learn, intelligent with good initiative and confidence.
-
-This is a super exciting reception role in a busy practice - not a basic name badge giving or 'checking in' reception role - you will need to be smart and open to learning things and want to grow with us as a business, and confident with dealing with calls and multi-tasking.
-
-Ideal candidates must possess:
-
-- Relevant UK dental reception experience
-
-- Excellent English language skills – both written and spoken
-
-- Strong IT skills
-
-- Organised, ability to multi-task and calm under pressure
-
-- A can do attitude with excellent personal presentation
-
-**Dental reception experience is required for this role**
-
-We offer a great working environment where you will always be treated well, respected and valued as part of a very friendly team. Full training will be given. To find out more about us, our brand and what we are all about please visit our website at www.toothlondon .co.uk
-
-Apply with your CV and a quick covering letter/email telling us why you think you have what it takes to be part of the tooth team.
-
-We will be able to do out of hours interviews if required. We will not be able to respond to all applicants owing to the numbers of candidates who apply via this website. We are not able to sponsor candidates for this role - you must be in the UK with UK work experience and relevant NI/Visa/Settlement Status as applicable.
-
-Full training will be given before start date. Start date 5th Feb or earlier.
-
-Job Types: Full-time, Permanent
-
-Salary: £30,160.00-£32,240.00 per year
-
-Benefits:
-
-Company pension
-Employee discount
-Sick pay
-Education:
-
-A-Level or equivalent (preferred)
-Experience:
-
-Dental receptionist: 1 year (preferred)
-Work Location: In person
-
-Application deadline: 19/01/2024
-Reference ID: RCPT0124
-Expected start date: 05/02/2024
+if __name__ == "__main__":
+    ARTICLE = """ 
+Hugging Face: Revolutionizing Natural Language Processing
+Introduction
+In the rapidly evolving field of Natural Language Processing (NLP), Hugging Face has emerged as a prominent and innovative force. This article will explore the story and significance of Hugging Face, a company that has made remarkable contributions to NLP and AI as a whole. From its inception to its role in democratizing AI, Hugging Face has left an indelible mark on the industry.
+The Birth of Hugging Face
+Hugging Face was founded in 2016 by Clément Delangue, Julien Chaumond, and Thomas Wolf. The name "Hugging Face" was chosen to reflect the company's mission of making AI models more accessible and friendly to humans, much like a comforting hug. Initially, they began as a chatbot company but later shifted their focus to NLP, driven by their belief in the transformative potential of this technology.
+Transformative Innovations
+Hugging Face is best known for its open-source contributions, particularly the "Transformers" library. This library has become the de facto standard for NLP and enables researchers, developers, and organizations to easily access and utilize state-of-the-art pre-trained language models, such as BERT, GPT-3, and more. These models have countless applications, from chatbots and virtual assistants to language translation and sentiment analysis.
+Key Contributions:
+1. **Transformers Library:** The Transformers library provides a unified interface for more than 50 pre-trained models, simplifying the development of NLP applications. It allows users to fine-tune these models for specific tasks, making it accessible to a wider audience.
+2. **Model Hub:** Hugging Face's Model Hub is a treasure trove of pre-trained models, making it simple for anyone to access, experiment with, and fine-tune models. Researchers and developers around the world can collaborate and share their models through this platform.
+3. **Hugging Face Transformers Community:** Hugging Face has fostered a vibrant online community where developers, researchers, and AI enthusiasts can share their knowledge, code, and insights. This collaborative spirit has accelerated the growth of NLP.
+Democratizing AI
+Hugging Face's most significant impact has been the democratization of AI and NLP. Their commitment to open-source development has made powerful AI models accessible to individuals, startups, and established organizations. This approach contrasts with the traditional proprietary AI model market, which often limits access to those with substantial resources.
+By providing open-source models and tools, Hugging Face has empowered a diverse array of users to innovate and create their own NLP applications. This shift has fostered inclusivity, allowing a broader range of voices to contribute to AI research and development.
+Industry Adoption
+The success and impact of Hugging Face are evident in its widespread adoption. Numerous companies and institutions, from startups to tech giants, leverage Hugging Face's technology for their AI applications. This includes industries as varied as healthcare, finance, and entertainment, showcasing the versatility of NLP and Hugging Face's contributions.
+Future Directions
+Hugging Face's journey is far from over. As of my last knowledge update in September 2021, the company was actively pursuing research into ethical AI, bias reduction in models, and more. Given their track record of innovation and commitment to the AI community, it is likely that they will continue to lead in ethical AI development and promote responsible use of NLP technologies.
+Conclusion
+Hugging Face's story is one of transformation, collaboration, and empowerment. Their open-source contributions have reshaped the NLP landscape and democratized access to AI. As they continue to push the boundaries of AI research, we can expect Hugging Face to remain at the forefront of innovation, contributing to a more inclusive and ethical AI future. Their journey reminds us that the power of open-source collaboration can lead to groundbreaking advancements in technology and bring AI within the reach of many.
 """
-summary = generate_summary(job_description)
-print(summary)
+    summary = create_summary(ARTICLE)
+    embedding = create_embedding(summary)
+    print(summary)
+    print(embedding)
+
+
