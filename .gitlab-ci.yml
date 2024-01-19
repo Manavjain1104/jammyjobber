@@ -22,4 +22,4 @@ unit-test:
   image: python:3.12
   stage: test
   script:
-    - python3 test_db.py
+    - python3 test/test_db.py
