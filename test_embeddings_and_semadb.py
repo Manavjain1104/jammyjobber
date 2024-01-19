@@ -1,4 +1,4 @@
-from semadb_utils import *
+from utils.semadb_utils import *
 from embeddings_utils import *
 
 # create_collection("testJobs", 384, "cosine")
