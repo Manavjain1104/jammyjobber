@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from semadb_utils import *
+from utils.semadb_utils import *
 from embeddings_utils import *
-from .models import Job
+
 
 # Create your views here.
 def home_page_view(request):
