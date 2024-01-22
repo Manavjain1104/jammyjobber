@@ -43,8 +43,12 @@ unit-test:
   stage: test
   script:
 <<<<<<< HEAD
+<<<<<<< HEAD
     - python3 test_db.py
 >>>>>>> 3d200b9 (TRy with os)
 =======
+=======
+    - pip install requests
+>>>>>>> bc818d6 (Add installing requests)
     - python3 test/test_db.py
 >>>>>>> 5011012 (Change test path)
