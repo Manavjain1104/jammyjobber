@@ -1,7 +1,5 @@
 import sqlite3
 
-from csv import reader
-
 job_listing_db = "job_listing.db"
 
 
