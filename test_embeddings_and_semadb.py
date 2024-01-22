@@ -1,5 +1,5 @@
 from utils.semadb_utils import *
-from embeddings_utils import *
+from utils.embeddings_utils import *
 
 # create_collection("testJobs", 384, "cosine")
 jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
