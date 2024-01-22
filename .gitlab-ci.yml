@@ -17,3 +17,11 @@ sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+
+unit-test:
+  image: python:3.12
+  stage: test
+  script:
+    - pip install requests
+    - pip install python-dotenv
+    - python3 test/test_db.py
