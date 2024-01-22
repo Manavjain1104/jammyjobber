@@ -22,4 +22,5 @@ unit-test:
   image: python:3.12
   stage: test
   script:
+    - pip install requests
     - python3 test/test_db.py
