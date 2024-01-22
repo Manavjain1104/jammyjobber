@@ -3,14 +3,14 @@ from sqlite_utils import job_listing_db, reset_table, create_job_listing
 from llm_utils import create_summary, MIN_LEN, bulk_create_embeddings
 from semadb_utils import bulk_add_points
 from csv import reader
-
-starting_row = 0
+import os
 
 # ====== CSV integration =======
 
 
 def csv_into_database(collection, path_to_file, csv_delimiter=','):
     """Add the csv file into the sqlite and semadb database.
+    WILL DELETE THE CSV FILE (to prevent duplication in database, do not push the same entries few times)
 
     Args:
         path_to_file (str): path to the file
@@ -30,14 +30,11 @@ def csv_into_database(collection, path_to_file, csv_delimiter=','):
             raise Exception(
                 "csv file should contain title, company, lcoation, description (order matters)")
 
-        reset_table(connection)
-
         job_ids = []
         job_summaries = []
 
         for row in csv_reader:
             # Assuming that header goes as {title, company, location, description}
-            #
             job_id = create_job_listing(connection, *tuple(row))
             job_ids.append(job_id)
 
@@ -48,10 +45,12 @@ def csv_into_database(collection, path_to_file, csv_delimiter=','):
 
             job_summaries.append(job_summary)
 
-        connection.close()
+    connection.close()
 
-        bulk_add_points(collection, bulk_create_embeddings(
-            job_summaries), job_ids)
+    bulk_add_points(collection, bulk_create_embeddings(
+        job_summaries), job_ids)
+
+    os.remove(path_to_file)
 
 
 csv_into_database("job_scraped.csv")
