@@ -49,6 +49,10 @@ unit-test:
 =======
 =======
     - pip install requests
+<<<<<<< HEAD
 >>>>>>> bc818d6 (Add installing requests)
+=======
+    - pip install python-dotenv
+>>>>>>> 46d2606 (Add installing python-dotenv)
     - python3 test/test_db.py
 >>>>>>> 5011012 (Change test path)
