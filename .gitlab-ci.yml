@@ -24,5 +24,4 @@ unit-test:
   script:
     - pip install requests
     - pip install python-dotenv
-    - pip install unittest
     - python3 test/test_db.py
