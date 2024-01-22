@@ -1,27 +1,34 @@
 from django.shortcuts import render
 from utils.semadb_utils import *
 from utils.embeddings_utils import *
+from utils.sqlite_utils import *
 
 
 # Create your views here.
 def home_page_view(request):
-    jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
-            "We are looking for a python developer. We can offer a competetive salary", "Charity worker needed.",
-            "Dog sitter job in Manchester"]
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    cursor = connection.cursor()
+
+    jobs = read_job_listings(connection)
+    print(jobs)
+
+    # jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
+    #         "We are looking for a python developer. We can offer a competetive salary", "Charity worker needed.",
+    #         "Dog sitter job in Manchester"]
 
     if 'query' in request.GET:
         query = request.GET['query']
 
         request_embedding = create_embedding(query)
         closest = search_points("testJobs", request_embedding, 2)
-        job_list = [jobs[i] for i in closest]
+        job_list = [jobs[i+1][4] for i in closest]
 
     else:
+        job_list = map(lambda x: x[4], jobs)
 
-        job_list = jobs
+    connection.close()
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
-    # return render(request, "pages/home_search.html", {})
 
 
 # def submitted_search_view(request):
