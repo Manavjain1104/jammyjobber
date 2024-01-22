@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from utils.semadb_utils import *
-from embeddings_utils import *
+from utils.embeddings_utils import *
 
 
 # Create your views here.
