@@ -90,7 +90,8 @@ def search_points(collection, vector, limit=10):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST
     }
-    response = requests.post(search_url(collection), json=payload, headers=headers)
+    response = requests.post(search_url(collection),
+                             json=payload, headers=headers)
 
     point_ids = []
     for point in response.json()['points']:
