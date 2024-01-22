@@ -1,7 +1,5 @@
 import sqlite3
 
-from csv import reader
-
 job_listing_db = "job_listing.db"
 
 
@@ -119,29 +117,3 @@ def test_job_listing_database():
     # delete_dummy_job_listing()
     print(read_job_listings(connection))
     connection.close()
-
-
-# ====== CSV integration into sqlite =======
-def csv_into_database(path_to_file, csv_delimiter=','):
-    """Add the csv file into the sqlite database.
-
-    Args:
-        path_to_file (str): path to the file
-        csv_delimiter (str, optional): deliminater for the csv file. Defaults to ','.
-    """
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
-    with open(path_to_file, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=csv_delimiter)
-        csv_header = next(csv_reader)
-
-        reset_table()
-
-        for row in csv_reader:
-            # Assuming that header goes as {title, company, location, description}
-            create_job_listing(connection, *tuple(row))
-
-    connection.close()
-
-
-test_job_listing_database()

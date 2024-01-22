@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Job
 from utils.semadb_utils import *
-from utils.embeddings_utils import *
+from utils.llm_utils import *
 from utils.sqlite_utils import *
 
 
