@@ -1,3 +1,4 @@
+from context import utils
 import utils.semadb_utils as semadb
 
 def test_url_generation():
