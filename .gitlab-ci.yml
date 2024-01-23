@@ -21,11 +21,7 @@ unit-test:
   image: python:3.12
   stage: test
   script:
-    - pip install --upgrade pip
-    - pip install imp
-    - pip install requests
-    - pip install python-dotenv
-    - pip install nose
+    - pipenv shell
     - python3 test/test_semadb.py
     - python3 test/test_sqlite.py
     - python3 test/test_integration.py
