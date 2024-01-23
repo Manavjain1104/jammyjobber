@@ -46,6 +46,7 @@ unit-test:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - pipenv shell
     - python3 test/test_semadb.py
     - python3 test/test_sqlite.py
@@ -60,6 +61,9 @@ unit-test:
 =======
     - pipenv install requests
 >>>>>>> 0e66c1f (Try installing requests)
+=======
+    - pipenv install
+>>>>>>> b81d767 (Try installing pipenv)
     - pipenv run python test/test_semadb.py
     - pipenv run python test/test_sqlite.py
     - pipenv run python test/test_integration.py
