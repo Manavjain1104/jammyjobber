@@ -20,7 +20,24 @@ def create_table(connection):
 
 
 # ======== HELPER FUNC ============
-def create_job_listing(connection, title, company, location, description):
+def create_job_listing(connection, title, company, location, description, checkDuplicates=False):
+    """Creates the new job listing and returns the id of the new entry
+    If checkDuplicates is True and there is a duplicate, do not create the entry and return -1
+
+    Args:
+        connection (sqlite3.connection): connection to the database
+        title (str): title of the job
+        company (str): company where the job is at
+        location (str): where the job is located
+        description (str): job description
+        checkDuplicates (bool, optional): true if check for duplicates is needed. Defaults to False.
+
+    Returns:
+        job id: job id that correspond to sqlite database
+    """
+    if checkDuplicates:
+        if (find_job(connection, {'title': title, 'company': company, 'location': location, 'description': description}) != []):
+            return -1
     cursor = connection.cursor()
 
     # Returns the id of the new job listing created
@@ -34,6 +51,7 @@ def create_job_listing(connection, title, company, location, description):
 
 
 def read_job_listings(connection):
+    """Return list of tuples of all the entries"""
     cursor = connection.cursor()
 
     cursor.execute('SELECT * FROM job_listings')
@@ -42,6 +60,16 @@ def read_job_listings(connection):
 
 
 def update_job_listing(connection, job_id, title, company, location, description):
+    """Update job listing try for the given job_id.
+
+    Args:
+        connection (sqlite3.connection): connection to the database
+        job_id (int): job id in the database
+        title (str): title of the job
+        company (str): company where the job is at
+        location (str): where the job is located
+        description (str): job description
+    """
     cursor = connection.cursor()
 
     cursor.execute('''
@@ -53,7 +81,15 @@ def update_job_listing(connection, job_id, title, company, location, description
 
 
 def find_job(connection, criteria):
-    # Example: criteria can be a dictionary like {'title': 'Software Engineer', 'location': 'CityA'}
+    """Find the job entries based on the criteria given
+
+    Args:
+        connection (sqlite3.connection): connection to the database
+        criteria ({header: info}): dictionary of the criterias (ex. {'title': 'Software Engineer', 'location': 'CityA'})
+
+    Returns:
+        [tuples]: list of entries corresponding to the entries
+    """
     cursor = connection.cursor()
 
     query = 'SELECT * FROM job_listings WHERE '
@@ -65,6 +101,12 @@ def find_job(connection, criteria):
 
 
 def delete_job_listing(connection, job_id):
+    """Delete entry corresponding to job id
+
+    Args:
+        connection (sqlite3.connection): connection to the database
+        job_id (int): job id in the database
+    """
     cursor = connection.cursor()
 
     cursor.execute('DELETE FROM job_listings WHERE id=?', (job_id,))
@@ -72,6 +114,7 @@ def delete_job_listing(connection, job_id):
 
 
 def reset_table(connection):
+    """Clear the entries and reset the counter"""
     cursor = connection.cursor()
 
     cursor.execute('DELETE FROM job_listings;')
@@ -80,9 +123,7 @@ def reset_table(connection):
 
 
 # ========= TEST DATA ==========
-def populate_dummy_job_listing():
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
+def populate_dummy_job_listing(connection):
     create_job_listing(connection, "Software Engineering", "Joe inc.",
                        "London", "This is a Software Engineering job.")
     create_job_listing(connection, "Receptionist", "Frechclinic", "London",
@@ -94,25 +135,19 @@ def populate_dummy_job_listing():
     create_job_listing(connection, "Dog sitter", "doglovr", "Manchester",
                        "Dog sitter job in Manchester")
 
-    connection.close()
 
-
-def delete_dummy_job_listing():
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
+def delete_dummy_job_listing(connection):
     delete_job_listing(connection, 1)
     delete_job_listing(connection, 2)
     delete_job_listing(connection, 3)
     delete_job_listing(connection, 4)
     delete_job_listing(connection, 5)
 
-    connection.close()
-
 
 def test_job_listing_database():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
     reset_table(connection)
-    populate_dummy_job_listing()
+    populate_dummy_job_listing(connection)
     # print(read_job_listings())
     # delete_dummy_job_listing()
     print(read_job_listings(connection))
