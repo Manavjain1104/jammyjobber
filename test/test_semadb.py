@@ -68,5 +68,7 @@ class SemaDBTestCase(unittest.TestCase):
         response = semadb.get_collection("test_collection")
         assert_is_not_none(response)
 
+
+
 if __name__ == '__main__':
     unittest.main()

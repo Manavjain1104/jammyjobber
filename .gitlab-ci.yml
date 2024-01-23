@@ -63,8 +63,12 @@ unit-test:
 >>>>>>> 0e66c1f (Try installing requests)
 =======
     - pipenv install
+<<<<<<< HEAD
 >>>>>>> b81d767 (Try installing pipenv)
     - pipenv run python test/test_semadb.py
     - pipenv run python test/test_sqlite.py
     - pipenv run python test/test_integration.py
 >>>>>>> cc709d3 (Try running with python)
+=======
+    - pipenv run python -m unittest discover test/
+>>>>>>> e321c2e (Run all unit tests at once)
