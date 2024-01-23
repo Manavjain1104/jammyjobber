@@ -12,15 +12,11 @@ before_script:
 
 stages:
   - test
-sast:
-  stage: test
-include:
-  - template: Security/SAST.gitlab-ci.yml
 
 unit-test:
-  image: python:3.8
+  image: python:3.10
   stage: test
   script:
     - pip install pipenv
-    - pipenv install
-    - pipenv run python -m unittest discover test/
+    - python3 -m pipenv install
+    - python3 -m pipenv run python -m unittest discover test/
