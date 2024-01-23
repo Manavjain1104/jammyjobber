@@ -39,11 +39,10 @@
       - if: $CI_COMMIT_BRANCH == "master"
 =======
 unit-test:
-  image: python:3.12
+  image: python:3.11
   stage: test
   script:
     - pip install pipenv
-    - pip install --python 3.8
     - pipenv shell
     - python3 test/test_semadb.py
     - python3 test/test_sqlite.py
