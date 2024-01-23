@@ -53,13 +53,4 @@ unit-test:
 >>>>>>> bc818d6 (Add installing requests)
 =======
     - pip install python-dotenv
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 46d2606 (Add installing python-dotenv)
-=======
-    - pip install unittest
->>>>>>> 34bc83f (Add tests for new points generation)
-=======
->>>>>>> b15d2fe (Remove installing unittest)
     - python3 test/test_db.py
->>>>>>> 5011012 (Change test path)
