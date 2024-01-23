@@ -1,6 +1,8 @@
 from context import utils
 import utils.semadb_utils as semadb
 import unittest
+from unittest.mock import Mock, patch
+from nose.tools import assert_is_not_none
 
 class SemaDBTestCase(unittest.TestCase):
     def test_url_generation(self):
@@ -16,6 +18,11 @@ class SemaDBTestCase(unittest.TestCase):
         with self.assertRaises(Exception):
             semadb.new_point()
 
+    @patch('utils.semadb_utils.requests.get')
+    def test_get_collection_ok(self, mock_get):
+        mock_get.return_value.ok = True
+        response = semadb.get_collection("test_collection")
+        assert_is_not_none(response)
 
 if __name__ == '__main__':
     unittest.main()
