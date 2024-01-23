@@ -35,6 +35,7 @@ def create_job_listing(connection, title, company, location, description, link):
 
 
 def read_job_listings(connection):
+    """Return list of tuples of all the entries"""
     cursor = connection.cursor()
 
     cursor.execute('SELECT * FROM job_listings')
@@ -54,7 +55,15 @@ def update_job_listing(connection, job_id, title, company, location, description
 
 
 def find_job(connection, criteria):
-    # Example: criteria can be a dictionary like {'title': 'Software Engineer', 'location': 'CityA'}
+    """Find the job entries based on the criteria given
+
+    Args:
+        connection (sqlite3.connection): connection to the database
+        criteria ({header: info}): dictionary of the criterias (ex. {'title': 'Software Engineer', 'location': 'CityA'})
+
+    Returns:
+        [tuples]: list of entries corresponding to the entries
+    """
     cursor = connection.cursor()
 
     query = 'SELECT * FROM job_listings WHERE '
@@ -66,6 +75,12 @@ def find_job(connection, criteria):
 
 
 def delete_job_listing(connection, job_id):
+    """Delete entry corresponding to job id
+
+    Args:
+        connection (sqlite3.connection): connection to the database
+        job_id (int): job id in the database
+    """
     cursor = connection.cursor()
 
     cursor.execute('DELETE FROM job_listings WHERE id=?', (job_id,))
@@ -73,6 +88,7 @@ def delete_job_listing(connection, job_id):
 
 
 def reset_table(connection):
+    """Clear the entries and reset the counter"""
     cursor = connection.cursor()
 
     cursor.execute('DELETE FROM job_listings;')
@@ -90,9 +106,7 @@ def bulk_delete_job_listing(connection, job_ids):
 
 
 # ========= TEST DATA ==========
-def populate_dummy_job_listing():
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
+def populate_dummy_job_listing(connection):
     create_job_listing(connection, "Software Engineering", "Joe inc.",
                        "London", "This is a Software Engineering job.", "www.joeinc.com")
     create_job_listing(connection, "Receptionist", "Frechclinic", "London",
@@ -104,19 +118,13 @@ def populate_dummy_job_listing():
     create_job_listing(connection, "Dog sitter", "doglovr", "Manchester",
                        "Dog sitter job in Manchester", "doglvr.com")
 
-    connection.close()
 
-
-def delete_dummy_job_listing():
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
+def delete_dummy_job_listing(connection):
     delete_job_listing(connection, 1)
     delete_job_listing(connection, 2)
     delete_job_listing(connection, 3)
     delete_job_listing(connection, 4)
     delete_job_listing(connection, 5)
-
-    connection.close()
 
 
 def test_job_listing_database():
