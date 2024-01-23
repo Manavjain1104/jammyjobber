@@ -13,4 +13,5 @@ temp/
 .idea/
 .env
 env/
+venv/
 .DS_Store

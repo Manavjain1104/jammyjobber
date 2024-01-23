@@ -1,19 +1,16 @@
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer
-from typing import List
+from typing import List, Tuple
 
 summariser = pipeline("summarization", model="Falconsai/text_summarization")
 embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
 
-def create_summary(text: str) -> str:
+def create_summary_and_embedding(text: str) -> Tuple[str, List[int]]:
     summariser_output = summariser(
             text, max_length=230, min_length=30, do_sample=False
             )
     summary = summariser_output[0]['summary_text']
-    return summary
-
-def create_embedding(text: str) -> List[int]:
-    return embedder.encode(summary)
+    return summary, embedder.encode(summary)
 
 if __name__ == "__main__":
     ARTICLE = """ 
@@ -38,8 +35,7 @@ Hugging Face's journey is far from over. As of my last knowledge update in Septe
 Conclusion
 Hugging Face's story is one of transformation, collaboration, and empowerment. Their open-source contributions have reshaped the NLP landscape and democratized access to AI. As they continue to push the boundaries of AI research, we can expect Hugging Face to remain at the forefront of innovation, contributing to a more inclusive and ethical AI future. Their journey reminds us that the power of open-source collaboration can lead to groundbreaking advancements in technology and bring AI within the reach of many.
 """
-    summary = create_summary(ARTICLE)
-    embedding = create_embedding(summary)
+    summary, embedding = create_summary_and_embedding(ARTICLE)
     print(summary)
     print(embedding)
 
