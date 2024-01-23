@@ -45,8 +45,50 @@ class SqliteTestCase(unittest.TestCase):
         jobs = read_job_listings(self.connection)
         self.assertEqual(len(jobs), 5)
 
-    # def test_update_job_listing(self):
-    #     ...
+    def test_update_job_listing(self):
+        job_id = create_job_listing(
+            self.connection, "Test Job", "Test Company", "Test Location", "Test Description")
+
+        update_job_listing(
+            self.connection, job_id, "Test Job1", "Test Company2", "Test Location3", "Test Description4")
+
+        jobs = find_job(self.connection, {'id': job_id})
+        self.assertEqual(jobs, [(job_id, "Test Job1", "Test Company2",
+                         "Test Location3", "Test Description4")])
+
+    def test_find_job(self):
+        create_job_listing(self.connection, "A", "B", "C", "D")
+        create_job_listing(self.connection, "A", "E", "F", "J")
+        create_job_listing(self.connection, "B", "E", "F", "J")
+
+        jobs = find_job(self.connection, {'title': "A"})
+        self.assertEqual(len(jobs), 2)
+
+    def test_delete_job_listing(self):
+        a = create_job_listing(self.connection, "A", "B", "C", "D")
+        b = create_job_listing(self.connection, "A", "E", "F", "J")
+
+        self.assertEqual(len(read_job_listings(self.connection)), 2)
+        delete_job_listing(self.connection, a)
+        self.assertEqual(len(read_job_listings(self.connection)), 1)
+        delete_job_listing(self.connection, b)
+        self.assertEqual(len(read_job_listings(self.connection)), 0)
+
+    def test_delete_empty_job_listing(self):
+        self.assertEqual(len(read_job_listings(self.connection)), 0)
+        delete_job_listing(self.connection, 1)
+        self.assertEqual(len(read_job_listings(self.connection)), 0)
+
+    def test_reset_table(self):
+        a = create_job_listing(self.connection, "A", "B", "C", "D")
+
+        jobs = read_job_listings(self.connection)
+        self.assertNotEquals(len(jobs), 0)
+
+        reset_table(self.connection)
+
+        jobs = read_job_listings(self.connection)
+        self.assertEquals(len(jobs), 0)
 
 
 if __name__ == '__main__':
