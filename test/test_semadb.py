@@ -5,6 +5,8 @@ import utils.semadb_utils as semadb
 import unittest
 from unittest.mock import Mock, patch
 from nose.tools import assert_is_not_none
+from unittest.mock import Mock, patch
+from nose.tools import assert_is_not_none
 
 test_collection = "test_collection"
 class SemaDBTestCase(unittest.TestCase):
@@ -60,6 +62,11 @@ class SemaDBTestCase(unittest.TestCase):
         response = semadb.search_points(test_collection, [1, 1], 1)
         assert response == [1284]
 
+    @patch('utils.semadb_utils.requests.get')
+    def test_get_collection_ok(self, mock_get):
+        mock_get.return_value.ok = True
+        response = semadb.get_collection("test_collection")
+        assert_is_not_none(response)
 
 if __name__ == '__main__':
     unittest.main()
