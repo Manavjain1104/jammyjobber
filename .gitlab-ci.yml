@@ -44,6 +44,7 @@ unit-test:
   script:
     - pip install pipenv
 <<<<<<< HEAD
+<<<<<<< HEAD
     - pipenv shell
     - python3 test/test_semadb.py
     - python3 test/test_sqlite.py
@@ -54,3 +55,8 @@ unit-test:
     - pipenv run python3 test/test_sqlite.py
     - pipenv run python3 test/test_integration.py
 >>>>>>> 36b4755 (Add pipenv run)
+=======
+    - pipenv run python test/test_semadb.py
+    - pipenv run python test/test_sqlite.py
+    - pipenv run python test/test_integration.py
+>>>>>>> cc709d3 (Try running with python)
