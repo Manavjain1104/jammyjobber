@@ -22,5 +22,5 @@ unit-test:
   stage: test
   script:
     - pip install pipenv
-    - pipenv install
-    - pipenv run python -m unittest discover test/
+    - python -m pipenv pipenv install
+    - python -m pipenv pipenv run python -m unittest discover test/
