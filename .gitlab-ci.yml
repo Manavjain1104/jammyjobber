@@ -18,11 +18,9 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 unit-test:
-  image: python:3.12
+  image: python:3.8
   stage: test
   script:
-    - pip install requests
-    - pip install python-dotenv
-    - python3 test/test_semadb.py
-    - python3 test/test_sqlite.py
-    - python3 test/test_integration.py
+    - pip install pipenv
+    - pipenv install
+    - pipenv run python -m unittest discover test/
