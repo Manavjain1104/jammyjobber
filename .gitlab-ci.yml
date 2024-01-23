@@ -7,16 +7,15 @@
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
 before_script:
-- echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-- echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
-
+  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
 
 stages:
-- test
+  - test
 sast:
   stage: test
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
 
 unit-test:
   image: python:3.12
@@ -24,4 +23,6 @@ unit-test:
   script:
     - pip install requests
     - pip install python-dotenv
-    - python3 test/test_db.py
+    - python3 test/test_semadb.py
+    - python3 test/test_sqlite.py
+    - python3 test/test_integration.py
