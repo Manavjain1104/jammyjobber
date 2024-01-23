@@ -22,7 +22,6 @@ unit-test:
   stage: test
   script:
     - pip install pipenv
-    - pipenv shell
-    - python3 test/test_semadb.py
-    - python3 test/test_sqlite.py
-    - python3 test/test_integration.py
+    - pipenv run python3 test/test_semadb.py
+    - pipenv run python3 test/test_sqlite.py
+    - pipenv run python3 test/test_integration.py
