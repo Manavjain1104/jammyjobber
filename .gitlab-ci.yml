@@ -27,7 +27,6 @@
   #     - pip install pipenv
   #     - pip install Django
 
-<<<<<<< HEAD
   #     - python3 -m pipenv install
   #     - python3 -m pipenv run python -m unittest discover test/
 
@@ -37,20 +36,3 @@
       - dpl --provider=heroku --app=jammy-jobber --api-key=d9b9ae82-676d-4f77-8e44-a2825b126b9f
     rules:
       - if: $CI_COMMIT_BRANCH == "master"
-=======
-unit-test:
-  image: python:3.12
-  stage: test
-  script:
-<<<<<<< HEAD
-<<<<<<< HEAD
-    - python3 test_db.py
->>>>>>> 3d200b9 (TRy with os)
-=======
-=======
-    - pip install requests
-<<<<<<< HEAD
->>>>>>> bc818d6 (Add installing requests)
-=======
-    - pip install python-dotenv
-    - python3 test/test_db.py
