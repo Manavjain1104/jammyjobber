@@ -23,6 +23,7 @@ unit-test:
   script:
     - pip install requests
     - pip install python-dotenv
+    - pip install nose
     - python3 test/test_semadb.py
     - python3 test/test_sqlite.py
     - python3 test/test_integration.py
