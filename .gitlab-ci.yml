@@ -15,9 +15,14 @@
       - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
 
+<<<<<<< HEAD
   stages:
     # - test
     - publicDeploy
+=======
+stages:
+  - test
+>>>>>>> 462e90a (Change python version for testing)
 
 <<<<<<< HEAD
   # unit-test:
@@ -39,10 +44,11 @@
       - if: $CI_COMMIT_BRANCH == "master"
 =======
 unit-test:
-  image: python:3.8
+  image: python:3.10
   stage: test
   script:
     - pip install pipenv
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -72,3 +78,7 @@ unit-test:
 =======
     - pipenv run python -m unittest discover test/
 >>>>>>> e321c2e (Run all unit tests at once)
+=======
+    - python3 -m pipenv install
+    - python3 -m pipenv run python -m unittest discover test/
+>>>>>>> 462e90a (Change python version for testing)
