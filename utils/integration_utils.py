@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite_utils import job_listing_db, reset_table, create_job_listing
 from llm_utils import create_summary, MIN_LEN, bulk_create_embeddings
-from semadb_utils import bulk_add_points
+from semadb_utils import bulk_add_points, COLLECTION_NAME
 from csv import reader
 import os
 import requests
@@ -73,10 +73,16 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
     if not use_api:
         job_embeddings = bulk_create_embeddings(job_summaries)
 
+    print(job_ids)
+    print()
+    print(job_summaries)
+    print()
+    # print(job_embedding)
+
     bulk_add_points(collection, job_embeddings, job_ids)
 
     os.remove(path_to_file)
 
 
 if __name__ == "__main__":
-    csv_into_database("job_scraped.csv")
+    csv_into_database(COLLECTION_NAME, "web_scraper/nurse.csv")

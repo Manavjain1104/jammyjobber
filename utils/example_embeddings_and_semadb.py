@@ -26,4 +26,4 @@ jobs = ["This is a Software Engineering job.", "You will be a receptionist at ou
 # print(create_collection(COLLECTION_NAME, 384))
 
 
-# print(get_collection(COLLECTION_NAME))
+print(get_collection(COLLECTION_NAME))

@@ -112,10 +112,13 @@ def delete_dummy_job_listing():
 
 def test_job_listing_database():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-    reset_table(connection)
+    # reset_table(connection)
     # populate_dummy_job_listing()
     # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
     print(read_job_listings(connection))
     connection.close()
+
+
+test_job_listing_database()
