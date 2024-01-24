@@ -7,7 +7,7 @@ name = "pypi"
 requests = "*"
 python-dotenv = "*"
 nose = "*"
-django = "*"
+Django = "*"
 
 [dev-packages]
 
