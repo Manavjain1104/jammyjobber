@@ -19,7 +19,7 @@ stages:
 unit-test:
   stage: test
   tags: 
-    - doc-cloud-vm
+    - cloud-vm-41-89
   script:
     - pip install pipenv
     - python3 -m pipenv install
