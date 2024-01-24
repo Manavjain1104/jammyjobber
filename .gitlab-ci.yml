@@ -16,6 +16,8 @@ stages:
 unit-test:
   image: python:3.8
   stage: test
+  tags:
+    - doc-cloud-vm
   script:
     - pip install pipenv
     - python3 -m pipenv install
