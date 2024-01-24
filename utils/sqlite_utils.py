@@ -13,24 +13,25 @@ def create_table(connection):
             title TEXT NOT NULL,
             company TEXT NOT NULL,
             location TEXT,
-            description TEXT
+            description TEXT,
+            link TEXT
         )
     ''')
     connection.commit()
 
 
 # ======== HELPER FUNC ============
-def create_job_listing(connection, title, company, location, description):
+def create_job_listing(connection, title, company, location, description, link):
     cursor = connection.cursor()
 
     # Returns the id of the new job listing created
     cursor.execute('''
-            INSERT INTO job_listings (title, company, location, description)
-            VALUES (?, ?, ?, ?)
-        ''', (title, company, location, description))
+            INSERT INTO job_listings (title, company, location, description, link)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (title, company, location, description, link))
     connection.commit()
 
-    return find_job(connection, {'title': title, 'company': company, 'location': location, 'description': description})[0][0]
+    return find_job(connection, {'title': title, 'company': company, 'location': location, 'description': description, 'link': link})[0][0]
 
 
 def read_job_listings(connection):
@@ -41,14 +42,14 @@ def read_job_listings(connection):
     return rows
 
 
-def update_job_listing(connection, job_id, title, company, location, description):
+def update_job_listing(connection, job_id, title, company, location, description, link):
     cursor = connection.cursor()
 
     cursor.execute('''
         UPDATE job_listings
-        SET title=?, company=?, location=?, description=?
+        SET title=?, company=?, location=?, description=?, link=?
         WHERE id=?
-    ''', (title, company, location, description, job_id))
+    ''', (title, company, location, description, link, job_id))
     connection.commit()
 
 
@@ -84,15 +85,15 @@ def populate_dummy_job_listing():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
 
     create_job_listing(connection, "Software Engineering", "Joe inc.",
-                       "London", "This is a Software Engineering job.")
+                       "London", "This is a Software Engineering job.", "www.joeinc.com")
     create_job_listing(connection, "Receptionist", "Frechclinic", "London",
-                       "You will be a receptionist at our clinic.")
+                       "You will be a receptionist at our clinic.", "aaaa.uk")
     create_job_listing(connection, "Python Developer", "Snake & co.", "remote",
-                       "We are looking for a python developer. We can offer a competetive salary")
+                       "We are looking for a python developer. We can offer a competetive salary", "python.org")
     create_job_listing(connection, "Volunteer", "Helpmeplz",
-                       "london", "Charity worker needed.")
+                       "london", "Charity worker needed.", "helpme.plz")
     create_job_listing(connection, "Dog sitter", "doglovr", "Manchester",
-                       "Dog sitter job in Manchester")
+                       "Dog sitter job in Manchester", "doglvr.com")
 
     connection.close()
 
@@ -112,7 +113,8 @@ def delete_dummy_job_listing():
 def test_job_listing_database():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
     reset_table(connection)
-    populate_dummy_job_listing()
+    # populate_dummy_job_listing()
+    # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
     print(read_job_listings(connection))
