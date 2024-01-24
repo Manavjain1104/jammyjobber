@@ -29,6 +29,7 @@
     script:
       - pip install pipenv
       - pip install Django
+      - pipenv install -r requirements.txt
       - python3 -m pipenv install
       - python3 -m pipenv run python -m unittest discover test/
 
