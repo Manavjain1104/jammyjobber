@@ -11,7 +11,6 @@
     image: ubuntu:latest
     before_script:
       - apt install -y python3-pip
-      - pip install Django
       - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
@@ -27,6 +26,7 @@
       - cloud-vm-41-89
     script:
       - pip install pipenv
+      - pip install Django
       - python3 -m pipenv install
       - python3 -m pipenv run python -m unittest discover test/
 
