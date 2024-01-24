@@ -117,7 +117,7 @@ def test_job_listing_database():
     # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
-    print(read_job_listings(connection))
+    print(len(read_job_listings(connection)))
     connection.close()
 
 

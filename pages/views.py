@@ -20,7 +20,7 @@ def home_page_view(request):
         query = request.GET['query']
 
         request_embedding = create_embedding(query)
-        closest = search_points("testJobs", request_embedding, 2)
+        closest = search_points(COLLECTION_NAME, request_embedding, 2)
         job_list = [jobs[i+1][4] for i in closest]
 
     else:
@@ -55,7 +55,7 @@ def job_search(request):
         query = request.GET['query']
 
         request_embedding = create_embedding(query)
-        closest = search_points("testJobs", request_embedding, 1)
+        closest = search_points(COLLECTION_NAME, request_embedding, 1)
         job_list = jobs[closest[0]]
 
     else:
