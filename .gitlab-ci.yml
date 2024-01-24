@@ -6,13 +6,14 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-  image: 
-    ubuntu:latest
-    python:3.11
-  before_script:
-    - apt install -y python3-pip
-    - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-    - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+
+  default:
+    image: ubuntu:latest
+    before_script:
+      - apt install -y python3-pip
+      - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+      - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+
 
   stages:
     - test
@@ -21,7 +22,7 @@
   unit-test:
     stage: test
     tags: 
-      - cloud-vm-41-89
+      - doc-cloud-vm
     script:
       - pip install pipenv
       - python3 -m pipenv install
