@@ -25,6 +25,7 @@ stages:
 >>>>>>> 462e90a (Change python version for testing)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   # unit-test:
   #   stage: test
   #   tags: 
@@ -43,6 +44,17 @@ stages:
     rules:
       - if: $CI_COMMIT_BRANCH == "master"
 =======
+=======
+precommit:
+  image: python:3.10.2-slim-bullseye
+  before_script:
+    - apt update && apt install -y --no-install-recommends git
+    - pip install -r requirements.txt
+  script:
+    - pre-commit run --all-files
+
+
+>>>>>>> 83d582f (Update .gitlab-ci.yml file to run pre-commit)
 unit-test:
   image: python:3.10
   stage: test
