@@ -28,5 +28,5 @@
   publicDeploy:
     stage: publicDeploy    # deploy to heroku
     script:
-      - dpl --provider=heroku --app=jammyjobber-simplewebapp --api-key=de39d51d-edd0-4971-8161-d741fb2e4de0
+      - dpl --provider=heroku --app=jammyjobber-simplewebapp --api-key=cb7d9ae7-7c27-458d-b8dd-182c8950619b
 
