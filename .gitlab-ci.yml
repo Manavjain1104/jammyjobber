@@ -14,10 +14,9 @@ stages:
   - test
 
 unit-test:
-  image: python:3.8
   stage: test
   tags: 
-    - gorup_14_vm
+    - doc-cloud-vm
   script:
     - pip install pipenv
     - python3 -m pipenv install
