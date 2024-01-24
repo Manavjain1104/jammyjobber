@@ -10,17 +10,27 @@ default:
   image: ubuntu:latest
   before_script:
     - apt install -y python3-pip
-    - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-    - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+
+before_script:
+  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+
 
 stages:
   - test
+  - publicDeploy
 
 unit-test:
   stage: test
   tags: 
-    - cloud-vm-41-89
+    - doc-cloud-vm
   script:
     - pip install pipenv
     - python3 -m pipenv install
     - python3 -m pipenv run python -m unittest discover test/
+
+
+publicDeploy:
+  stage: publicDeploy    # deploy to heroku
+  script:
+    - dpl --provider=heroku --app=jammyjobber-simplewebapp --api-key=de39d51d-edd0-4971-8161-d741fb2e4de0
