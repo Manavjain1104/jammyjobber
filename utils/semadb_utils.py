@@ -9,6 +9,9 @@ load_dotenv()
 KEY = os.getenv('RAPID_API_KEY')
 HOST = os.getenv('RAPID_API_HOST')
 
+# Collection name
+COLLECTION_NAME = "JobListings"
+
 
 # Url used to access a collection
 def collection_url(collection):
@@ -38,7 +41,7 @@ def create_collection(id, vectorSize, distanceMetric="cosine"):
         "X-RapidAPI-Host": HOST
     }
     response = requests.post(base_url, json=payload, headers=headers)
-    return response
+    return response.json()
 
 
 # Given vector representation and SQLite id, return json representation
@@ -57,7 +60,8 @@ def add_points(collection, points):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST
     }
-    response = requests.post(points_url(collection), json=payload, headers=headers)
+    response = requests.post(points_url(collection),
+                             json=payload, headers=headers)
     return response
 
 
@@ -76,7 +80,7 @@ def get_collection(collection):
         "X-RapidAPI-Host": HOST
     }
     response = requests.get(collection_url(collection), headers=headers)
-    return response
+    return response.json()
 
 
 # Given a vector representation of a point, search for limit nearest points

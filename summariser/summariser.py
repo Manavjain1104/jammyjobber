@@ -5,12 +5,17 @@ from typing import List, Tuple
 summariser = pipeline("summarization", model="Falconsai/text_summarization")
 embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
 
+
+MAX_LEN = 230
+
+
 def create_summary_and_embedding(text: str) -> Tuple[str, List[int]]:
     summariser_output = summariser(
-            text, max_length=230, min_length=30, do_sample=False
-            )
+        text, max_length=MAX_LEN, min_length=30, do_sample=False
+    )
     summary = summariser_output[0]['summary_text']
     return summary, embedder.encode(summary)
+
 
 if __name__ == "__main__":
     ARTICLE = """ 
@@ -38,5 +43,3 @@ Hugging Face's story is one of transformation, collaboration, and empowerment. T
     summary, embedding = create_summary_and_embedding(ARTICLE)
     print(summary)
     print(embedding)
-
-

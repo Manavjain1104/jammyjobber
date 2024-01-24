@@ -1,5 +1,5 @@
-from utils.semadb_utils import *
-from utils.llm_utils import *
+from semadb_utils import *
+from llm_utils import *
 
 # create_collection("testJobs", 384, "cosine")
 jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
@@ -14,9 +14,16 @@ jobs = ["This is a Software Engineering job.", "You will be a receptionist at ou
 # get_collection("testJobs")
 
 
-job = "Only London"
-print(job)
-#
-request_embedding = create_embedding(job)
-closest = search_points("testJobs", request_embedding, 1)
-print(jobs[closest[0]])
+# job = "Only London"
+# print(job)
+# #
+# request_embedding = create_embedding(job)
+# print(len(request_embedding))
+# closest = search_points("testJobs", request_embedding, 1)
+# print(jobs[closest[0]])
+
+
+# print(create_collection(COLLECTION_NAME, 384))
+
+
+# print(get_collection(COLLECTION_NAME))
