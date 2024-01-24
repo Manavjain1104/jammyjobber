@@ -17,9 +17,15 @@
 
 
   stages:
+    - setup
     - test
     - publicDeploy
 
+  setup:
+    stage: setup
+    script:
+        - pip install -r requirements.txt
+        
   unit-test:
     stage: test
     tags: 
