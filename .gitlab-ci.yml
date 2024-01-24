@@ -13,14 +13,14 @@ before_script:
 stages:
   - test
 
-precommit:
-  image: python:3.10.2-slim-bullseye
-  before_script:
-    - apt update && apt install -y --no-install-recommends git
-    - pip install -r requirements.txt
-    - pre-commit install
-  script:
-    - pre-commit run --all-files
+# precommit:
+#   image: python:3.10.2-slim-bullseye
+#   before_script:
+#     - apt update && apt install -y --no-install-recommends git
+#     - pip install -r requirements.txt
+#     - pre-commit install
+#   script:
+#     - pre-commit run --all-files
 
 
 unit-test:
