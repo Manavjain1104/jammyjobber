@@ -14,18 +14,15 @@
       - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
+      - pip install -r requirements.txt
+
+
 
 
   stages:
-    - setup
     - test
     - publicDeploy
 
-  setup:
-    stage: setup
-    script:
-        - pip install -r requirements.txt
-        
   unit-test:
     stage: test
     tags: 
