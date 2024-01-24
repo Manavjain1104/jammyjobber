@@ -8,6 +8,7 @@ requests = "*"
 python-dotenv = "*"
 nose = "*"
 Django = "*"
+transformers = "*"
 
 [dev-packages]
 
