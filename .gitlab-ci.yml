@@ -12,9 +12,9 @@
     before_script:
       - apt install -y python3-pip
       - pip install Django
-      - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/django/
       - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+      - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
 
 
   stages:
