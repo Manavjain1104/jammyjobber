@@ -10,10 +10,8 @@ default:
   image: ubuntu:latest
   before_script:
     - apt install -y python3-pip
-
-before_script:
-  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+    - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+    - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
 
 stages:
   - test
