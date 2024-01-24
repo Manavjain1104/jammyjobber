@@ -6,7 +6,9 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-  image: ubuntu:latest
+  image: 
+    ubuntu:latest
+    python:3.11
   before_script:
     - apt install -y python3-pip
     - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
