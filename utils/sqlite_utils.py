@@ -134,11 +134,7 @@ def test_job_listing_database():
     # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
-    # bulk_dele#te_job_listing(connection, list(range(111, 116)))
-
-    for job in read_job_listings(connection):
-        print(job)
-
+    print(len(read_job_listings(connection)))
     connection.close()
 
 connection = sqlite3.connect(job_listing_db, check_same_thread=False)
