@@ -80,6 +80,15 @@ def reset_table(connection):
     connection.commit()
 
 
+def bulk_delete_job_listing(connection, job_ids):
+    cursor = connection.cursor()
+
+    placeholders = ','.join(['?'] * len(job_ids))
+    cursor.execute(
+        f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
+    connection.commit()
+
+
 # ========= TEST DATA ==========
 def populate_dummy_job_listing():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
@@ -117,7 +126,11 @@ def test_job_listing_database():
     # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
-    print(len(read_job_listings(connection)))
+    # bulk_delete_job_listing(connection, list(range(81, 111)))
+
+    for job in read_job_listings(connection):
+        print(job)
+
     connection.close()
 
 
