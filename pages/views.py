@@ -33,6 +33,8 @@ def home_page_view(request):
     for job in job_list:
         print(job)
 
+    for job in job_list:
+        print(job.title, job.link)
     connection.close()
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
