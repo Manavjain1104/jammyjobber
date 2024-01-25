@@ -10,10 +10,9 @@ def home_page_view(request):
     cursor = connection.cursor()
 
     jobs = read_job_listings(connection)
-    # print(jobs)
 
     # Assuming Job model has title and description fields
-    job_instances = [Job(title=job[1], company=job[2], link=job[5])
+    job_instances = [Job(job_id=job[0], title=job[1], company=job[2], location=job[3], description=job[4], link=job[5])
                      for job in jobs]
 
     if 'query' in request.GET:
@@ -26,8 +25,6 @@ def home_page_view(request):
     else:
         job_list = job_instances
 
-    for job in job_list:
-        print(job.title, job.link)
     connection.close()
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})

@@ -25,12 +25,17 @@
         {% for job in job_list %}
             <li class="job-listing">
                 <a href=" {{ job.link }} "><h3>{{ job.title }}</h3></a>
-                <p>{{ job.company }}</p>
-                <!-- Add more job details as needed -->
+                <p>{{ job.company }} @ {{ job.location }}</p>
+                <button class="expand-btn" onclick="toggleDescription(this, '{{ job.job_id }}')">Show Description</button>
+                <div id="description-{{ job.job_id }}" class="job-description">
+                    <p>{{ job.description }}</p>
+                </div>
             </li>
         {% endfor %}
     </ul>
 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="../../static/js/job_listing.js"></script>
 </body>
 </html>
 
