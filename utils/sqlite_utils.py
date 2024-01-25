@@ -141,5 +141,6 @@ def test_job_listing_database():
 
     connection.close()
 
-
-test_job_listing_database()
+connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+print(len(read_job_listings(connection)))
+connection.close()
