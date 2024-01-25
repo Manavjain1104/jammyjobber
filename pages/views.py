@@ -25,6 +25,10 @@ def home_page_view(request):
     else:
         job_list = job_instances
 
+    print("AAAAA")
+    for job in job_list:
+        print(job)
+
     connection.close()
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
