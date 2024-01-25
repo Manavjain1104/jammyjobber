@@ -3,9 +3,14 @@
 # To stop me from accidentally uploading a 5GB file to GitLab
 *.llamafile
 
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+=======
+*/__pychache__/
+__pycache__/
+>>>>>>> 888e69f (Fix the wrong index numeration in view job display)
 
 <<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
