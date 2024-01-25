@@ -73,6 +73,17 @@ header {
     color: #666;
 }
 
+.job-description {
+    display: none;
+}
+
+.expand-btn {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
 /* Responsive design for smaller screens */
 @media screen and (max-width: 600px) {
     .search-box, .job-listings {
