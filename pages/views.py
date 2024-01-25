@@ -13,7 +13,7 @@ def home_page_view(request):
     cursor = connection.cursor()
 
     jobs = read_job_listings(connection)
-    print(jobs)
+    # print(jobs)
 
     # jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
     #         "We are looking for a python developer. We can offer a competetive salary", "Charity worker needed.",

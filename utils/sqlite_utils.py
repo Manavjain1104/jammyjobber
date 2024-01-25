@@ -135,9 +135,7 @@ def bulk_delete_job_listing(connection, job_ids):
 
 
 # ========= TEST DATA ==========
-def populate_dummy_job_listing():
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
+def populate_dummy_job_listing(connection):
     create_job_listing(connection, "Software Engineering", "Joe inc.",
                        "London", "This is a Software Engineering job.", "www.joeinc.com")
     create_job_listing(connection, "Receptionist", "Frechclinic", "London",
@@ -149,19 +147,13 @@ def populate_dummy_job_listing():
     create_job_listing(connection, "Dog sitter", "doglovr", "Manchester",
                        "Dog sitter job in Manchester", "doglvr.com")
 
-    connection.close()
 
-
-def delete_dummy_job_listing():
-    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
+def delete_dummy_job_listing(connection):
     delete_job_listing(connection, 1)
     delete_job_listing(connection, 2)
     delete_job_listing(connection, 3)
     delete_job_listing(connection, 4)
     delete_job_listing(connection, 5)
-
-    connection.close()
 
 
 def test_job_listing_database():
@@ -171,7 +163,7 @@ def test_job_listing_database():
     # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
-    # bulk_delete_job_listing(connection, list(range(81, 111)))
+    # bulk_dele#te_job_listing(connection, list(range(111, 116)))
 
     for job in read_job_listings(connection):
         print(job)

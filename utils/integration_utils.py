@@ -33,7 +33,6 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
         csv_header = next(csv_reader)
 
         if csv_header != ["title", "company", "location", "description", "link"]:
-            print(csv_header)
             raise Exception(
                 "csv file should contain title, company, location, description, link (order matters)")
 
@@ -72,12 +71,6 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
 
     if not use_api:
         job_embeddings = bulk_create_embeddings(job_summaries)
-
-    print(job_ids)
-    print()
-    print(job_summaries)
-    print()
-    # print(job_embedding)
 
     bulk_add_points(collection, job_embeddings, job_ids)
 
