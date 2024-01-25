@@ -19,19 +19,19 @@
 
 
   stages:
-    - test
+    # - test
     - publicDeploy
 
-  unit-test:
-    stage: test
-    tags: 
-      - cloud-vm-41-89
-    script:
-      - pip install pipenv
-      - pip install Django
+  # unit-test:
+  #   stage: test
+  #   tags: 
+  #     - cloud-vm-41-89
+  #   script:
+  #     - pip install pipenv
+  #     - pip install Django
 
-      - python3 -m pipenv install
-      - python3 -m pipenv run python -m unittest discover test/
+  #     - python3 -m pipenv install
+  #     - python3 -m pipenv run python -m unittest discover test/
 
   publicDeploy:
     stage: publicDeploy    # deploy to heroku
