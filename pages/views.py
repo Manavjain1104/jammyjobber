@@ -15,20 +15,22 @@ def home_page_view(request):
     jobs = read_job_listings(connection)
     # print(jobs)
 
-    # jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
-    #         "We are looking for a python developer. We can offer a competetive salary", "Charity worker needed.",
-    #         "Dog sitter job in Manchester"]
+    # Assuming Job model has title and description fields
+    job_instances = [Job(title=job[1], company=job[2], link=job[5])
+                     for job in jobs]
 
     if 'query' in request.GET:
         query = request.GET['query']
 
         request_embedding = create_embedding(query)
-        closest = search_points(COLLECTION_NAME, request_embedding, 2)
-        job_list = [jobs[i+1][4] for i in closest]
+        closest = search_points(COLLECTION_NAME, request_embedding, 5)
+        job_list = [job_instances[i] for i in closest]
 
     else:
-        job_list = map(lambda x: x[4], jobs)
+        job_list = job_instances
 
+    for job in job_list:
+        print(job.title, job.link)
     connection.close()
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
