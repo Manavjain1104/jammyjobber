@@ -6,27 +6,26 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-  image: ubuntu:latest
-  before_script:
-    - apt install -y python3-pip
-    - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-    - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+image: ubuntu:latest
+before_script:
+  - apt install -y python3-pip
+  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
 
-  stages:
-    - test
-    - publicDeploy
+stages:
+  - test
+  - publicDeploy
 
-  unit-test:
-    stage: test
-    tags: 
-      - cloud-vm-41-89
-    script:
-      - pip install pipenv
-      - python3 -m pipenv install
-      - python3 -m pipenv run python -m unittest discover test/
+unit-test:
+  stage: test
+  tags:
+    - cloud-vm-41-89
+  script:
+    - pip install pipenv
+    - python3 -m pipenv install
+    - python3 -m pipenv run python -m unittest discover test/
 
-  publicDeploy:
-    stage: publicDeploy    # deploy to heroku
-    script:
-      - dpl --provider=heroku --app=jammyjobber-simplewebapp --api-key=cb7d9ae7-7c27-458d-b8dd-182c8950619b
-
+publicDeploy:
+  stage: publicDeploy # deploy to heroku
+  script:
+    - dpl --provider=heroku --app=jammyjobber-simplewebapp --api-key=cb7d9ae7-7c27-458d-b8dd-182c8950619b
