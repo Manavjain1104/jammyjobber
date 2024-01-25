@@ -23,10 +23,15 @@ def home_page_view(request):
 
         request_embedding = create_embedding(query)
         closest = search_points(COLLECTION_NAME, request_embedding, 5)
-        job_list = [job_instances[i] for i in closest]
+
+        job_list = [job for job in job_instances if job.job_id in closest]
 
     else:
         job_list = job_instances
+
+    print("AAAAA")
+    for job in job_list:
+        print(job)
 
     connection.close()
 
