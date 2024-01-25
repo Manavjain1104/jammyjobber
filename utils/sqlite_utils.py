@@ -134,7 +134,7 @@ def test_job_listing_database():
     # print(read_job_listings(connection))
     # print(read_job_listings())
     # delete_dummy_job_listing()
-    # bulk_delete_job_listing(connection, list(range(81, 111)))
+    # bulk_dele#te_job_listing(connection, list(range(111, 116)))
 
     for job in read_job_listings(connection):
         print(job)
