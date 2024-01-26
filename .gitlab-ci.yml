@@ -11,6 +11,7 @@ before_script:
   - apt install -y python3-pip
   - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
   - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+  - echo API_SERVER_ADDRESS="$API_SERVER_ADDRESS" >> .env
 
 stages:
   - test
