@@ -6,6 +6,7 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
+<<<<<<< HEAD
   default:
     image: ubuntu:latest
     before_script:
@@ -14,6 +15,14 @@
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
       - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
+=======
+image: ubuntu:latest
+before_script:
+  - apt install -y python3-pip
+  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+  - echo API_SERVER_ADDRESS="$API_SERVER_ADDRESS" >> .env
+>>>>>>> 3f46c21 (Replace llm_utils functions with calls to API)
 
 <<<<<<< HEAD
   stages:
