@@ -21,8 +21,12 @@ before_script:
   - apt install -y python3-pip
   - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
   - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+<<<<<<< HEAD
   - echo API_SERVER_ADDRESS="$API_SERVER_ADDRESS" >> .env
 >>>>>>> 3f46c21 (Replace llm_utils functions with calls to API)
+=======
+  - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
+>>>>>>> 3d5231a (Change server address variable name)
 
 <<<<<<< HEAD
   stages:
