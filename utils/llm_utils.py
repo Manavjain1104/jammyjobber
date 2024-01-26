@@ -2,7 +2,7 @@ import os
 import requests
 import json
 
-ADDRESS = os.getenv('API_SERVER_ADDRESS')
+ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 HEADERS = {'Content-Type': 'application/json'}
 
 
