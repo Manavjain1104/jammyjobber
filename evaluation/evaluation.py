@@ -230,8 +230,9 @@ def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
     """Wrapper function to evaluate the model
     """
-    ...
 
+    with open(path_to_csv, 'r') as csv_file:
+        ...
 
 if __name__ == "__main__":
     queryA = """
