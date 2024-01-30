@@ -29,7 +29,7 @@ def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     pass
 
 
-def calculate_hit_rate(desired_jobs, recommended_jobs, n):
+def calculate_hit_rate(desired_jobs, recommended_jobs):
     """Calculates the hit rate of the recommendations"""
     # initial implementation: we have some way of accessing all desired jobs
     # we compute proportion of top n jobs that are actually desired by user
@@ -39,11 +39,11 @@ def calculate_hit_rate(desired_jobs, recommended_jobs, n):
 
     # we only have a hit if the job is in the top n recommendations and we haven't seen it before
     for desired_job in desired_jobs:
-        if desired_job in recommended_jobs[:n] and desired_job not in seen:
+        if desired_job in recommended_jobs and desired_job not in seen:
             hits += 1
             seen.add(desired_job)
 
-    return hits / n
+    return hits / len(recommended_jobs)
 
 
 def calculate_accuracy(conf_matrix):
