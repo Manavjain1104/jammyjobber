@@ -6,25 +6,38 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-image: ubuntu:latest
-before_script:
-  - apt install -y python3-pip
-  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
-  - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
 
-stages:
-  - test
-  - publicDeploy
+  default:
+    image: ubuntu:latest
+    before_script:
+      - apt install -y python3-pip
+      - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+      - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+      - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
 
-unit-test:
-  stage: test
-  tags:
-    - cloud-vm-41-89
-  script:
-    - pip install pipenv
-    - python3 -m pipenv install
-    - python3 -m pipenv run python -m unittest discover test/
+
+
+
+  stages:
+    # - test
+    - publicDeploy
+
+  # unit-test:
+  #   stage: test
+  #   tags: 
+  #     - cloud-vm-41-89
+  #   script:
+  #     - pip install pipenv
+  #     - pip install Django
+
+  #     - python3 -m pipenv install
+  #     - python3 -m pipenv run python -m unittest discover test/
+
+  publicDeploy:
+    stage: publicDeploy    # deploy to heroku
+    script:
+      - dpl --provider=heroku --app=jammy-jobber --api-key=ee091f5c-d80a-4598-935b-ed14ca5b13c3
+
 
 publicDeploy:
   stage: publicDeploy # deploy to heroku

@@ -1,8 +1,11 @@
 # To stop me from accidentally uploading a 5GB file to GitLab
 *.llamafile
 
-*/__pychache__/
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+
+*/__pychache__/
 
 temp/
 

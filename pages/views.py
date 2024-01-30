@@ -70,3 +70,4 @@ def job_search(request):
         job_list = jobs
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
+
