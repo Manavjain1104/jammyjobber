@@ -1,10 +1,12 @@
 import json
 import requests
+from context import utils
 from utils.llm_utils import create_embedding
 from csv import reader
+import numpy as np
 from numpy.linalg import norm
 from numpy import dot
-import numpy as np
+
 
 # ------- HELPER --------
 SUMMARISER_URL = 'http://127.0.0.1:5000/summariser'
@@ -100,6 +102,24 @@ def calculate_f1_measures(conf_matrix):
 # ------- Matrix ---------
 
 
+def find_dynamic_cutoff(distances, sensitivity=2.0):
+    mean_distance = np.mean(distances)
+    std_distance = np.std(distances)
+
+    # Detect outliers using the Z-score
+    z_scores = [(dist - mean_distance) / std_distance for dist in distances]
+
+    # Identify the index where a sudden change occurs (assuming a single cluster of distances)
+    change_index = np.argmax(np.abs(np.diff(z_scores)) > sensitivity)
+
+    # Use the detected change point as the dynamic threshold
+    dynamic_threshold = distances[change_index +
+                                  1] if change_index < len(distances) - 1 else distances[-1]
+
+    labels = [str(dist <= dynamic_threshold) for dist in distances]
+    return labels
+
+
 def add_points_to_datbase(path_to_csv):
     with open(path_to_csv, 'r') as csv_file:
         csv_reader = reader(csv_file, delimiter=',')
@@ -138,7 +158,7 @@ def add_points_to_datbase(path_to_csv):
 
     # bulk_add_points(EVAL_COLLECTION_NAME, job_embeddings,range(len(true_labels)))
 
-    return (true_labels, job_summaries)
+    return (true_labels, job_summaries, job_embeddings)
 
 
 def evaluate(path_to_csv, query, reset=False):
@@ -153,13 +173,16 @@ def evaluate(path_to_csv, query, reset=False):
     # In case the information in collection needs to be flushed
 
     # Process the csv and extract the jobs and qualifications
-    true_labels, job_summaries = add_points_to_datbase(path_to_csv)
+    true_labels, job_summaries, job_embeddings = add_points_to_datbase(
+        path_to_csv)
 
     # Process query in our semaDB to see the returns
     request_embedding = create_embedding(query)
-    distances = [cosine_dist(request_embedding, )]
 
-    predicted_labels = ...
+    distances = [cosine_dist(request_embedding, entry_embedding)
+                 for entry_embedding in job_embeddings]  # in order
+
+    predicted_labels = find_dynamic_cutoff(distances)
     labels = ["True", "False"]
 
     # Create a confusion matrix based on the labels
