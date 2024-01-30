@@ -1,4 +1,9 @@
+import json
+import requests
+from utils.llm_utils import create_embedding
 from csv import reader
+from numpy.linalg import norm
+from numpy import dot
 import numpy as np
 from numpy.linalg import norm
 from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
@@ -6,6 +11,7 @@ from utils.llm_utils import create_summary, create_embedding, bulk_create_embedd
 
 
 # ------- HELPER --------
+SUMMARISER_URL = 'http://127.0.0.1:5000/summariser'
 EVAL_COLLECTION_NAME = "Evaluation"
 MIN_LEN = 230
 
@@ -144,7 +150,6 @@ def calculate_f1_measures(conf_matrix):
         f1_measures.append(f1)
     return f1_measures
 
-
 # ------- Matrix ---------
 
 
@@ -209,7 +214,109 @@ def add_points_to_datbase(path_to_csv):
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
 
-def evaluate(path_to_csv, query):
+def find_dynamic_cutoff(distances, sensitivity=2.0):
+    mean_distance = np.mean(distances)
+    std_distance = np.std(distances)
+
+    # Detect outliers using the Z-score
+    z_scores = [(dist - mean_distance) / std_distance for dist in distances]
+
+    # Identify the index where a sudden change occurs (assuming a single cluster of distances)
+    change_index = np.argmax(np.abs(np.diff(z_scores)) > sensitivity)
+
+    # Use the detected change point as the dynamic threshold
+    dynamic_threshold = distances[change_index +
+                                  1] if change_index < len(distances) - 1 else distances[-1]
+
+    labels = [str(dist <= dynamic_threshold).upper() for dist in distances]
+
+    expand_distance = []
+    for i in range(len(labels)):
+        if labels[i] == 'TRUE':
+            expand_distance.append((i, distances[i]))
+
+    ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
+    return (labels, ranking)
+
+
+def add_points_to_datbase(path_to_csv):
+    with open(path_to_csv, 'r') as csv_file:
+        csv_reader = reader(csv_file, delimiter=',')
+        csv_header = next(csv_reader)
+
+        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
+            raise Exception(
+                "csv file should contain title, company, location, description, link (order matters)")
+
+        true_labels = []
+        job_summaries = []
+        true_ranking = []
+        i = 0
+
+        # Populate the semaDB (we do not need to create the sqlite)
+        for row in csv_reader:
+            if row[5] == 'TRUE':
+                true_ranking.append((i, row[6]))
+            true_labels.append(row[5])  # true or false
+
+            # Assuming that header start as {title, company, location, description}
+            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
+
+            if len(job_summary) > MIN_LEN:
+                job_summary = create_summary(job_summary)
+            job_summaries.append(job_summary)
+            i += 1
+
+    job_embeddings = bulk_create_embeddings(job_summaries)
+
+    true_ranking = [idx for idx, _ in sorted(
+        true_ranking, key=lambda x: int(x[1]))]
+
+    return (true_labels, true_ranking, job_summaries, job_embeddings)
+
+
+def add_points_to_datbase(path_to_csv):
+    with open(path_to_csv, 'r') as csv_file:
+        csv_reader = reader(csv_file, delimiter=',')
+        csv_header = next(csv_reader)
+
+        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
+            raise Exception(
+                "csv file should contain title, company, location, description, link (order matters)")
+
+        true_labels = []
+        job_embeddings = []
+        job_summaries = []
+
+        # Populate the semaDB (we do not need to create the sqlite)
+        for row in csv_reader:
+            true_labels.append(row[5])  # true or false
+
+            # Assuming that header start as {title, company, location, description}
+            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
+
+            if len(job_summary) > MIN_LEN:
+                data = {'text': job_summary}
+                json_data = json.dumps(data)
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(
+                    SUMMARISER_URL, data=json_data, headers=headers)
+
+                if response.status_code == 200:
+                    job_summary = response.json()['summary']
+                    job_embedding = response.json()['embedding']
+                    job_embeddings.append(job_embedding)
+                else:
+                    raise Exception(
+                        f"Error: {response.status_code}, {response.json()}")
+            job_summaries.append(job_summary)
+
+    # bulk_add_points(EVAL_COLLECTION_NAME, job_embeddings,range(len(true_labels)))
+
+    return (true_labels, job_summaries)
+
+
+def evaluate(path_to_csv, query, reset=False):
     """Evaluates the decision tree against the testing data,
     prints the overall accuracy, and the percision, recalls,
     and f1 measures per class
@@ -326,4 +433,5 @@ I am personable and adept at handling workplace conflicts.
 Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
 A reasonably good pay scale would be a welcome addition to the overall package.
     """
+
     evaluate(path_to_csv, query)
