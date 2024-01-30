@@ -55,7 +55,13 @@ def calculate_accuracy(conf_matrix) -> float:
 
 
 def calculate_precisions(conf_matrix):
-    ...
+    precisions = []
+    for i in range(len(conf_matrix)):
+        true_pos = conf_matrix[i, i]
+        false_pos = np.sum(conf_matrix[:, i]) - true_pos
+        precision = true_pos / (true_pos + false_pos)
+        precisions.append(precision)
+    return precisions
 
 
 def calculate_recalls(conf_matrix):
