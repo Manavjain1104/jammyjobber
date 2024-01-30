@@ -1,10 +1,12 @@
 import json
 import requests
+from context import utils
 from utils.llm_utils import create_embedding
 from csv import reader
+import numpy as np
 from numpy.linalg import norm
 from numpy import dot
-import numpy as np
+
 from numpy.linalg import norm
 from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
 
@@ -313,7 +315,7 @@ def add_points_to_datbase(path_to_csv):
 
     # bulk_add_points(EVAL_COLLECTION_NAME, job_embeddings,range(len(true_labels)))
 
-    return (true_labels, job_summaries)
+    return (true_labels, job_summaries, job_embeddings)
 
 
 def evaluate(path_to_csv, query, reset=False):
