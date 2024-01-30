@@ -2,7 +2,7 @@ from django.shortcuts import render
 from utils.semadb_utils import *
 from utils.llm_utils import *
 from utils.sqlite_utils import *
-
+from .models import Job
 
 # Create your views here.
 def home_page_view(request):
