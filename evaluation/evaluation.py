@@ -1,15 +1,31 @@
 import csv
+import numpy as np
 
 # ------- HELPER --------
 
 
 # ------- Evaluation --------
-def confusion_matrix():
-    ...
+def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
+    """Creates a confusion matrix based on the true and predicted labels"""
+    assert len(true_labels) == len(predicted_labels), "The number of true labels and predicted labels must be the same"
 
+    # create a dictionary mapping labels to indices
+    label_to_index = {label: i for i, label in enumerate(labels)}
+
+    # initialise the confusion matrix to be np array of zeros
+    conf_matrix = np.zeros((len(labels), len(labels)), dtype=np)
+
+    # populate the confusion matrix
+    for true_label, predicted_label in zip(true_labels, predicted_labels):
+        true_index = label_to_index[true_label]
+        predicted_index = label_to_index[predicted_label]
+        conf_matrix[true_index, predicted_index] += 1
+
+    return conf_matrix
 
 def calculate_top_n_accuracy():
     ...
+
 
 
 def calculate_accuracy(conf_matrix):
