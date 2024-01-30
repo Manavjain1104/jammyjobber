@@ -1,10 +1,13 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from utils.semadb_utils import *
 from utils.llm_utils import *
 from utils.sqlite_utils import *
 from .models import Job
 
 # Create your views here.
+
+
 def home_page_view(request):
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
     cursor = connection.cursor()
@@ -19,8 +22,9 @@ def home_page_view(request):
         query = request.GET['query']
 
         request_embedding = create_embedding(query)
-        closest = search_points("testJobs", request_embedding, 2)
-        job_list = [jobs[i+1][4] for i in closest]
+        closest = search_points(COLLECTION_NAME, request_embedding, 5)
+
+        job_list = [job for job in job_instances if job.job_id in closest]
 
     else:
         job_list = job_instances
@@ -58,7 +62,7 @@ def job_search(request):
         query = request.GET['query']
 
         request_embedding = create_embedding(query)
-        closest = search_points("testJobs", request_embedding, 1)
+        closest = search_points(COLLECTION_NAME, request_embedding, 1)
         job_list = jobs[closest[0]]
 
     else:
@@ -66,3 +70,4 @@ def job_search(request):
         job_list = jobs
 
     return render(request, 'pages/home_search.html', {'job_list': job_list})
+
