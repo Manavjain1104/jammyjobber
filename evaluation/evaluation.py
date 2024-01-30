@@ -72,7 +72,7 @@ def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     pass
 
 
-def calculate_hit_rate(desired_jobs, recommended_jobs):
+def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
     """Calculates the hit rate of the recommendations"""
     # initial implementation: we have some way of accessing all desired jobs
     # we compute proportion of top n jobs that are actually desired by user
