@@ -65,11 +65,23 @@ def calculate_precisions(conf_matrix):
 
 
 def calculate_recalls(conf_matrix):
-    ...
+    recalls = []
+    for i in range(len(conf_matrix)):
+        true_pos = conf_matrix[i, i]
+        false_neg = np.sum(conf_matrix[i, :]) - true_pos
+        recall = true_pos / (true_pos + false_neg)
+        recalls.append(recall)
+    return recalls
 
 
 def calculate_f1_measures(conf_matrix):
-    ...
+    precisions = calculate_precisions(conf_matrix)
+    recalls = calculate_recalls(conf_matrix)
+    f1_measures = []
+    for precision, recall in zip(precisions, recalls):
+        f1 = 2 * (precision * recall) / (precision + recall)
+        f1_measures.append(f1)
+    return f1_measures
 
 
 # ------- Matrix ---------
