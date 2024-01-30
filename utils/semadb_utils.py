@@ -44,6 +44,16 @@ def create_collection(id, vectorSize, distanceMetric="cosine"):
     return response.json()
 
 
+# Delete the given collection of points
+def delete_collection(collection):
+    headers = {
+        "X-RapidAPI-Key": KEY,
+        "X-RapidAPI-Host": HOST
+    }
+    response = requests.delete(collection_url(collection), headers=headers)
+    return response.json()
+
+
 # Given vector representation and SQLite id, return json representation
 # of a point
 def new_point(vector, externalId):

@@ -1,13 +1,27 @@
+import json
+import requests
+from utils.llm_utils import create_embedding
+from csv import reader
+from numpy.linalg import norm
+from numpy import dot
 import numpy as np
 
-
 # ------- HELPER --------
+SUMMARISER_URL = 'http://127.0.0.1:5000/summariser'
+EVAL_COLLECTION_NAME = "Evaluation"
+MIN_LEN = 230
 
+
+def cosine_dist(vec1, vec2):
+    return np.dot(vec1, vec2)/(norm(vec1) * norm(vec2))
 
 # ------- Evaluation --------
+
+
 def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
     """Creates a confusion matrix based on the true and predicted labels"""
-    assert len(true_labels) == len(predicted_labels), "The number of true labels and predicted labels must be the same"
+    assert len(true_labels) == len(
+        predicted_labels), "The number of true labels and predicted labels must be the same"
 
     # create a dictionary mapping labels to indices
     label_to_index = {label: i for i, label in enumerate(labels)}
@@ -83,11 +97,51 @@ def calculate_f1_measures(conf_matrix):
         f1_measures.append(f1)
     return f1_measures
 
-
 # ------- Matrix ---------
 
 
-def evaluate(path_to_csv, query):
+def add_points_to_datbase(path_to_csv):
+    with open(path_to_csv, 'r') as csv_file:
+        csv_reader = reader(csv_file, delimiter=',')
+        csv_header = next(csv_reader)
+
+        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
+            raise Exception(
+                "csv file should contain title, company, location, description, link (order matters)")
+
+        true_labels = []
+        job_embeddings = []
+        job_summaries = []
+
+        # Populate the semaDB (we do not need to create the sqlite)
+        for row in csv_reader:
+            true_labels.append(row[5])  # true or false
+
+            # Assuming that header start as {title, company, location, description}
+            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
+
+            if len(job_summary) > MIN_LEN:
+                data = {'text': job_summary}
+                json_data = json.dumps(data)
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(
+                    SUMMARISER_URL, data=json_data, headers=headers)
+
+                if response.status_code == 200:
+                    job_summary = response.json()['summary']
+                    job_embedding = response.json()['embedding']
+                    job_embeddings.append(job_embedding)
+                else:
+                    raise Exception(
+                        f"Error: {response.status_code}, {response.json()}")
+            job_summaries.append(job_summary)
+
+    # bulk_add_points(EVAL_COLLECTION_NAME, job_embeddings,range(len(true_labels)))
+
+    return (true_labels, job_summaries)
+
+
+def evaluate(path_to_csv, query, reset=False):
     """Evaluates the decision tree against the testing data,
     prints the overall accuracy, and the percision, recalls,
     and f1 measures per class
@@ -96,12 +150,17 @@ def evaluate(path_to_csv, query):
         path_to_csv(str): path to the csv file
     """
 
-    with open(path_to_csv, 'r') as csv_file:
-        ...
+    # In case the information in collection needs to be flushed
 
-    true_labels = ...
+    # Process the csv and extract the jobs and qualifications
+    true_labels, job_summaries = add_points_to_datbase(path_to_csv)
+
+    # Process query in our semaDB to see the returns
+    request_embedding = create_embedding(query)
+    distances = [cosine_dist(request_embedding, )]
+
     predicted_labels = ...
-    labels = ...
+    labels = ["True", "False"]
 
     # Create a confusion matrix based on the labels
     conf_matrix = confusion_matrix(
@@ -139,4 +198,5 @@ Ideally, I am looking for a school close to public transport, with positive revi
 A reasonably good pay scale would be a welcome addition to the overall package.
     """
 
+    # create_collection(EVAL_COLLECTION_NAME)
     evaluate(path_to_csv, query)
