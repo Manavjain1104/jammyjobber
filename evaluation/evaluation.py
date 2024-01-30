@@ -29,7 +29,7 @@ def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     pass
 
 
-def calculate_hit_rate(desired_jobs, recommended_jobs):
+def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
     """Calculates the hit rate of the recommendations"""
     # initial implementation: we have some way of accessing all desired jobs
     # we compute proportion of top n jobs that are actually desired by user
@@ -46,8 +46,12 @@ def calculate_hit_rate(desired_jobs, recommended_jobs):
     return hits / len(recommended_jobs)
 
 
-def calculate_accuracy(conf_matrix):
-    ...
+def calculate_accuracy(conf_matrix) -> float:
+    """Calculates the accuracy from the confusion matrix"""
+    true_positives = np.trace(conf_matrix)
+    total_predictions = np.sum(conf_matrix)
+    accuracy = true_positives / total_predictions
+    return accuracy
 
 
 def calculate_precisions(conf_matrix):
