@@ -1,5 +1,5 @@
-import csv
 import numpy as np
+
 
 # ------- HELPER --------
 
@@ -23,9 +23,27 @@ def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
 
     return conf_matrix
 
-def calculate_top_n_accuracy():
-    ...
 
+def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
+    """Calculates the top n accuracy of the recommendations"""
+    pass
+
+
+def calculate_hit_rate(desired_jobs, recommended_jobs, n):
+    """Calculates the hit rate of the recommendations"""
+    # initial implementation: we have some way of accessing all desired jobs
+    # we compute proportion of top n jobs that are actually desired by user
+
+    hits = 0
+    seen = set()
+
+    # we only have a hit if the job is in the top n recommendations and we haven't seen it before
+    for desired_job in desired_jobs:
+        if desired_job in recommended_jobs[:n] and desired_job not in seen:
+            hits += 1
+            seen.add(desired_job)
+
+    return hits / n
 
 
 def calculate_accuracy(conf_matrix):
@@ -42,6 +60,7 @@ def calculate_recalls(conf_matrix):
 
 def calculate_f1_measures(conf_matrix):
     ...
+
 
 # ------- Matrix ---------
 
