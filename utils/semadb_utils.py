@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 base_url = "https://semadb.p.rapidapi.com/collections"
 
 # Get variables from the environment
-load_dotenv()
-KEY = os.getenv('RAPID_API_KEY')
-HOST = os.getenv('RAPID_API_HOST')
+load_dotenv(override=True)
+KEY = os.getenv("RAPID_API_KEY")
+HOST = os.getenv("RAPID_API_HOST")
 
 # Collection name
 COLLECTION_NAME = "JobListings"
@@ -30,15 +30,11 @@ def search_url(collection):
 
 # Create a new collection of points
 def create_collection(id, vectorSize, distanceMetric="cosine"):
-    payload = {
-        "id": id,
-        "vectorSize": vectorSize,
-        "distanceMetric": distanceMetric
-    }
+    payload = {"id": id, "vectorSize": vectorSize, "distanceMetric": distanceMetric}
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
-        "X-RapidAPI-Host": HOST
+        "X-RapidAPI-Host": HOST,
     }
     response = requests.post(base_url, json=payload, headers=headers)
     return response.json()
@@ -58,10 +54,9 @@ def add_points(collection, points):
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
-        "X-RapidAPI-Host": HOST
+        "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(points_url(collection),
-                             json=payload, headers=headers)
+    response = requests.post(points_url(collection), json=payload, headers=headers)
     return response
 
 
@@ -75,10 +70,7 @@ def bulk_add_points(collection, vectors, ids):
 
 # Given a collection name, retrieve basic information about the collection
 def get_collection(collection):
-    headers = {
-        "X-RapidAPI-Key": KEY,
-        "X-RapidAPI-Host": HOST
-    }
+    headers = {"X-RapidAPI-Key": KEY, "X-RapidAPI-Host": HOST}
     response = requests.get(collection_url(collection), headers=headers)
     return response.json()
 
@@ -86,20 +78,16 @@ def get_collection(collection):
 # Given a vector representation of a point, search for limit nearest points
 # in the database. Returns a list of job ids, used in SQLite
 def search_points(collection, vector, limit=10):
-    payload = {
-        "vector": vector,
-        "limit": limit
-    }
+    payload = {"vector": vector, "limit": limit}
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
-        "X-RapidAPI-Host": HOST
+        "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(search_url(collection),
-                             json=payload, headers=headers)
+    response = requests.post(search_url(collection), json=payload, headers=headers)
 
     point_ids = []
-    for point in response.json()['points']:
-        point_ids.append(point['metadata']['externalId'])
+    for point in response.json()["points"]:
+        point_ids.append(point["metadata"]["externalId"])
 
     return point_ids
