@@ -31,8 +31,8 @@ def add_cv_view(request):
             instance = form.save()
             job_instances = get_listings()
             text = extract_text(instance.pdf.path)
-            request_embedding = create_embedding(text)
-
+            os.remove(instance.pdf.path)
+            request_embedding = create_embedding(create_summary(text))
             closest = search_points(COLLECTION_NAME, request_embedding, 5)
             job_list = [job for job in job_instances if job.job_id in closest]
             return render(request, "pages/home_search.html", {"job_list": job_list})
