@@ -3,13 +3,18 @@
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+**/__pycache__/
 *.py[cod]
 
-*/__pychache__
 
 temp/
 
 .vscode/
 .idea/
 .env
-env/
+env
+venv
+.venv
+
+Pipfile
+Pipfile.lock
