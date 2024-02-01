@@ -1,7 +1,7 @@
 import json
 import requests
 from context import utils
-from utils.llm_utils import create_embedding
+from utils.llm_utils import create_embedding, create_summary, bulk_create_embeddings
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
@@ -13,7 +13,6 @@ from utils.llm_utils import create_summary, create_embedding, bulk_create_embedd
 
 
 # ------- HELPER --------
-SUMMARISER_URL = 'http://127.0.0.1:5000/summariser'
 EVAL_COLLECTION_NAME = "Evaluation"
 MIN_LEN = 230
 
@@ -287,7 +286,6 @@ def add_points_to_datbase(path_to_csv):
                 "csv file should contain title, company, location, description, link (order matters)")
 
         true_labels = []
-        job_embeddings = []
         job_summaries = []
 
         # Populate the semaDB (we do not need to create the sqlite)
@@ -298,22 +296,10 @@ def add_points_to_datbase(path_to_csv):
             job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
 
             if len(job_summary) > MIN_LEN:
-                data = {'text': job_summary}
-                json_data = json.dumps(data)
-                headers = {'Content-Type': 'application/json'}
-                response = requests.post(
-                    SUMMARISER_URL, data=json_data, headers=headers)
-
-                if response.status_code == 200:
-                    job_summary = response.json()['summary']
-                    job_embedding = response.json()['embedding']
-                    job_embeddings.append(job_embedding)
-                else:
-                    raise Exception(
-                        f"Error: {response.status_code}, {response.json()}")
+                job_summary = create_summary(job_summary)
             job_summaries.append(job_summary)
 
-    # bulk_add_points(EVAL_COLLECTION_NAME, job_embeddings,range(len(true_labels)))
+    job_embeddings = bulk_create_embeddings(job_summaries)
 
     return (true_labels, job_summaries, job_embeddings)
 
