@@ -41,15 +41,11 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
         job_summaries = []
 
         for row in csv_reader:
-            # Assuming that header goes as {title, company, location, description}
-            job_id = create_job_listing(connection, *tuple(row))
-            job_ids.append(job_id)
+            job_info = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
 
-            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
-
-            if len(job_summary) > MIN_LEN:
+            if len(job_info) > MIN_LEN:
                 if use_api:
-                    data = {'text': job_summary}
+                    data = {'text': job_info}
                     json_data = json.dumps(data)
                     headers = {'Content-Type': 'application/json'}
                     response = requests.post(
@@ -66,6 +62,11 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
                     job_summary = create_summary(job_summary)
 
             job_summaries.append(job_summary)
+
+            # Assuming that header goes as {title, company, location, description}
+            job_id = create_job_listing(connection, *tuple(row + [job_summary]))
+            job_ids.append(job_id)
+
 
     connection.close()
 
