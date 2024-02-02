@@ -37,7 +37,7 @@ def home_page_view(request):
 
     if 'location_query' in request.GET:
         location_query = request.GET['location_query']
-        job_list = [job for job in job_list if is_in_region(job[3], location_query)]
+        job_list = [job for job in job_list if is_in_region(job.location, location_query)]
 
     connection.close()
 
