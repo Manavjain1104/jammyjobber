@@ -23,6 +23,14 @@
         </form>
     </div>
 
+    <div class="search-box">
+        <label for="search-input">Enter location here</label>
+        <form action="" method="get">
+            <input type="text" name="location_query" placeholder="Search here...">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
 
     <ul class="job-listings">
         {% for job in job_list %}
