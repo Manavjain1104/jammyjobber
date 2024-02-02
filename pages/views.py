@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from utils.semadb_utils import *
 from utils.llm_utils import *
 from utils.sqlite_utils import *
+from utils.address_utils import *
 from .models import Job
 
 # Create your views here.
@@ -25,12 +26,16 @@ def home_page_view(request):
 
         # request_embedding = create_embedding(query)
         request_embedding = process_data(query, model_used)
-        closest = search_points(collection_used, request_embedding, 5)
+        closest = search_points(collection_used, request_embedding, 10)
 
         job_list = [job for job in job_instances if job.job_id in closest]
 
     else:
         job_list = job_instances
+
+    if 'location_query' in request.GET:
+        location_query = request.GET['location_query']
+        job_list = [job for job in job_list if is_in_region(job[3], location_query)]
 
     connection.close()
 
