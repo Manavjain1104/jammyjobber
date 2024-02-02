@@ -1,5 +1,3 @@
-import json
-import requests
 from context import utils
 from utils.llm_utils import create_embedding, create_summary, bulk_create_embeddings
 from csv import reader
@@ -76,7 +74,11 @@ def calculate_error(desired_job, recommended_jobs):
 
 def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
-    pass
+    top_n_predictions = desired_job[:n]
+    correct_predictions = set(
+        top_n_predictions).intersection(set(recommended_jobs[:n]))
+    accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
+    return accuracy
 
 
 def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
@@ -177,6 +179,7 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
 
     ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
     return (labels, ranking)
+<<<<<<< HEAD
 
 
 def add_points_to_datbase(path_to_csv):
@@ -274,6 +277,8 @@ def add_points_to_datbase(path_to_csv):
         true_ranking, key=lambda x: int(x[1]))]
 
     return (true_labels, true_ranking, job_summaries, job_embeddings)
+=======
+>>>>>>> b33a551 (Change llm utils to have option to run locally, finish the evaluation for top n accurancy)
 
 
 def add_points_to_datbase(path_to_csv):
@@ -287,9 +292,13 @@ def add_points_to_datbase(path_to_csv):
 
         true_labels = []
         job_summaries = []
+        true_ranking = []
+        i = 0
 
         # Populate the semaDB (we do not need to create the sqlite)
         for row in csv_reader:
+            if row[5] == 'TRUE':
+                true_ranking.append((i, row[6]))
             true_labels.append(row[5])  # true or false
 
             # Assuming that header start as {title, company, location, description}
@@ -298,10 +307,14 @@ def add_points_to_datbase(path_to_csv):
             if len(job_summary) > MIN_LEN:
                 job_summary = create_summary(job_summary)
             job_summaries.append(job_summary)
+            i += 1
 
     job_embeddings = bulk_create_embeddings(job_summaries)
 
-    return (true_labels, job_summaries, job_embeddings)
+    true_ranking = [idx for idx, _ in sorted(
+        true_ranking, key=lambda x: int(x[1]))]
+
+    return (true_labels, true_ranking, job_summaries, job_embeddings)
 
 
 def evaluate(path_to_csv, query, reset=False):
@@ -326,6 +339,12 @@ def evaluate(path_to_csv, query, reset=False):
 
     predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
 
+<<<<<<< HEAD
+=======
+    print(true_ranking)
+    print(predicted_ranking)
+
+>>>>>>> b33a551 (Change llm utils to have option to run locally, finish the evaluation for top n accurancy)
     labels = ["TRUE", "FALSE"]
 
     # Create a confusion matrix based on the labels
