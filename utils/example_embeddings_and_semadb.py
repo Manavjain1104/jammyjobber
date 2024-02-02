@@ -3,6 +3,8 @@ from llm_utils import *
 import os
 from sqlite_utils import *
 ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
+from sentence_transformers import SentenceTransformer
+
 
 # create_collection("testJobs", 384, "cosine")
 # jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
@@ -30,30 +32,33 @@ ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 
 # print(create_collection("JobAnswerer", 768))
 # print(create_collection("JobFacebook", 384))
+def new_embedding(text):
+    embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
+    embedding = embedder.encode([text])
+    embedding_normalised = embedding / \
+                           np.linalg.norm(embedding, axis=1, keepdims=True)
+    return embedding_normalised[0].tolist()
 
 
-# connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-# cursor = connection.cursor()
-# jobs = read_job_listings(connection)
+connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+cursor = connection.cursor()
+jobs = read_job_listings(connection)
+
+# from transformers import pipeline
+# summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 # Assuming Job model has title and description fields
-# vectors = []
-# ids = []
-# for job in jobs:
-#         vectors.append(process_data(job[4], Model.EXTRACTOR_DESCRIPTION))
-#         ids.append(job[0])
-#
-# if (len(vectors) == 110 and len(ids) == 110):
-#         bulk_add_points(COLLECTION_ANSWERER_NAME, vectors, ids)
+vectors = []
+ids = []
+for job in jobs:
+    vectors.append(new_embedding(job[4]))
+    ids.append(job[0])
+    if job[0] % 10 == 0:
+        print("processed 10 jobs")
 
-# print(get_collection(COLLECTION_ANSWERER_NAME))
+if len(vectors) == 110 and len(ids) == 110:
+        bulk_add_points(COLLECTION_FACEBOOK_NAME, vectors, ids)
 
-# json_single_data = json.dumps("You need to know maths for this job")
-# summary_response = requests.post(ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS)
-# if summary_response.status_code == 200:
-#     summary = summary_response.json()['answer']
-#     print(summary)
-# else:
-#     raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+print(get_collection(COLLECTION_FACEBOOK_NAME))
 
-print(len(process_data("This is a cool job. No skills needed", Model.EXTRACTOR_DESCRIPTION)))
+# print(len(process_data("This is a cool job. No skills needed", Model.EXTRACTOR_DESCRIPTION)))
