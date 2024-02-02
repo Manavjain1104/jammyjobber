@@ -93,7 +93,6 @@ def get_suggested_job(request):
 def create_embedding(description):
     client = InferenceClient(token=TOKEN)
     embedding = client.feature_extraction(description, model = EMBEDDER)
-    print(embedding)
     embedding_normalised = [embedding] / \
                            np.linalg.norm([embedding], axis=1, keepdims=True)
     return embedding_normalised[0].tolist()
