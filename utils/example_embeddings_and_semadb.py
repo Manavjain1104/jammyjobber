@@ -26,4 +26,4 @@ jobs = ["This is a Software Engineering job.", "You will be a receptionist at ou
 # print(create_collection(COLLECTION_NAME, 384))
 
 
-print(len(process_data("I know Italian and Spanish. I want to be an interpreter.", Model.EXTRACTOR_REQUEST)))
+print(process_data("My name is Clara. I live in London one of the most beautiful cities", Model.FACEBOOK_SUMMARISER))
