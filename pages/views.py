@@ -7,6 +7,8 @@ from .models import Job
 
 # Create your views here.
 
+model_used = Model.EXTRACTOR_REQUEST
+collection_used = COLLECTION_ANSWERER_NAME
 
 def home_page_view(request):
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
@@ -21,8 +23,9 @@ def home_page_view(request):
     if 'query' in request.GET:
         query = request.GET['query']
 
-        request_embedding = create_embedding(query)
-        closest = search_points(COLLECTION_NAME, request_embedding, 5)
+        # request_embedding = create_embedding(query)
+        request_embedding = process_data(query, model_used)
+        closest = search_points(collection_used, request_embedding, 5)
 
         job_list = [job for job in job_instances if job.job_id in closest]
 
@@ -61,8 +64,9 @@ def job_search(request):
     if 'query' in request.GET:
         query = request.GET['query']
 
-        request_embedding = create_embedding(query)
-        closest = search_points(COLLECTION_NAME, request_embedding, 1)
+        # request_embedding = create_embedding(query)
+        request_embedding = process_data(query, model_used)
+        closest = search_points(collection_used, request_embedding, 1)
         job_list = jobs[closest[0]]
 
     else:

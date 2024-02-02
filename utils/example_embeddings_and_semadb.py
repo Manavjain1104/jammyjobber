@@ -1,6 +1,8 @@
 from semadb_utils import *
 from llm_utils import *
+import os
 from sqlite_utils import *
+ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 
 # create_collection("testJobs", 384, "cosine")
 # jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
@@ -44,4 +46,14 @@ from sqlite_utils import *
 # if (len(vectors) == 110 and len(ids) == 110):
 #         bulk_add_points(COLLECTION_ANSWERER_NAME, vectors, ids)
 
-print(get_collection(COLLECTION_ANSWERER_NAME))
+# print(get_collection(COLLECTION_ANSWERER_NAME))
+
+# json_single_data = json.dumps("You need to know maths for this job")
+# summary_response = requests.post(ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS)
+# if summary_response.status_code == 200:
+#     summary = summary_response.json()['answer']
+#     print(summary)
+# else:
+#     raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+
+print(len(process_data("This is a cool job. No skills needed", Model.EXTRACTOR_DESCRIPTION)))
