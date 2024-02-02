@@ -3,12 +3,15 @@ import requests
 import json
 from enum import Enum
 from huggingface_hub import InferenceClient
+import numpy as np
 
 ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 TOKEN = os.getenv('INFERENCE_API_TOKEN')
 HEADERS = {'Content-Type': 'application/json'}
 ANSWERER_MODEL = 'deepset/roberta-base-squad2'
 FACEBOOk_MODEL = 'facebook/bart-large-cnn'
+EMBEDDER = 'sentence-transformers/all-MiniLM-L12-v2'
+SUMMARISER = 'Falconsai/text_summarization'
 
 class Model(Enum):
     SUMMARISER = 1
@@ -19,7 +22,8 @@ class Model(Enum):
 
 def process_data(text, model):
     if model == Model.SUMMARISER:
-        return create_embedding(create_summary(text))
+        embedding = create_embedding(create_summary(text))
+        return embedding
     elif model == Model.EXTRACTOR_DESCRIPTION:
         #768 vector model
         return create_embedding(get_job_details(text)) + create_embedding(get_skills_required(text))
@@ -34,13 +38,16 @@ def process_data(text, model):
 
 
 def create_summary(text: str) -> str:
-    json_single_data = json.dumps(text)
-    summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
-    if summary_response.status_code == 200:
-        summary = summary_response.json()['summary']
-        return summary
-    else:
-        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+    client = InferenceClient(token=TOKEN)
+    summary = client.summarization(text, model=SUMMARISER)
+    return summary
+    # json_single_data = json.dumps(text)
+    # summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
+    # if summary_response.status_code == 200:
+    #     summary = summary_response.json()['summary']
+    #     return summary
+    # else:
+    #     raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def create_summary_facebook_model(text):
@@ -84,13 +91,19 @@ def get_suggested_job(request):
 
 
 def create_embedding(description):
-    json_single_data = json.dumps(description)
-    embedding_response = requests.post(ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS)
-    if embedding_response.status_code == 200:
-        embedding = embedding_response.json()['embedding']
-        return embedding
-    else:
-        raise Exception(f"Error: {embedding_response.status_code}, {embedding_response.json()}")
+    client = InferenceClient(token=TOKEN)
+    embedding = client.feature_extraction(description, model = EMBEDDER)
+    print(embedding)
+    embedding_normalised = [embedding] / \
+                           np.linalg.norm([embedding], axis=1, keepdims=True)
+    return embedding_normalised[0].tolist()
+    # json_single_data = json.dumps(description)
+    # embedding_response = requests.post(ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS)
+    # if embedding_response.status_code == 200:
+    #     embedding = embedding_response.json()['embedding']
+    #     return embedding
+    # else:
+    #     raise Exception(f"Error: {embedding_response.status_code}, {embedding_response.json()}")
 
 
 # create a list of vector embeddings given a list of descriptions
