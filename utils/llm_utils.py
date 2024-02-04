@@ -7,7 +7,7 @@ HEADERS = {'Content-Type': 'application/json'}
 
 
 def create_summary(text: str) -> str:
-    json_single_data = json.dumps(str)
+    json_single_data = json.dumps(text)
     summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()['summary']
