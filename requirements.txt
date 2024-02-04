@@ -14,3 +14,5 @@ python-dotenv~=1.0.0
 pandas~=2.0.3
 bs4~=0.0.2
 beautifulsoup4~=4.12.3
+django-taggit
+pdfminer.six
