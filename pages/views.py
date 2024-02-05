@@ -27,8 +27,10 @@ def home_page_view(request):
         query = request.GET['query']
 
         # request_embedding = create_embedding(query)
-        request_embedding = process_data(query, model_used)
-        closest = search_points(collection_used, request_embedding, 10)
+        print(query)
+        request_embedding = process_data(query, model=model_used)
+        closest = search_points(collection_used, request_embedding, 5)
+
 
         job_list = [job for job in job_instances if job.job_id in closest]
 

@@ -29,8 +29,8 @@ def process_data(text, model):
         return create_embedding(get_job_details(text)) + create_embedding(get_skills_required(text))
     elif model == Model.EXTRACTOR_REQUEST:
         return create_embedding(get_suggested_job(text)) + create_embedding(get_candidate_skills(text))
-    elif model == Model.FACEBOOK_SUMMARISER:
-        return create_embedding(create_summary_facebook_model(text))
+    # elif model == Model.FACEBOOK_SUMMARISER:
+    #     return create_embedding(create_summary_facebook_model(text))
     elif model == Model.NONE:
         return create_embedding(text)
     else:
@@ -40,6 +40,7 @@ def process_data(text, model):
 def create_summary(text: str) -> str:
     client = InferenceClient(token=TOKEN)
     summary = client.summarization(text, model=SUMMARISER)
+    print(summary)
     return summary
     # json_single_data = json.dumps(text)
     # summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
@@ -50,11 +51,11 @@ def create_summary(text: str) -> str:
     #     raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
-def create_summary_facebook_model(text):
-    client = InferenceClient(token=TOKEN,
-                             model=FACEBOOk_MODEL)
-    answer = client.summarization(text)
-    return answer
+# def create_summary_facebook_model(text):
+#     client = InferenceClient(token=TOKEN,
+#                              model=FACEBOOk_MODEL)
+#     answer = client.summarization(text)
+#     return answer
 
 # create one vector embedding given a description in form of a string
 # example: create_embedding("some job")
@@ -91,18 +92,18 @@ def get_suggested_job(request):
 
 
 def create_embedding(description):
-    client = InferenceClient(token=TOKEN)
-    embedding = client.feature_extraction(description, model = EMBEDDER)
-    embedding_normalised = [embedding] / \
-                           np.linalg.norm([embedding], axis=1, keepdims=True)
-    return embedding_normalised[0].tolist()
-    # json_single_data = json.dumps(description)
-    # embedding_response = requests.post(ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS)
-    # if embedding_response.status_code == 200:
-    #     embedding = embedding_response.json()['embedding']
-    #     return embedding
-    # else:
-    #     raise Exception(f"Error: {embedding_response.status_code}, {embedding_response.json()}")
+    # client = InferenceClient(token=TOKEN)
+    # embedding = client.feature_extraction(description, model = EMBEDDER)
+    # embedding_normalised = [embedding] / \
+    #                        np.linalg.norm([embedding], axis=1, keepdims=True)
+    # return embedding_normalised[0].tolist()
+    json_single_data = json.dumps(description)
+    embedding_response = requests.post(ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS)
+    if embedding_response.status_code == 200:
+        embedding = embedding_response.json()['embedding']
+        return embedding
+    else:
+        raise Exception(f"Error: {embedding_response.status_code}, {embedding_response.json()}")
 
 
 # create a list of vector embeddings given a list of descriptions
