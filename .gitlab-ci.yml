@@ -13,6 +13,7 @@
       - apt install -y python3-pip
       - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+      - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
 
 
