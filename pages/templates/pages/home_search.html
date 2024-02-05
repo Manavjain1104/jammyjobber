@@ -15,15 +15,29 @@
         <p class="catchline">Let's find your jam</p>
     </header>
     
-    <div class="search-box">
-        <label for="search-input">Enter query here</label>
-        <form action="" method="get">
-            <input type="text" name="query" placeholder="Search here...">
-            <button type="submit">Submit</button>
-        </form>
+    <div class="main-page">
+    
+        <div class="search-box">
+            <label for="search-input">Enter query here</label>
+            <form action="" method="get">
+                <input type="text" name="query" placeholder="Search here...">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    
+        <div class="add-cv">
+            <label>Add CV to Database</label>
+            {% if submitted %}
+                Your CV was Submitted Successfully
+            {% else %}
+                <form action="" method ="POST" enctype = "multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="myFile" name="filename">
+                <button type="submit">Upload</button>
+                </form>
+            {% endif %}
+        </div>
     </div>
-
-
     <ul class="job-listings">
         {% for job in job_list %}
             <li class="job-listing">
@@ -36,6 +50,8 @@
             </li>
         {% endfor %}
     </ul>
+    
+   
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>
