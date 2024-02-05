@@ -52,7 +52,6 @@ h1 {
     align-self: flex-start;
 }
 
-
 .search-box input[type="text"] {
     width: 95%;
     padding: 15px;
@@ -78,6 +77,31 @@ h1 {
 .search-box button:hover, .add-cv button:hover {
     background: linear-gradient(to right, #d81b60, #c2185b);
     transform: scale(1.05);
+}
+.add-cv form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.add-cv input[type="file"] {
+    width: 40%;
+    padding: 15px;
+    margin-bottom: 15px;
+    font-size: 1em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-box input[type="text"]:hover,
+.search-box input[type="text"]:focus,
+.add-cv input[type="file"]:hover,
+.add-cv input[type="file"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Style the job listings */
