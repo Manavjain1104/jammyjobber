@@ -52,7 +52,7 @@ header {
 }
 
 .search-box button:hover {
-    background-color: #2980b9;
+    background-color: #d81b60;
 }
 
 /* Style the job listings */
@@ -63,10 +63,12 @@ header {
 }
 
 .job-listing {
-    background-color: #fff;
     border: 1px solid #ddd;
-    margin-bottom: 10px;
-    padding: 10px;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .job-listing h3 {
