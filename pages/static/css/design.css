@@ -6,7 +6,7 @@ body, h1, h2, p, ul, li {
 
 /* Apply a basic styling to the body */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     background-color: #efd1a3;
 }
 
@@ -49,6 +49,10 @@ header {
     color: #fff;
     border: none;
     cursor: pointer;
+}
+
+.search-box button:hover {
+    background-color: #2980b9;
 }
 
 /* Style the job listings */
