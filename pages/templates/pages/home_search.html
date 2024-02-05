@@ -16,7 +16,7 @@
     </header>
     
     <div class="main-page">
-    
+
         <div class="search-box">
             <label for="search-input">Enter query here</label>
             <form action="" method="get">
@@ -25,7 +25,7 @@
                 <button type="submit">Submit</button>
             </form>
         </div>
-    
+
         <div class="add-cv">
             {% if submitted %}
                 Your CV was Submitted Successfully
@@ -40,9 +40,9 @@
                 </form>
             {% endif %}
         </div>
-    
+
     </div>
-    
+
     <ul class="job-listings">
         {% for job in job_list %}
             <li class="job-listing">
@@ -55,8 +55,6 @@
             </li>
         {% endfor %}
     </ul>
-    
-   
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>

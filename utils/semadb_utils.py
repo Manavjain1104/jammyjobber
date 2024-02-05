@@ -11,6 +11,8 @@ HOST = os.getenv('RAPID_API_HOST')
 
 # Collection name
 COLLECTION_NAME = "JobListings"
+COLLECTION_ANSWERER_NAME = "JobAnswerer"
+COLLECTION_FACEBOOK_NAME = "JobFacebook"
 
 
 # Url used to access a collection
