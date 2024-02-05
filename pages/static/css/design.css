@@ -73,21 +73,32 @@ header {
 
 .job-listing h3 {
     color: #333;
+    margin-bottom: 10px;
+    font-size: 1.5em;
 }
 
 .job-listing p {
+    margin-bottom : 1em;
     color: #666;
 }
 
 .job-description {
     display: none;
+    margin-top : 1em;
 }
 
 .expand-btn {
-    background-color: #4caf50;
+    background-color: #ec407a;
     color: #fff;
-    padding: 5px 10px;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.expand-btn:hover {
+    background-color: #d81b60; /* Darker shade for hover effect */
 }
 
 /* Responsive design for smaller screens */
