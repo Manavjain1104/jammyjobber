@@ -7,7 +7,7 @@ body, h1, h2, p, ul, li {
 /* Apply a basic styling to the body */
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #efd1a3;
+    background-color: #eedbb9;
 }
 
 /* Style the header section */
@@ -34,7 +34,7 @@ h1 {
 /* Style the search box */
 .search-box {
     margin: 20px auto;
-    width: 60%;
+    width: 70%;
 }
 
 .search-box label {
@@ -42,11 +42,10 @@ h1 {
     margin-bottom: 10px;
     color: #555;
     font-size: 1.2em;
-    b
 }
 
 .search-box input[type="text"] {
-    width: 80%;
+    width: 95%;
     padding: 15px;
     font-size: 16px;
     border: 1px solid #ddd;
@@ -54,6 +53,7 @@ h1 {
 }
 
 .search-box button {
+    margin-top: 1em;
     padding: 15px 30px;
     background: linear-gradient(to right, #ec407a, #d81b60);
     color: #fff;
@@ -73,16 +73,21 @@ h1 {
 .job-listings {
     list-style-type: none;
     margin: 20px auto;
-    width: 60%;
+    width: 70%;
 }
 
 .job-listing {
     border: 1px solid #ddd;
     margin: 20px 0;
     padding: 20px;
-    background-color: #fff;
+    background-color: #f9f9f9;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle box shadow for lifted appearance */
+    transition: transform 0.3s ease;
+}
+
+.job-listing:hover {
+    transform: translateY(-5px); /* Add a slight upward movement on hover */
 }
 
 .job-listing h3 {
