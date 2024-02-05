@@ -3,6 +3,7 @@ from utils.semadb_utils import *
 from utils.llm_utils import *
 from utils.sqlite_utils import *
 from utils.address_utils import *
+from utils.address_utils import *
 from .models import Job
 from .forms import CVForm
 from pdfminer.high_level import extract_text
@@ -10,6 +11,8 @@ from pdfminer.high_level import extract_text
 
 # Create your views here.
 
+model_used = Model.SUMMARISER
+collection_used = COLLECTION_NAME
 model_used = Model.SUMMARISER
 collection_used = COLLECTION_NAME
 
@@ -31,12 +34,20 @@ def home_page_view(request):
         request_embedding = process_data(query, model=model_used)
         closest = search_points(collection_used, request_embedding, 5)
 
+        # request_embedding = create_embedding(query)
+        print(query)
+        request_embedding = process_data(query, model=model_used)
+        closest = search_points(collection_used, request_embedding, 5)
+
 
         job_list = [job for job in job_instances if job.job_id in closest]
 
     else:
         job_list = job_instances
 
+    if 'location_query' in request.GET:
+        location_query = request.GET['location_query']
+        job_list = [job for job in job_list if is_in_region(job.location, location_query)]
     if 'location_query' in request.GET:
         location_query = request.GET['location_query']
         job_list = [job for job in job_list if is_in_region(job.location, location_query)]

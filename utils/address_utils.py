@@ -17,6 +17,10 @@ def is_in_region(address, region):
         return is_postcode_in_region(address, region) if is_postcode(address) else region.lower() in address.lower()
     except Exception as e:
         return False
+    try:
+        return is_postcode_in_region(address, region) if is_postcode(address) else region.lower() in address.lower()
+    except Exception as e:
+        return False
 
 
 def is_postcode_in_region(postcode, region):

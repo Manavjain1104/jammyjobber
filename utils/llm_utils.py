@@ -4,10 +4,41 @@ import json
 from enum import Enum
 from huggingface_hub import InferenceClient
 import numpy as np
+from enum import Enum
+from huggingface_hub import InferenceClient
+import numpy as np
 
 ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 TOKEN = os.getenv('INFERENCE_API_TOKEN')
+TOKEN = os.getenv('INFERENCE_API_TOKEN')
 HEADERS = {'Content-Type': 'application/json'}
+ANSWERER_MODEL = 'deepset/roberta-base-squad2'
+FACEBOOk_MODEL = 'facebook/bart-large-cnn'
+EMBEDDER = 'sentence-transformers/all-MiniLM-L12-v2'
+SUMMARISER = 'Falconsai/text_summarization'
+
+class Model(Enum):
+    SUMMARISER = 1
+    EXTRACTOR_REQUEST = 2
+    EXTRACTOR_DESCRIPTION = 3
+    FACEBOOK_SUMMARISER = 4
+    NONE = 5
+
+def process_data(text, model):
+    if model == Model.SUMMARISER:
+        embedding = create_embedding(create_summary(text))
+        return embedding
+    elif model == Model.EXTRACTOR_DESCRIPTION:
+        #768 vector model
+        return create_embedding(get_job_details(text)) + create_embedding(get_skills_required(text))
+    elif model == Model.EXTRACTOR_REQUEST:
+        return create_embedding(get_suggested_job(text)) + create_embedding(get_candidate_skills(text))
+    # elif model == Model.FACEBOOK_SUMMARISER:
+    #     return create_embedding(create_summary_facebook_model(text))
+    elif model == Model.NONE:
+        return create_embedding(text)
+    else:
+        raise Exception("Unknown model")
 ANSWERER_MODEL = 'deepset/roberta-base-squad2'
 FACEBOOk_MODEL = 'facebook/bart-large-cnn'
 EMBEDDER = 'sentence-transformers/all-MiniLM-L12-v2'
