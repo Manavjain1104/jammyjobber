@@ -12,11 +12,18 @@ body {
 
 /* Style the header section */
 header {
-    background-color: #6b003a;
     color: #fff;
-    padding: 10px;
+    padding: 20px;
     text-align: center;
+    background: linear-gradient(to right, #6b003a, #6c7b8a)
 }
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
 
 .catchline {
     color: #fff;
