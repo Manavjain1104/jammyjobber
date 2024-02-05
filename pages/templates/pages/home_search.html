@@ -26,18 +26,22 @@
         </div>
     
         <div class="add-cv">
-            <label>Add CV to Database</label>
             {% if submitted %}
                 Your CV was Submitted Successfully
             {% else %}
-                <form action="" method ="POST" enctype = "multipart/form-data">
+                <form action method ="POST" enctype = "multipart/form-data">
                 {% csrf_token %}
-                <input type="file" id="myFile" name="filename">
-                <button type="submit">Upload</button>
+                    <label for="id_pdf">Add CV to Database</label>
+                    <input type="file" name="pdf" required id="id_pdf">
+                <div class="submit-button-section">
+                    <button class="submit-button" type="submit"> Update </button>
+                </div>
                 </form>
             {% endif %}
         </div>
+    
     </div>
+    
     <ul class="job-listings">
         {% for job in job_list %}
             <li class="job-listing">
