@@ -317,7 +317,7 @@ def add_points_to_datbase(path_to_csv):
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
 
-def evaluate(path_to_csv, query, reset=False):
+def evaluate(path_to_csv, query):
     """Evaluates the decision tree against the testing data,
     prints the overall accuracy, and the percision, recalls,
     and f1 measures per class
@@ -369,6 +369,12 @@ def evaluate(path_to_csv, query, reset=False):
     print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
 
     return accuracy, precisions, recalls, f1, top_n_accuracy
+
+
+def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
+    for path in paths_to_csv:
+        for query in [queryA, queryB, queryC]:
+            evaluate(path, query)
 
 
 def evaluate_q3(paths_to_csv, queryA, queryB, queryC):

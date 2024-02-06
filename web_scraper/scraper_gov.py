@@ -96,7 +96,7 @@ if __name__ == "__main__":
     Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv 
     file and min no. of jobs needed, to the EXTRACT function
     """
-    nurse_url = "https://findajob.dwp.gov.uk/search?cat=19&loc=86383"
+    nurse_url = "https://findajob.dwp.gov.uk/search?adv=1&qwd=environment%20sustainability&qor=climate%20change%20leader%20green%20initiatives%20sustainability%20roles%20environmental%20impact&sb=relevance&sd=down"
     extract(url=nurse_url, file_name="general", min_results=30)
 
     recent_url = "https://findajob.dwp.gov.uk/search?q=&w="
