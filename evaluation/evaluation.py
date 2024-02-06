@@ -46,6 +46,10 @@ def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     return accuracy
 
 
+def calculate_error(desired_job, recommended_jobs):
+    ...
+
+
 def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
     """Calculates the hit rate of the recommendations"""
     # initial implementation: we have some way of accessing all desired jobs
@@ -164,7 +168,7 @@ def add_points_to_datbase(path_to_csv):
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
 
-def evaluate(path_to_csv, query, reset=False):
+def evaluate(path_to_csv, query):
     """Evaluates the decision tree against the testing data,
     prints the overall accuracy, and the percision, recalls,
     and f1 measures per class
@@ -216,7 +220,53 @@ def evaluate(path_to_csv, query, reset=False):
     return accuracy, precisions, recalls, f1, top_n_accuracy
 
 
+def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
+    for path in paths_to_csv:
+        for query in [queryA, queryB, queryC]:
+            evaluate(path, query)
+
+
 if __name__ == "__main__":
+    queryA = """
+    I would like to work in accounting. I have a BSc in Maths from Southampton. 
+    I want to work for a company with a generous compensation package, 
+    and I don't mind working hard and long hours.
+    """
+    keywordA = "Accountant"
+
+    queryB = """
+    I'm looking for my dream job. I care about climate change and I want to work for 
+    a company that can help the environment. I'm good with people and a strong leader.
+    """
+    keywordB = "Sustainability"
+
+    queryC = """
+    I am an academic, I have published several high profile papers on molecular biology, 
+    genetic engineering, and cellular signalling. I am looking to break into the industry. 
+    What jobs are right for me?"""
+    keywordC = "Biologist"
+
+    path_to_noise = ...
+    path_to_signalA = ...
+    path_to_signalB = ...
+    path_to_signalC = ...
+
+    paths_to_signal = [path_to_signalA, path_to_signalB, path_to_signalC]
+
+    print("\n========== METRIC 1 ==========")
+    print("3qs with signal".center(30))
+    evaluate_q3(paths_to_signal, queryA, queryB, queryC)
+
+    print("\n========== METRIC 2 ==========")
+    print("3qs with noise".center(30))
+    evaluate_q3([path_to_noise], queryA, queryB, queryC)
+
+    print("\n========== METRIC 3 ==========")
+    print("3qs with mixed".center(30))
+    evaluate_q3(paths_to_signal + path_to_noise, queryA, queryB, queryC)
+
+    print("\n========== METRIC 4 ==========")
+    print("extended q with signal".center(30))
     path_to_csv = "evaluation/teacher_ben.csv"
     query = """
 I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
@@ -229,6 +279,4 @@ I am personable and adept at handling workplace conflicts.
 Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
 A reasonably good pay scale would be a welcome addition to the overall package.
     """
-
-    # create_collection(EVAL_COLLECTION_NAME)
     evaluate(path_to_csv, query)
