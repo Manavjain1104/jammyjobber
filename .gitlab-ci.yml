@@ -6,7 +6,7 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-<<<<<<< HEAD
+
   default:
     image: ubuntu:latest
     before_script:
@@ -15,31 +15,14 @@
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
       - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
       - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
-=======
-image: ubuntu:latest
-before_script:
-  - apt install -y python3-pip
-  - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-  - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
-<<<<<<< HEAD
-  - echo API_SERVER_ADDRESS="$API_SERVER_ADDRESS" >> .env
->>>>>>> 3f46c21 (Replace llm_utils functions with calls to API)
-=======
-  - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
->>>>>>> 3d5231a (Change server address variable name)
 
-<<<<<<< HEAD
+
+
+
   stages:
     # - test
     - publicDeploy
-=======
-stages:
-  - test
->>>>>>> 462e90a (Change python version for testing)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   # unit-test:
   #   stage: test
   #   tags: 
@@ -57,65 +40,5 @@ stages:
       - dpl --provider=heroku --app=jammy-jobber --api-key=d9b9ae82-676d-4f77-8e44-a2825b126b9f
     rules:
       - if: $CI_COMMIT_BRANCH == "master"
-=======
-=======
-precommit:
-  image: python:3.10.2-slim-bullseye
-  before_script:
-    - apt update && apt install -y --no-install-recommends git
-    - pip install -r requirements.txt
-    - pre-commit install
-  script:
-    - pre-commit run --all-files
-=======
-# precommit:
-#   image: python:3.10.2-slim-bullseye
-#   before_script:
-#     - apt update && apt install -y --no-install-recommends git
-#     - pip install -r requirements.txt
-#     - pre-commit install
-#   script:
-#     - pre-commit run --all-files
->>>>>>> 3517aff (Update .gitlab-ci.yml file to comment out precommit)
 
 
->>>>>>> 83d582f (Update .gitlab-ci.yml file to run pre-commit)
-unit-test:
-  image: python:3.10
-  stage: test
-  script:
-    - pip install pipenv
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    - pipenv shell
-    - python3 test/test_semadb.py
-    - python3 test/test_sqlite.py
-    - python3 test/test_integration.py
->>>>>>> d0bfcb6 (Upgrade pip in pipeline)
-=======
-    - pipenv run python3 test/test_semadb.py
-    - pipenv run python3 test/test_sqlite.py
-    - pipenv run python3 test/test_integration.py
->>>>>>> 36b4755 (Add pipenv run)
-=======
-=======
-    - pipenv install requests
->>>>>>> 0e66c1f (Try installing requests)
-=======
-    - pipenv install
-<<<<<<< HEAD
->>>>>>> b81d767 (Try installing pipenv)
-    - pipenv run python test/test_semadb.py
-    - pipenv run python test/test_sqlite.py
-    - pipenv run python test/test_integration.py
->>>>>>> cc709d3 (Try running with python)
-=======
-    - pipenv run python -m unittest discover test/
->>>>>>> e321c2e (Run all unit tests at once)
-=======
-    - python3 -m pipenv install
-    - python3 -m pipenv run python -m unittest discover test/
->>>>>>> 462e90a (Change python version for testing)

@@ -177,7 +177,6 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
 
     ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
     return (labels, ranking)
-<<<<<<< HEAD
 
 
 def add_points_to_datbase(path_to_csv):
@@ -275,8 +274,6 @@ def add_points_to_datbase(path_to_csv):
         true_ranking, key=lambda x: int(x[1]))]
 
     return (true_labels, true_ranking, job_summaries, job_embeddings)
-=======
->>>>>>> b33a551 (Change llm utils to have option to run locally, finish the evaluation for top n accurancy)
 
 
 def add_points_to_datbase(path_to_csv):
@@ -337,12 +334,9 @@ def evaluate(path_to_csv, query):
 
     predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
 
-<<<<<<< HEAD
-=======
     print(true_ranking)
     print(predicted_ranking)
 
->>>>>>> b33a551 (Change llm utils to have option to run locally, finish the evaluation for top n accurancy)
     labels = ["TRUE", "FALSE"]
 
     # Create a confusion matrix based on the labels
