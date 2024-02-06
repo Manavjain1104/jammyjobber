@@ -1,6 +1,10 @@
+import os
 from bs4 import BeautifulSoup
+from pathlib import Path
 import requests
 import pandas as pd
+
+OUTPUT_PATH = Path("scraper_output")
 
 
 def extract_job_title(job_elem):
@@ -28,12 +32,15 @@ def extract_job_description(job_elem):
     description_text = requests.get(description_link).text
     description_soup = BeautifulSoup(description_text, 'lxml')
     description = description_soup.find("div", itemprop="description")
-    return description.get_text(strip=True)
+    return description.get_text(strip=False)
 
 
-def print_to_csv(data, file_name):
+def print_to_csv(data, file_name, max_entries=None):
     table = pd.DataFrame(data, columns=["title", "company", "location", "description", "link"])
-    table.to_csv(file_name + ".csv", index=False, encoding="utf-8")
+    if type(max_entries) == int and max_entries < len(table):
+        table = table[: max_entries]
+    os.makedirs(OUTPUT_PATH, exist_ok=True)
+    table.to_csv(OUTPUT_PATH / (file_name + ".csv"), index=False, encoding="utf-8")
 
 
 def get_jobs_for_url(url, data, min_results):
@@ -66,7 +73,7 @@ def get_jobs_for_url(url, data, min_results):
         get_jobs_for_url(next_page_url, data, min_results)
 
 
-def extract(url, file_name, min_results):
+def extract(url, file_name, min_results, max_results=None):
     """
     Initialises data, calls the actual scraping function and then handles printing the data to a new csv file
     """
@@ -81,7 +88,7 @@ def extract(url, file_name, min_results):
     }
     get_jobs_for_url(url, data, min_results)
     print("No. of jobs found: " + str(len(data['title'])))
-    print_to_csv(data, file_name)
+    print_to_csv(data, file_name, max_results)
 
 
 if __name__ == "__main__":
@@ -91,3 +98,18 @@ if __name__ == "__main__":
     """
     nurse_url = "https://findajob.dwp.gov.uk/search?cat=19&loc=86383"
     extract(url=nurse_url, file_name="general", min_results=30)
+
+    recent_url = "https://findajob.dwp.gov.uk/search?q=&w="
+    extract(url=recent_url, file_name="recent", min_results=30, max_results=30)
+
+    accountant_url = "https://findajob.dwp.gov.uk/search?q=accountant&w=UK"
+    extract(url=accountant_url, file_name="accountant", min_results=10, max_results=10)
+
+    sustainability_url = "https://findajob.dwp.gov.uk/search?q=sustainability&w=UK"
+    extract(url=sustainability_url, file_name="sustainability", min_results=10, max_results=10)
+
+    biologist_url = "https://findajob.dwp.gov.uk/search?q=biologist&w=UK"
+    extract(url=biologist_url, file_name="biologist", min_results=10, max_results=10)
+
+    teacher_url = "https://findajob.dwp.gov.uk/search?q=teacher&w=UK"
+    extract(url=teacher_url, file_name="teacher", min_results=30, max_results=30)
