@@ -73,7 +73,7 @@ def calculate_error(desired_job, recommended_jobs):
 
 def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
-    top_n_predictions = desired_job[:n]
+    top_n_predictions = desired_jobs[:n]
     correct_predictions = set(
         top_n_predictions).intersection(set(recommended_jobs[:n]))
     accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
