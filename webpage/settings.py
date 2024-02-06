@@ -120,4 +120,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_TRUSTED_ORIGINS = ['https://jammy-jobber-0a37e91b6b51.herokuapp.com/']
+CSRF_TRUSTED_ORIGINS = ['https://jammy-jobber-0a37e91b6b51.herokuapp.com']
