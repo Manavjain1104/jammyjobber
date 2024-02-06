@@ -11,10 +11,9 @@ from pdfminer.high_level import extract_text
 
 # Create your views here.
 
-model_used = Model.SUMMARISER
-collection_used = COLLECTION_NAME
-model_used = Model.SUMMARISER
-collection_used = COLLECTION_NAME
+model_used = Model.EXTRACTOR_REQUEST
+collection_used = COLLECTION_ANSWERER_NAME
+
 
 def home_page_view(request):
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)

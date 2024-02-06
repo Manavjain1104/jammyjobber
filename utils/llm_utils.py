@@ -69,17 +69,13 @@ def process_data(text, model):
 
 
 def create_summary(text: str) -> str:
-    client = InferenceClient(token=TOKEN)
-    summary = client.summarization(text, model=SUMMARISER)
-    print(summary)
-    return summary
-    # json_single_data = json.dumps(text)
-    # summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
-    # if summary_response.status_code == 200:
-    #     summary = summary_response.json()['summary']
-    #     return summary
-    # else:
-    #     raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+    json_single_data = json.dumps(text)
+    summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
+    if summary_response.status_code == 200:
+        summary = summary_response.json()['summary']
+        return summary
+    else:
+        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 # def create_summary_facebook_model(text):
@@ -92,42 +88,47 @@ def create_summary(text: str) -> str:
 # example: create_embedding("some job")
 
 def get_skills_required(description):
-    client = InferenceClient(token=TOKEN,
-                             model=ANSWERER_MODEL)
-    answer = client.question_answering(question="What skills are required?",
-                              context=description)['answer']
-    return answer
+    json_single_data = json.dumps(description)
+    summary_response = requests.post(ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS)
+    if summary_response.status_code == 200:
+        summary = summary_response.json()['answer']
+        return summary
+    else:
+        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_job_details(description):
-    client = InferenceClient(token=TOKEN,
-                             model=ANSWERER_MODEL)
-    answer = client.question_answering(question="What are the job details?",
-                              context=description)['answer']
-    return answer
+    json_single_data = json.dumps(description)
+    summary_response = requests.post(ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS)
+    if summary_response.status_code == 200:
+        summary = summary_response.json()['answer']
+        return summary
+    else:
+        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 def get_candidate_skills(request):
-    client = InferenceClient(token=TOKEN,
-                             model=ANSWERER_MODEL)
-    answer = client.question_answering(question="What skills do they have?",
-                              context=request)['answer']
-    return answer
+    json_single_data = json.dumps(request)
+    summary_response = requests.post(ADDRESS + "get_candidate_skills", data=json_single_data, headers=HEADERS)
+    if summary_response.status_code == 200:
+        summary = summary_response.json()['answer']
+        return summary
+    else:
+        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+
 
 
 def get_suggested_job(request):
-    client = InferenceClient(token=TOKEN,
-                             model=ANSWERER_MODEL)
-    answer = client.question_answering(question="What should they work as?",
-                              context=request)['answer']
-    return answer
+    json_single_data = json.dumps(request)
+    summary_response = requests.post(ADDRESS + "get_suggested_job", data=json_single_data, headers=HEADERS)
+    if summary_response.status_code == 200:
+        summary = summary_response.json()['answer']
+        return summary
+    else:
+        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+
 
 
 def create_embedding(description):
-    # client = InferenceClient(token=TOKEN)
-    # embedding = client.feature_extraction(description, model = EMBEDDER)
-    # embedding_normalised = [embedding] / \
-    #                        np.linalg.norm([embedding], axis=1, keepdims=True)
-    # return embedding_normalised[0].tolist()
     json_single_data = json.dumps(description)
     embedding_response = requests.post(ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS)
     if embedding_response.status_code == 200:
