@@ -1,8 +1,7 @@
-
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
-from numpy import dot
+
 
 
 # ------- HELPER --------
