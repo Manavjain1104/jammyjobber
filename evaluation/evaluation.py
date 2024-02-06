@@ -232,6 +232,7 @@ Additionally, I aim to have time for lesson planning, marking work, and personal
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
     """Wrapper function to evaluate the model
     """
+    ...
 
 
 if __name__ == "__main__":
