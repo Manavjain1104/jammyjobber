@@ -36,9 +36,9 @@ def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
     return conf_matrix
 
 
-def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
+def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
-    top_n_predictions = desired_job[:n]
+    top_n_predictions = desired_jobs[:n]
     correct_predictions = set(
         top_n_predictions).intersection(set(recommended_jobs[:n]))
     accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
