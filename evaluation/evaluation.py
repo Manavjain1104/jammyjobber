@@ -1,5 +1,4 @@
-from context import utils
-from utils.llm_utils import create_embedding, create_summary, bulk_create_embeddings
+
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
@@ -214,6 +213,19 @@ def evaluate(path_to_csv, query, reset=False):
     print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
 
     return accuracy, precisions, recalls, f1, top_n_accuracy
+
+
+query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
+In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
+Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+"""
+
+def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
+    """Wrapper function to evaluate the model
+    """
+
+
+
 
 
 if __name__ == "__main__":
