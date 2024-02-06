@@ -1,9 +1,6 @@
-from context import utils
-from utils.llm_utils import create_embedding, create_summary, bulk_create_embeddings
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
-from numpy import dot
 
 
 # ------- HELPER --------
@@ -37,9 +34,9 @@ def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
     return conf_matrix
 
 
-def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
+def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
-    top_n_predictions = desired_job[:n]
+    top_n_predictions = desired_jobs[:n]
     correct_predictions = set(
         top_n_predictions).intersection(set(recommended_jobs[:n]))
     accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
@@ -224,6 +221,17 @@ def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
     for path in paths_to_csv:
         for query in [queryA, queryB, queryC]:
             evaluate(path, query)
+
+
+query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
+In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
+Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+"""
+
+
+def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
+    """Wrapper function to evaluate the model
+    """
 
 
 if __name__ == "__main__":

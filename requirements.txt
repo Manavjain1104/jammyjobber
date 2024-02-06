@@ -13,4 +13,5 @@ transformers~=4.36.2
 python-dotenv~=1.0.0
 pandas~=2.0.3
 bs4~=0.0.2
-beautifulsoup4~=4.12.3
+beautifulsoup4~=4.12.2
+numpy~=1.26.3
