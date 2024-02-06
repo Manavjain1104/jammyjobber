@@ -1,8 +1,7 @@
-
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
-from numpy import dot
+
 
 from numpy.linalg import norm
 from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
