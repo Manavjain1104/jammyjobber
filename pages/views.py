@@ -38,18 +38,26 @@ def home_page_view(request):
         request_embedding = process_data(query, model=model_used)
         closest = search_points(collection_used, request_embedding, 5)
 
-
         job_list = [job for job in job_instances if job.job_id in closest]
+        
+        if 'location_query' in request.GET:
+            location_query = request.GET['location_query']
+            job_list = [job for job in job_list if is_in_region(job.location, location_query)]
+        
+    elif request.method == "POST":
+        form = CVForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = form.save()
+            job_instances = get_listings()
+            text = extract_text(instance.pdf.path)
+            os.remove(instance.pdf.path)
+            request_embedding = process_data(text, model=model_used)
+
+            closest = search_points(collection_used, request_embedding, 5)
+            job_list = [job for job in job_instances if job.job_id in closest]
 
     else:
         job_list = job_instances
-
-    if 'location_query' in request.GET:
-        location_query = request.GET['location_query']
-        job_list = [job for job in job_list if is_in_region(job.location, location_query)]
-    if 'location_query' in request.GET:
-        location_query = request.GET['location_query']
-        job_list = [job for job in job_list if is_in_region(job.location, location_query)]
 
     connection.close()
 
@@ -75,41 +83,6 @@ def get_listings():
     ]
     connection.close()
     return job_instances
-
-
-# def submitted_search_view(request):
-#     query = request.GET.get('query', '')
-#
-#     jobs = ["This is a Software Engineering job.", "You will be a receptionist at our clinic.",
-#             "We are looking for a python developer. We can offer a competetive salary", "Charity worker needed.",
-#             "Dog sitter job in Manchester"]
-#
-#     request_embedding = create_embedding(query)
-#     closest = search_points("testJobs", request_embedding, 1)
-#
-#     result = jobs[closest[0]]
-#
-#     return render(request, "pages/submitted_search.html", {'result': result})
-
-def add_cv_view(request):
-    submitted = False
-    if request.method == "POST":
-        form = CVForm(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save()
-            job_instances = get_listings()
-            text = extract_text(instance.pdf.path)
-            os.remove(instance.pdf.path)
-            request_embedding = create_embedding(text)
-
-            closest = search_points(COLLECTION_NAME, request_embedding, 5)
-            job_list = [job for job in job_instances if job.job_id in closest]
-            return render(request, "pages/home_search.html", {"job_list": job_list})
-    else:
-        form = CVForm
-    context = {"form": form, "submitted": submitted}
-    return render(request, "pages/add_cv.html", context)
-
 
 
 def job_search(request):
