@@ -1,11 +1,8 @@
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
-
-
 from numpy.linalg import norm
 from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
-
 
 
 # ------- HELPER --------
@@ -18,19 +15,6 @@ def cosine_dist(vec1, vec2):
 
 # ------- Evaluation --------
 
-    # create a dictionary mapping labels to indices
-    label_to_index = {label: i for i, label in enumerate(labels)}
-
-    # initialise the confusion matrix to be np array of zeros
-    conf_matrix = np.zeros((len(labels), len(labels)), dtype=np)
-
-    # populate the confusion matrix
-    for true_label, predicted_label in zip(true_labels, predicted_labels):
-        true_index = label_to_index[true_label]
-        predicted_index = label_to_index[predicted_label]
-        conf_matrix[true_index, predicted_index] += 1
-
-    return conf_matrix
 
 def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
     """Creates a confusion matrix based on the true and predicted labels"""
@@ -63,14 +47,15 @@ def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
 
 def calculate_error(desired_job, recommended_jobs):
     # list with the indexes from the most relevant to least
-    assert(len(desired_job) == len(recommended_jobs))
+    assert (len(desired_job) == len(recommended_jobs))
     acc = 0
     for i in range(len(desired_job)):
         acc += abs(i - recommended_jobs.index(desired_job[i]))
     err = acc / len(desired_job)
     return acc
 
-def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
+
+def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
     top_n_predictions = desired_jobs[:n]
     correct_predictions = set(
@@ -83,7 +68,6 @@ def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
     """Calculates the hit rate of the recommendations"""
     # initial implementation: we have some way of accessing all desired jobs
     # we compute proportion of top n jobs that are actually desired by user
-
     hits = 0
     seen = set()
 
@@ -94,7 +78,6 @@ def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
             seen.add(desired_job)
 
     return hits / len(recommended_jobs)
-
 
 
 def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
@@ -363,28 +346,13 @@ def evaluate(path_to_csv, query):
     return accuracy, precisions, recalls, f1, top_n_accuracy
 
 
-query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
-In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
-Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-"""
+def evaluate_many(paths_to_csv, query_lst):
+    if len(paths_to_csv) != len(query_lst):
+        raise Exception("Number of elements of both should be the same")
 
-def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
-    """Wrapper function to evaluate the model
-    """
-
-
-
-
-
-def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
-    for path in paths_to_csv:
-        for query in [queryA, queryB, queryC]:
-            evaluate(path, query)
-
-
-def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
-
-    ...
+    for i in range(len(query_lst)):
+        evaluate(paths_to_csv[i], query_lst)
+        ...
 
 
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
@@ -394,6 +362,7 @@ def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
 
     with open(path_to_csv, 'r') as csv_file:
         ...
+
 
 if __name__ == "__main__":
     queryA = """
@@ -415,24 +384,27 @@ if __name__ == "__main__":
     What jobs are right for me?"""
     keywordC = "Biologist"
 
-    path_to_noise = ...
-    path_to_signalA = ...
-    path_to_signalB = ...
-    path_to_signalC = ...
-
-    paths_to_signal = [path_to_signalA, path_to_signalB, path_to_signalC]
+    path_to_noiseA = "evaluation/accountant.csv"
+    path_to_noiseB = "evaluation/sustainability.csv"
+    path_to_noiseC = "evaluation/biologist.csv"
+    path_to_signalA = "evaluation/noise_accountant.csv"
+    path_to_signalB = "evaluation/noise_sustainability.csv"
+    path_to_signalC = "evaluation/noise_biologist.csv"
 
     print("\n========== METRIC 1 ==========")
     print("3qs with signal".center(30))
-    evaluate_q3(paths_to_signal, queryA, queryB, queryC)
+    evaluate_many([[path_to_signalA], [path_to_signalB],
+                  [path_to_signalC]], [queryA, queryB, queryC])
 
     print("\n========== METRIC 2 ==========")
     print("3qs with noise".center(30))
-    evaluate_q3([path_to_noise], queryA, queryB, queryC)
+    evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
+                  queryA, queryB, queryC])
 
     print("\n========== METRIC 3 ==========")
     print("3qs with mixed".center(30))
-    evaluate_q3(paths_to_signal + path_to_noise, queryA, queryB, queryC)
+    evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
+                  path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC])
 
     print("\n========== METRIC 4 ==========")
     print("extended q with signal".center(30))
@@ -442,15 +414,14 @@ if __name__ == "__main__":
     # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
     # Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
     # """
-
     query = """
-I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
-In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare. 
-Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects. 
-I am personable and adept at handling workplace conflicts.
-Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
-A reasonably good pay scale would be a welcome addition to the overall package.
+    I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
+    In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare. 
+    Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+    I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects. 
+    I am personable and adept at handling workplace conflicts.
+    Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
+    A reasonably good pay scale would be a welcome addition to the overall package.
     """
 
     evaluate(path_to_csv, query)
