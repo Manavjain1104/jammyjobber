@@ -1,6 +1,7 @@
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
+from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
 
 
 # ------- HELPER --------
@@ -44,6 +45,7 @@ def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
 
 
 def calculate_error(desired_job, recommended_jobs):
+    # lst with the indexes from the most relevant to least
     ...
 
 
@@ -173,23 +175,19 @@ def evaluate(path_to_csv, query):
     Args:
         path_to_csv(str): path to the csv file
     """
-
     # In case the information in collection needs to be flushed
 
     # Process the csv and extract the jobs and qualifications
     true_labels, true_ranking, job_summaries, job_embeddings = add_points_to_datbase(
         path_to_csv)
 
-    # Process query in our semaDB to see the returns
+    # Process query into embeddings
     request_embedding = create_embedding(query)
 
     distances = [cosine_dist(request_embedding, entry_embedding)
                  for entry_embedding in job_embeddings]  # in order
 
     predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
-
-    print(true_ranking)
-    print(predicted_ranking)
 
     labels = ["TRUE", "FALSE"]
 
@@ -218,15 +216,8 @@ def evaluate(path_to_csv, query):
 
 
 def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
-    for path in paths_to_csv:
-        for query in [queryA, queryB, queryC]:
-            evaluate(path, query)
 
-
-query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
-In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
-Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-"""
+    ...
 
 
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
@@ -277,14 +268,18 @@ if __name__ == "__main__":
     print("\n========== METRIC 4 ==========")
     print("extended q with signal".center(30))
     path_to_csv = "evaluation/teacher_ben.csv"
+
+    # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
+    # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
+    # Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+    # """
+
     query = """
 I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
 In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare. 
 Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-
 I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects. 
 I am personable and adept at handling workplace conflicts.
-
 Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
 A reasonably good pay scale would be a welcome addition to the overall package.
     """
