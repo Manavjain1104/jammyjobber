@@ -172,8 +172,8 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
                 true_labels.append(row[5])  # true or false
 
                 # handle keyword value
-                if int(row[7]) > 0:
-                    keywords.append((i, row[7]))
+                if int(row[keyword_idx]) > 0:
+                    keywords.append((i, row[keyword_idx]))
 
                 # Assuming that header start as {title, company, location, description}
                 job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
@@ -252,6 +252,8 @@ def evaluate(paths_to_csv, query, model, noisy=False):
 
     print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
     print(f'{"Error":22}: {errors}')
+
+    # TODO: KEYWORD SEARCH
 
     return accuracy, precisions, recalls, f1, top_n_accuracy
 
