@@ -162,6 +162,7 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
             job_summaries = []
             true_ranking = []
             keywords = []
+            keyword_labels = []
 
             keyword_idx = 7 if not noisy else 6
 
@@ -169,11 +170,15 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
             for row in csv_reader:
                 if row[5] == 'TRUE' and not noisy:
                     true_ranking.append((i, row[6]))
-                true_labels.append(row[5])  # true or false
+                true_labels.append(row[5] if row[5] ==
+                                   'TRUE' else 'FALSE')  # true or false
 
                 # handle keyword value
                 if int(row[keyword_idx]) > 0:
+                    keyword_labels.append("TRUE")
                     keywords.append((i, row[keyword_idx]))
+                else:
+                    keyword_labels.append("FALSE")
 
                 # Assuming that header start as {title, company, location, description}
                 job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
@@ -188,10 +193,10 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
     true_ranking = [idx for idx, _ in sorted(
         true_ranking, key=lambda x: int(x[1]))]
 
-    keywords = [idx for idx, _ in sorted(
+    keyword_ranking = [idx for idx, _ in sorted(
         keywords, key=lambda x: int(x[1]))]
 
-    return true_labels, true_ranking, keywords, job_summaries, job_embeddings
+    return true_labels, true_ranking, keyword_labels, keyword_ranking, job_summaries, job_embeddings
 
 
 def evaluate(paths_to_csv, query, model, noisy=False):
@@ -205,29 +210,33 @@ def evaluate(paths_to_csv, query, model, noisy=False):
     # In case the information in collection needs to be flushed
 
     # Process the csv and extract the jobs and qualifications
-    true_labels, true_ranking, keywords, job_summaries, job_embeddings = add_points_to_datbase(
+    true_labels, true_ranking, keywords_labels, keyword_ranking, job_summaries, job_embeddings = add_points_to_datbase(
         paths_to_csv, noisy)
 
     # Process query into embeddings
     request_embedding = process_data(query, model)
 
-    distances = [cosine_dist(request_embedding, entry_embedding)
-                 for entry_embedding in job_embeddings]  # in order
+    if model != Model.KEYWORD:
+        distances = [cosine_dist(request_embedding, entry_embedding)
+                     for entry_embedding in job_embeddings]  # in order
 
-    n = len(true_ranking)
-    distance_cut_off = sorted(distances)[n-1]
-    predicted_labels = [str(dist <= distance_cut_off).upper()
-                        for dist in distances]
-    expand_distance = []
-    for i in range(len(predicted_labels)):
-        if predicted_labels[i] == 'TRUE':
-            expand_distance.append((i, distances[i]))
-    predicted_ranking = [idx for idx, _ in sorted(
-        expand_distance, key=lambda x: x[1])]
+        n = true_labels.count("TRUE")  # should get number of true
+        distance_cut_off = sorted(distances)[n-1]
+        predicted_labels = [str(dist <= distance_cut_off).upper()
+                            for dist in distances]
+        expand_distance = []
+        for i in range(len(predicted_labels)):
+            if predicted_labels[i] == 'TRUE':
+                expand_distance.append((i, distances[i]))
+        predicted_ranking = [idx for idx, _ in sorted(
+            expand_distance, key=lambda x: x[1])]
+    else:
+        predicted_ranking = keyword_ranking
+        predicted_labels = keywords_labels
 
     print(true_ranking)
     print(predicted_ranking)
-
+    print()
     labels = ["TRUE", "FALSE"]
 
     # Create a confusion matrix based on the labels
@@ -236,22 +245,30 @@ def evaluate(paths_to_csv, query, model, noisy=False):
 
     # Caluclate the measures and print them out
     accuracy = calculate_accuracy(conf_matrix)  # aka hit rate
-    precisions = calculate_precisions(conf_matrix)
-    recalls = calculate_recalls(conf_matrix)
-    f1 = calculate_f1_measures(conf_matrix)
 
-    errors = calculate_error(true_ranking, predicted_ranking)
-    top_n_accuracy = calculate_top_n_accuracy(
-        true_ranking, predicted_ranking, 10)
+    precisions = 0
+    recalls = 0
+    f1 = 0
+    errors = 0
+    top_n_accuracy = 0
+
+    if not noisy:
+        precisions = calculate_precisions(conf_matrix)
+        recalls = calculate_recalls(conf_matrix)
+        f1 = calculate_f1_measures(conf_matrix)
+        errors = calculate_error(true_ranking, predicted_ranking)
+        top_n_accuracy = calculate_top_n_accuracy(
+            true_ranking, predicted_ranking, 10)
 
     print()
     print(f"Accuracy : {accuracy}")
-    print(f'{"Percisions per class":22}: {precisions}')
-    print(f'{"Recalls per class":22}: {recalls}')
-    print(f'{"F1-measures per class":22}: {f1}')
 
-    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
-    print(f'{"Error":22}: {errors}')
+    if not noisy:
+        print(f'{"Percisions per class":22}: {precisions}')
+        print(f'{"Recalls per class":22}: {recalls}')
+        print(f'{"F1-measures per class":22}: {f1}')
+        print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
+        print(f'{"Error":22}: {errors}')
 
     # TODO: KEYWORD SEARCH
 
@@ -263,6 +280,7 @@ def evaluate_many(paths_to_csv, query_lst, model, noisy=False):
         raise Exception("Number of elements of both should be the same")
 
     for i in range(len(query_lst)):
+        print("Evaluating ", paths_to_csv[i])
         wrapper_evaluate_model(model, query_lst[i], paths_to_csv[i], noisy)
 
 
@@ -308,7 +326,8 @@ if __name__ == "__main__":
     path_to_noiseB = "evaluation/noise_sustainability.csv"
     path_to_noiseC = "evaluation/noise_biologist.csv"
 
-    models = [Model.SUMMARISER, Model.EXTRACTOR_DESCRIPTION, Model.NONE]
+    models = [Model.SUMMARISER, Model.EXTRACTOR_DESCRIPTION,
+              Model.NONE, Model.KEYWORD]
     for model in models:
         print(f"========== MODEL {model} ==========\n\n")
 
@@ -318,34 +337,31 @@ if __name__ == "__main__":
         #               [path_to_signalC]], [queryA, queryB, queryC], model)
 
         print("\n========== METRIC 2 ==========")
-        print("3qs with noise".center(30))
-        evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
-                      queryA, queryB, queryC], model, True)
+        # print("3qs with noise".center(30))
+        # evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
+        #              queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 3 ==========")
         print("3qs with mixed".center(30))
         # TODO: CHANGE HERE
-        evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
-                      path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
+        # evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
+        #              path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 4 ==========")
         print("extended q with signal".center(30))
-    path_to_csv = "evaluation/teacher_ben.csv"
+        path_to_csv = "evaluation/teacher_ben.csv"
 
-    # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
-    # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
-    # Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-    # """
-    query = """
-    I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
-    In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare. 
-    Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-    I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects. 
-    I am personable and adept at handling workplace conflicts.
-    Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
-    A reasonably good pay scale would be a welcome addition to the overall package.
-    """
-
-    for model in models:
-        print(f"========== MODEL {model} ==========\n\n")
+        # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
+        # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
+        # Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+        # """
+        query = """
+        I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
+        In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare. 
+        Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+        I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects. 
+        I am personable and adept at handling workplace conflicts.
+        Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
+        A reasonably good pay scale would be a welcome addition to the overall package.
+        """
         wrapper_evaluate_model(model, query, path_to_csv)
