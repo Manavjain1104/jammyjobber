@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 
 # Get variables from the environment
 load_dotenv()
+from enum import Enum
+from huggingface_hub import InferenceClient
+import numpy as np
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter
 
 ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 TOKEN = os.getenv('INFERENCE_API_TOKEN')
@@ -66,17 +70,25 @@ if DEV_LOCAL:
     MIN_LEN = 30
 
     summariser = pipeline(
-        "summarization", model="Falconsai/text_summarization")
+        "summarization", model="Falconsai/text_summarization", )
     embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
-
+    splitter = SentenceTransformersTokenTextSplitter(chunk_overlap=50)
 
 def create_summary(text: str) -> str:
     if DEV_LOCAL:
-        summariser_output = summariser(
-            text, max_length=MAX_LEN, min_length=MIN_LEN, do_sample=False
-        )
-        summary = summariser_output[0]['summary_text']
+        chunks = splitter.split_text(text)
+        summary = ""
+        for chunk in chunks:
+            summariser_output = summariser(
+                chunk, max_length=MAX_LEN // len(chunks), min_length=MIN_LEN // len(chunks), do_sample=False
+            )
+            summary += summariser_output[0]['summary_text']
         return summary
+        # summariser_output = summariser(
+        #     text, max_length=MAX_LEN, min_length=MIN_LEN, do_sample=False
+        # )
+        # summary = summariser_output[0]['summary_text']
+        # return summary
 
     json_single_data = json.dumps(text)
     summary_response = requests.post(

@@ -144,6 +144,21 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
     ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
     return labels, ranking
 
+# PRE: the relevant file is already open
+def read_csv_columns(file, columns):
+    csv_reader = reader(file, delimiter=',')
+    headers = next(csv_reader)  # Read the header row to get column names
+
+    # Check if all columns provided are in the headers
+    if not all(col in headers for col in columns):
+        raise ValueError("One or more columns provided are not found in the CSV headers.")
+
+    indices = [headers.index(col) for col in columns]  # Get the indices of desired columns
+
+    # Construct a filtered reader object with only the desired columns
+    filtered_reader = ([row[i] for i in indices] for row in csv_reader)
+
+    return filtered_reader
 
 def add_points_to_datbase(paths_to_csv, noisy=False):
     i = 0
@@ -157,17 +172,17 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
 
     for path_to_csv in paths_to_csv:
         with open(path_to_csv, 'r') as csv_file:
-            csv_reader = reader(csv_file, delimiter=',')
+            csv_reader = read_csv_columns(csv_file, ["title", "company", "location", "description", "link", 'relevant', 'keyword'] if noisy else ["title", "company", "location", "description", "link", 'relevant', 'rank', 'keyword'])
             csv_header = next(csv_reader)
 
             # Check that the headers is correct
-            if noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'keyword']:
-                raise Exception(
-                    "noisy csv file should contain title, company, location, description, link, relevant, keyword (order matters)")
-
-            if not noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'rank', 'keyword']:
-                raise Exception(
-                    "csv file should contain title, company, location, description, link, relevant, rank, keyword (order matters)")
+            # if noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'keyword']:
+            #     raise Exception(
+            #         "noisy csv file should contain title, company, location, description, link, relevant, keyword (order matters)")
+            #
+            # if not noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'rank', 'keyword']:
+            #     raise Exception(
+            #         "csv file should contain title, company, location, description, link, relevant, rank, keyword (order matters)")
 
             keyword_idx = 7 if not noisy else 6
 
@@ -331,9 +346,8 @@ if __name__ == "__main__":
     path_to_noiseB = "evaluation/noise_sustainability.csv"
     path_to_noiseC = "evaluation/noise_biologist.csv"
 
-    # Model.SUMMARISER,
     models = [Model.EXTRACTOR_DESCRIPTION,
-              Model.NONE, Model.KEYWORD]
+              Model.NONE, Model.KEYWORD, Model.SUMMARISER]
     for model in models:
         print(f"========== MODEL {model} ==========\n\n")
 
@@ -349,13 +363,12 @@ if __name__ == "__main__":
 
         print("\n========== METRIC 3 ==========")
         print("3qs with mixed".center(30))
-        # TODO: CHANGE HERE
-        # evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
-        #              path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
+        evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
+                     path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 4 ==========")
         print("extended q with signal".center(30))
-        # path_to_csv = "evaluation/teacher_ben.csv"
+        path_to_csv = "evaluation/teacher_ben.csv"
 
         # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
         # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
