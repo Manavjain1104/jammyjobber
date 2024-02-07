@@ -7,16 +7,15 @@ from numpy.linalg import norm
 from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
 
 
-
 # ------- HELPER --------
 EVAL_COLLECTION_NAME = "Evaluation"
 MIN_LEN = 230
 
 
 def cosine_dist(vec1, vec2):
-    return np.dot(vec1, vec2)/(norm(vec1) * norm(vec2))
+    return np.dot(vec1, vec2) / (norm(vec1) * norm(vec2))
 
-# ------- Evaluation --------
+    # ------- Evaluation --------
 
     # create a dictionary mapping labels to indices
     label_to_index = {label: i for i, label in enumerate(labels)}
@@ -32,10 +31,12 @@ def cosine_dist(vec1, vec2):
 
     return conf_matrix
 
+
 def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
     """Creates a confusion matrix based on the true and predicted labels"""
     assert len(true_labels) == len(
-        predicted_labels), "The number of true labels and predicted labels must be the same"
+        predicted_labels
+    ), "The number of true labels and predicted labels must be the same"
 
     # create a dictionary mapping labels to indices
     label_to_index = {label: i for i, label in enumerate(labels)}
@@ -55,26 +56,25 @@ def confusion_matrix(true_labels, predicted_labels, labels) -> np.ndarray:
 def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
     top_n_predictions = desired_jobs[:n]
-    correct_predictions = set(
-        top_n_predictions).intersection(set(recommended_jobs[:n]))
+    correct_predictions = set(top_n_predictions).intersection(set(recommended_jobs[:n]))
     accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
     return accuracy
 
 
 def calculate_error(desired_job, recommended_jobs):
     # list with the indexes from the most relevant to least
-    assert(len(desired_job) == len(recommended_jobs))
+    assert len(desired_job) == len(recommended_jobs)
     acc = 0
     for i in range(len(desired_job)):
         acc += abs(i - recommended_jobs.index(desired_job[i]))
     err = acc / len(desired_job)
     return acc
 
+
 def calculate_top_n_accuracy(desired_job, recommended_jobs, n):
     """Calculates the top n accuracy of the recommendations"""
     top_n_predictions = desired_jobs[:n]
-    correct_predictions = set(
-        top_n_predictions).intersection(set(recommended_jobs[:n]))
+    correct_predictions = set(top_n_predictions).intersection(set(recommended_jobs[:n]))
     accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
     return accuracy
 
@@ -94,7 +94,6 @@ def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
             seen.add(desired_job)
 
     return hits / len(recommended_jobs)
-
 
 
 def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
@@ -151,6 +150,7 @@ def calculate_f1_measures(conf_matrix):
         f1_measures.append(f1)
     return f1_measures
 
+
 # ------- Matrix ---------
 
 
@@ -165,14 +165,17 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
     change_index = np.argmax(np.abs(np.diff(z_scores)) > sensitivity)
 
     # Use the detected change point as the dynamic threshold
-    dynamic_threshold = distances[change_index +
-                                  1] if change_index < len(distances) - 1 else distances[-1]
+    dynamic_threshold = (
+        distances[change_index + 1]
+        if change_index < len(distances) - 1
+        else distances[-1]
+    )
 
     labels = [str(dist <= dynamic_threshold).upper() for dist in distances]
 
     expand_distance = []
     for i in range(len(labels)):
-        if labels[i] == 'TRUE':
+        if labels[i] == "TRUE":
             expand_distance.append((i, distances[i]))
 
     ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
@@ -180,13 +183,22 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
 
 
 def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
+    with open(path_to_csv, "r") as csv_file:
+        csv_reader = reader(csv_file, delimiter=",")
         csv_header = next(csv_reader)
 
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
+        if csv_header != [
+            "title",
+            "company",
+            "location",
+            "description",
+            "link",
+            "want to get",
+            "ranking",
+        ]:
             raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
+                "csv file should contain title, company, location, description, link (order matters)"
+            )
 
         true_labels = []
         job_summaries = []
@@ -195,7 +207,7 @@ def add_points_to_datbase(path_to_csv):
 
         # Populate the semaDB (we do not need to create the sqlite)
         for row in csv_reader:
-            if row[5] == 'TRUE':
+            if row[5] == "TRUE":
                 true_ranking.append((i, row[6]))
             true_labels.append(row[5])  # true or false
 
@@ -209,8 +221,7 @@ def add_points_to_datbase(path_to_csv):
 
     job_embeddings = bulk_create_embeddings(job_summaries)
 
-    true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
+    true_ranking = [idx for idx, _ in sorted(true_ranking, key=lambda x: int(x[1]))]
 
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
@@ -226,14 +237,17 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
     change_index = np.argmax(np.abs(np.diff(z_scores)) > sensitivity)
 
     # Use the detected change point as the dynamic threshold
-    dynamic_threshold = distances[change_index +
-                                  1] if change_index < len(distances) - 1 else distances[-1]
+    dynamic_threshold = (
+        distances[change_index + 1]
+        if change_index < len(distances) - 1
+        else distances[-1]
+    )
 
     labels = [str(dist <= dynamic_threshold).upper() for dist in distances]
 
     expand_distance = []
     for i in range(len(labels)):
-        if labels[i] == 'TRUE':
+        if labels[i] == "TRUE":
             expand_distance.append((i, distances[i]))
 
     ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
@@ -241,13 +255,22 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
 
 
 def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
+    with open(path_to_csv, "r") as csv_file:
+        csv_reader = reader(csv_file, delimiter=",")
         csv_header = next(csv_reader)
 
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
+        if csv_header != [
+            "title",
+            "company",
+            "location",
+            "description",
+            "link",
+            "want to get",
+            "ranking",
+        ]:
             raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
+                "csv file should contain title, company, location, description, link (order matters)"
+            )
 
         true_labels = []
         job_summaries = []
@@ -256,7 +279,7 @@ def add_points_to_datbase(path_to_csv):
 
         # Populate the semaDB (we do not need to create the sqlite)
         for row in csv_reader:
-            if row[5] == 'TRUE':
+            if row[5] == "TRUE":
                 true_ranking.append((i, row[6]))
             true_labels.append(row[5])  # true or false
 
@@ -270,20 +293,28 @@ def add_points_to_datbase(path_to_csv):
 
     job_embeddings = bulk_create_embeddings(job_summaries)
 
-    true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
+    true_ranking = [idx for idx, _ in sorted(true_ranking, key=lambda x: int(x[1]))]
 
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
 
 def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
+    with open(path_to_csv, "r") as csv_file:
+        csv_reader = reader(csv_file, delimiter=",")
         csv_header = next(csv_reader)
 
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
+        if csv_header != [
+            "title",
+            "company",
+            "location",
+            "description",
+            "link",
+            "want to get",
+            "ranking",
+        ]:
             raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
+                "csv file should contain title, company, location, description, link (order matters)"
+            )
 
         true_labels = []
         job_summaries = []
@@ -292,7 +323,7 @@ def add_points_to_datbase(path_to_csv):
 
         # Populate the semaDB (we do not need to create the sqlite)
         for row in csv_reader:
-            if row[5] == 'TRUE':
+            if row[5] == "TRUE":
                 true_ranking.append((i, row[6]))
             true_labels.append(row[5])  # true or false
 
@@ -306,8 +337,7 @@ def add_points_to_datbase(path_to_csv):
 
     job_embeddings = bulk_create_embeddings(job_summaries)
 
-    true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
+    true_ranking = [idx for idx, _ in sorted(true_ranking, key=lambda x: int(x[1]))]
 
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
@@ -324,13 +354,16 @@ def evaluate(path_to_csv, query):
 
     # Process the csv and extract the jobs and qualifications
     true_labels, true_ranking, job_summaries, job_embeddings = add_points_to_datbase(
-        path_to_csv)
+        path_to_csv
+    )
 
     # Process query into embeddings
     request_embedding = create_embedding(query)
 
-    distances = [cosine_dist(request_embedding, entry_embedding)
-                 for entry_embedding in job_embeddings]  # in order
+    distances = [
+        cosine_dist(request_embedding, entry_embedding)
+        for entry_embedding in job_embeddings
+    ]  # in order
 
     predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
 
@@ -340,8 +373,7 @@ def evaluate(path_to_csv, query):
     labels = ["TRUE", "FALSE"]
 
     # Create a confusion matrix based on the labels
-    conf_matrix = confusion_matrix(
-        true_labels, predicted_labels, labels)
+    conf_matrix = confusion_matrix(true_labels, predicted_labels, labels)
 
     # Caluclate the measures and print them out
     accuracy = calculate_accuracy(conf_matrix)  # aka hit rate
@@ -349,8 +381,7 @@ def evaluate(path_to_csv, query):
     recalls = calculate_recalls(conf_matrix)
     f1 = calculate_f1_measures(conf_matrix)
 
-    top_n_accuracy = calculate_top_n_accuracy(
-        true_ranking, predicted_ranking, 10)
+    top_n_accuracy = calculate_top_n_accuracy(true_ranking, predicted_ranking, 10)
 
     print()
     print(f"Accuracy : {accuracy}")
@@ -368,12 +399,9 @@ In my day-to-day role, I want to teach a variety of STEM subjects (math, science
 Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
 """
 
+
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
-    """Wrapper function to evaluate the model
-    """
-
-
-
+    """Wrapper function to evaluate the model"""
 
 
 def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
@@ -383,17 +411,16 @@ def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
 
 
 def evaluate_q3(paths_to_csv, queryA, queryB, queryC):
-
     ...
 
 
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
-    """Wrapper function to evaluate the model
-    """
+    """Wrapper function to evaluate the model"""
     ...
 
-    with open(path_to_csv, 'r') as csv_file:
+    with open(path_to_csv, "r") as csv_file:
         ...
+
 
 if __name__ == "__main__":
     queryA = """

@@ -10,7 +10,7 @@ import json
 # ====== CSV integration =======
 
 
-def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False):
+def csv_into_database(collection, path_to_file, csv_delimiter=",", use_api=False):
     """Add the csv file into the sqlite and semadb database.
     WILL DELETE THE CSV FILE (to prevent duplication in database, do not push the same entries few times)
 
@@ -26,15 +26,16 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
 
     if use_api:
-        url = 'http://127.0.0.1:5000/summariser'
+        url = "http://127.0.0.1:5000/summariser"
 
-    with open(path_to_file, 'r') as csv_file:
+    with open(path_to_file, "r") as csv_file:
         csv_reader = reader(csv_file, delimiter=csv_delimiter)
         csv_header = next(csv_reader)
 
         if csv_header != ["title", "company", "location", "description", "link"]:
             raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
+                "csv file should contain title, company, location, description, link (order matters)"
+            )
 
         job_ids = []
         job_embeddings = []
@@ -45,19 +46,19 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
 
             if len(job_info) > MIN_LEN:
                 if use_api:
-                    data = {'text': job_info}
+                    data = {"text": job_info}
                     json_data = json.dumps(data)
-                    headers = {'Content-Type': 'application/json'}
-                    response = requests.post(
-                        url, data=json_data, headers=headers)
+                    headers = {"Content-Type": "application/json"}
+                    response = requests.post(url, data=json_data, headers=headers)
 
                     if response.status_code == 200:
-                        job_summary = response.json()['summary']
-                        job_embedding = response.json()['embedding']
+                        job_summary = response.json()["summary"]
+                        job_embedding = response.json()["embedding"]
                         job_embeddings.append(job_embedding)
                     else:
                         raise Exception(
-                            f"Error: {response.status_code}, {response.json()}")
+                            f"Error: {response.status_code}, {response.json()}"
+                        )
                 else:
                     job_summary = create_summary(job_summary)
 
@@ -66,7 +67,6 @@ def csv_into_database(collection, path_to_file, csv_delimiter=',', use_api=False
             # Assuming that header goes as {title, company, location, description}
             job_id = create_job_listing(connection, *tuple(row + [job_summary]))
             job_ids.append(job_id)
-
 
     connection.close()
 

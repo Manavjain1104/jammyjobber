@@ -16,7 +16,7 @@
 #     return embedder.encode(summary)
 
 # if __name__ == "__main__":
-#     ARTICLE = """ 
+#     ARTICLE = """
 # Hugging Face: Revolutionizing Natural Language Processing
 # Introduction
 # In the rapidly evolving field of Natural Language Processing (NLP), Hugging Face has emerged as a prominent and innovative force. This article will explore the story and significance of Hugging Face, a company that has made remarkable contributions to NLP and AI as a whole. From its inception to its role in democratizing AI, Hugging Face has left an indelible mark on the industry.
@@ -42,5 +42,3 @@
 #     embedding = create_embedding(summary)
 #     print(summary)
 #     print(embedding)
-
-

@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 
 
 class SqliteTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.connection = sqlite3.connect(":memory:", check_same_thread=False)
@@ -22,18 +21,38 @@ class SqliteTestCase(unittest.TestCase):
 
     def test_create_job_listing(self):
         job_id = create_job_listing(
-            self.connection, "Test Job", "Test Company", "Test Location", "Test Description", "Test Link")
+            self.connection,
+            "Test Job",
+            "Test Company",
+            "Test Location",
+            "Test Description",
+            "Test Link",
+        )
         self.assertIsNotNone(job_id)
-        job = find_job(self.connection, {'id': job_id})
+        job = find_job(self.connection, {"id": job_id})
         self.assertEqual(len(job), 1)
 
     def test_create_same_job_listing(self):
         job_id = create_job_listing(
-            self.connection, "Test Job", "Test Company", "Test Location", "Test Description", "Test Link", True)
+            self.connection,
+            "Test Job",
+            "Test Company",
+            "Test Location",
+            "Test Description",
+            "Test Link",
+            True,
+        )
         self.assertNotEqual(job_id, -1)
 
         job_id = create_job_listing(
-            self.connection, "Test Job", "Test Company", "Test Location", "Test Description", "Test Link", True)
+            self.connection,
+            "Test Job",
+            "Test Company",
+            "Test Location",
+            "Test Description",
+            "Test Link",
+            True,
+        )
         self.assertEqual(job_id, -1)
 
     def test_read_empty_job_listing(self):
@@ -47,28 +66,50 @@ class SqliteTestCase(unittest.TestCase):
 
     def test_update_job_listing(self):
         job_id = create_job_listing(
-            self.connection, "Test Job", "Test Company", "Test Location", "Test Description", "Test Link")
+            self.connection,
+            "Test Job",
+            "Test Company",
+            "Test Location",
+            "Test Description",
+            "Test Link",
+        )
 
         update_job_listing(
-            self.connection, job_id, "Test Job1", "Test Company2", "Test Location3", "Test Description4", "Test Link")
+            self.connection,
+            job_id,
+            "Test Job1",
+            "Test Company2",
+            "Test Location3",
+            "Test Description4",
+            "Test Link",
+        )
 
-        jobs = find_job(self.connection, {'id': job_id})
-        self.assertEqual(jobs, [(job_id, "Test Job1", "Test Company2",
-                         "Test Location3", "Test Description4", "Test Link")])
+        jobs = find_job(self.connection, {"id": job_id})
+        self.assertEqual(
+            jobs,
+            [
+                (
+                    job_id,
+                    "Test Job1",
+                    "Test Company2",
+                    "Test Location3",
+                    "Test Description4",
+                    "Test Link",
+                )
+            ],
+        )
 
     def test_find_job(self):
         create_job_listing(self.connection, "A", "B", "C", "D", "Test Link")
         create_job_listing(self.connection, "A", "E", "F", "J", "Test Link")
         create_job_listing(self.connection, "B", "E", "F", "J", "Test Link")
 
-        jobs = find_job(self.connection, {'title': "A"})
+        jobs = find_job(self.connection, {"title": "A"})
         self.assertEqual(len(jobs), 2)
 
     def test_delete_job_listing(self):
-        a = create_job_listing(self.connection, "A",
-                               "B", "C", "D", "Test Link")
-        b = create_job_listing(self.connection, "A",
-                               "E", "F", "J", "Test Link")
+        a = create_job_listing(self.connection, "A", "B", "C", "D", "Test Link")
+        b = create_job_listing(self.connection, "A", "E", "F", "J", "Test Link")
 
         self.assertEqual(len(read_job_listings(self.connection)), 2)
         delete_job_listing(self.connection, a)
@@ -82,8 +123,7 @@ class SqliteTestCase(unittest.TestCase):
         self.assertEqual(len(read_job_listings(self.connection)), 0)
 
     def test_reset_table(self):
-        a = create_job_listing(self.connection, "A",
-                               "B", "C", "D", "Test Link")
+        a = create_job_listing(self.connection, "A", "B", "C", "D", "Test Link")
 
         jobs = read_job_listings(self.connection)
         self.assertNotEqual(len(jobs), 0)
@@ -94,5 +134,5 @@ class SqliteTestCase(unittest.TestCase):
         self.assertEqual(len(jobs), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

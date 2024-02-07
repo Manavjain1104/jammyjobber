@@ -2,28 +2,26 @@ import unittest
 from evaluation.evaluation import *
 
 
-conf_matrix = np.array([
-     [18, 1, 0, 0, 1, 0],
-     [2, 15, 3, 0, 0, 0],
-     [0, 2, 20, 1, 1, 1],
-     [0, 0, 2, 22, 1, 0],
-     [1, 0, 0, 2, 17, 0],
-     [0, 0, 0, 1, 0, 19]
-])
+conf_matrix = np.array(
+    [
+        [18, 1, 0, 0, 1, 0],
+        [2, 15, 3, 0, 0, 0],
+        [0, 2, 20, 1, 1, 1],
+        [0, 0, 2, 22, 1, 0],
+        [1, 0, 0, 2, 17, 0],
+        [0, 0, 0, 1, 0, 19],
+    ]
+)
 
 
 class TestEvaluationFunctions(unittest.TestCase):
-
     def test_confusion_matrix(self):
         true_labels = [1, 2, 3, 4]
         predicted_labels = [1, 2, 4, 4]
         labels = [1, 2, 3, 4]
-        expected_output = np.array([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 0, 1],
-            [0, 0, 0, 1]
-        ])
+        expected_output = np.array(
+            [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1]]
+        )
 
         result = confusion_matrix(true_labels, predicted_labels, labels)
         np.testing.assert_array_equal(result, expected_output)
@@ -38,8 +36,8 @@ class TestEvaluationFunctions(unittest.TestCase):
 
     def test_top_n_accuracy(self):
         # Example data
-        desired_jobs = ['job1', 'job2', 'job3', 'job4', 'job5']
-        recommended_jobs = ['job1', 'job2', 'job4', 'job5', 'job6', 'job7', 'job8']
+        desired_jobs = ["job1", "job2", "job3", "job4", "job5"]
+        recommended_jobs = ["job1", "job2", "job4", "job5", "job6", "job7", "job8"]
         n = 4
 
         expected_output = 0.75
@@ -47,8 +45,17 @@ class TestEvaluationFunctions(unittest.TestCase):
         self.assertEqual(result, expected_output)
 
     def test_hit_rate(self):
-        desired_jobs = ['job1', 'job2', 'job3', 'job4', 'job5']
-        recommended_jobs = ['job1', 'job2', 'job4', 'job5', 'job6', 'job7', 'job8', 'job10']
+        desired_jobs = ["job1", "job2", "job3", "job4", "job5"]
+        recommended_jobs = [
+            "job1",
+            "job2",
+            "job4",
+            "job5",
+            "job6",
+            "job7",
+            "job8",
+            "job10",
+        ]
 
         expected_output = 0.5
         result = calculate_hit_rate(desired_jobs, recommended_jobs)

@@ -35,7 +35,7 @@
                     <label for="id_pdf">Add CV to Database</label>
                     <input type="file" name="pdf" required id="id_pdf">
                 <div class="submit-button-section">
-                    <button class="submit-button" type="submit"> Upload </button>
+                    <button class="submit-button" type="submit"> Update </button>
                 </div>
                 </form>
             {% endif %}
@@ -49,6 +49,7 @@
                 <a href=" {{ job.link }} "><h3>{{ job.title }}</h3></a>
                 <p>{{ job.company }} @ {{ job.location }}</p>
                 <button class="expand-btn" onclick="toggleDescription(this, '{{ job.job_id }}')">Show Description</button>
+                <button type="button" class="expand-btn" name="id" value = '{{ job.job_id }}' ><a href="/?id={{ job.job_id }}">Show Similar</a></button>
                 <div id="description-{{ job.job_id }}" class="job-description">
                     <p>{{ job.description }}</p>
                 </div>

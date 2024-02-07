@@ -30,15 +30,17 @@ def extract_job_link(job_elem):
 def extract_job_description(job_elem):
     description_link = extract_job_link(job_elem)
     description_text = requests.get(description_link).text
-    description_soup = BeautifulSoup(description_text, 'lxml')
+    description_soup = BeautifulSoup(description_text, "lxml")
     description = description_soup.find("div", itemprop="description")
     return description.get_text(strip=False)
 
 
 def print_to_csv(data, file_name, max_entries=None):
-    table = pd.DataFrame(data, columns=["title", "company", "location", "description", "link"])
+    table = pd.DataFrame(
+        data, columns=["title", "company", "location", "description", "link"]
+    )
     if type(max_entries) == int and max_entries < len(table):
-        table = table[: max_entries]
+        table = table[:max_entries]
     os.makedirs(OUTPUT_PATH, exist_ok=True)
     table.to_csv(OUTPUT_PATH / (file_name + ".csv"), index=False, encoding="utf-8")
 
@@ -49,7 +51,7 @@ def get_jobs_for_url(url, data, min_results):
     Finds at least min_results number of jobs (if available)
     """
     html_text = requests.get(url).text
-    soup = BeautifulSoup(html_text, 'lxml')
+    soup = BeautifulSoup(html_text, "lxml")
     jobs = soup.find_all("div", class_="search-result")
 
     # Store required characteristics of the job postings to the data object
@@ -60,15 +62,15 @@ def get_jobs_for_url(url, data, min_results):
         description = extract_job_description(job)
         link = extract_job_link(job)
 
-        data['title'].append(title)
-        data['company'].append(company)
-        data['location'].append(location)
-        data['description'].append(description)
-        data['link'].append(link)
+        data["title"].append(title)
+        data["company"].append(company)
+        data["location"].append(location)
+        data["description"].append(description)
+        data["link"].append(link)
 
     # Continue search onto next page if more jobs are needed
     next_page_elem = soup.find("a", class_="govuk-link pager-next")
-    while (next_page_elem is not None) and (len(data['title']) < min_results):
+    while (next_page_elem is not None) and (len(data["title"]) < min_results):
         next_page_url = next_page_elem.attrs["href"]
         get_jobs_for_url(next_page_url, data, min_results)
 
@@ -79,21 +81,15 @@ def extract(url, file_name, min_results, max_results=None):
     """
 
     # Data ~= Format for the extracted data. Stores the list of information per column
-    data = {
-        'title': [],
-        'company': [],
-        'location': [],
-        'description': [],
-        'link': []
-    }
+    data = {"title": [], "company": [], "location": [], "description": [], "link": []}
     get_jobs_for_url(url, data, min_results)
-    print("No. of jobs found: " + str(len(data['title'])))
+    print("No. of jobs found: " + str(len(data["title"])))
     print_to_csv(data, file_name, max_results)
 
 
 if __name__ == "__main__":
     """
-    Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv 
+    Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv
     file and min no. of jobs needed, to the EXTRACT function
     """
     nurse_url = "https://findajob.dwp.gov.uk/search?adv=1&qwd=environment%20sustainability&qor=climate%20change%20leader%20green%20initiatives%20sustainability%20roles%20environmental%20impact&sb=relevance&sd=down"
@@ -106,7 +102,12 @@ if __name__ == "__main__":
     extract(url=accountant_url, file_name="accountant", min_results=10, max_results=10)
 
     sustainability_url = "https://findajob.dwp.gov.uk/search?q=sustainability&w=UK"
-    extract(url=sustainability_url, file_name="sustainability", min_results=10, max_results=10)
+    extract(
+        url=sustainability_url,
+        file_name="sustainability",
+        min_results=10,
+        max_results=10,
+    )
 
     biologist_url = "https://findajob.dwp.gov.uk/search?q=biologist&w=UK"
     extract(url=biologist_url, file_name="biologist", min_results=10, max_results=10)
