@@ -389,6 +389,10 @@ def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
                 true_ranking.append((i, row[6]))
             true_labels.append(row[5])  # true or false
 
+            # handle keyword value
+            if int(row[7]) > 0:
+                keywords.append((i, row[7]))
+
             # Assuming that header start as {title, company, location, description}
             job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
 
@@ -402,7 +406,12 @@ def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
     true_ranking = [idx for idx, _ in sorted(
         true_ranking, key=lambda x: int(x[1]))]
 
-    return (true_labels, true_ranking, job_summaries, job_embeddings)
+    keywords = [idx for idx, _ in sorted(
+        keywords, key=lambda x: int(x[1]))]
+
+    if keywords:
+        return true_labels, true_ranking, keywords, job_summaries, job_embeddings
+    return true_labels, true_ranking, job_summaries, job_embeddings
 
         
 

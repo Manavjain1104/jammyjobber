@@ -17,6 +17,7 @@ FACEBOOk_MODEL = 'facebook/bart-large-cnn'
 EMBEDDER = 'sentence-transformers/all-MiniLM-L12-v2'
 SUMMARISER = 'Falconsai/text_summarization'
 
+
 class Model(Enum):
     SUMMARISER = 1
     EXTRACTOR_REQUEST = 2
@@ -24,12 +25,13 @@ class Model(Enum):
     FACEBOOK_SUMMARISER = 4
     NONE = 5
 
+
 def process_data(text, model):
     if model == Model.SUMMARISER:
         embedding = create_embedding(create_summary(text))
         return embedding
     elif model == Model.EXTRACTOR_DESCRIPTION:
-        #768 vector model
+        # 768 vector model
         return create_embedding(get_job_details(text)) + create_embedding(get_skills_required(text))
     elif model == Model.EXTRACTOR_REQUEST:
         return create_embedding(get_suggested_job(text)) + create_embedding(get_candidate_skills(text))
@@ -39,11 +41,14 @@ def process_data(text, model):
         return create_embedding(text)
     else:
         raise Exception("Unknown model")
+
+
 ANSWERER_MODEL = 'deepset/roberta-base-squad2'
 FACEBOOk_MODEL = 'facebook/bart-large-cnn'
 EMBEDDER = 'sentence-transformers/all-MiniLM-L12-v2'
 SUMMARISER = 'Falconsai/text_summarization'
 
+
 class Model(Enum):
     SUMMARISER = 1
     EXTRACTOR_REQUEST = 2
@@ -51,12 +56,13 @@ class Model(Enum):
     FACEBOOK_SUMMARISER = 4
     NONE = 5
 
+
 def process_data(text, model):
     if model == Model.SUMMARISER:
         embedding = create_embedding(create_summary(text))
         return embedding
     elif model == Model.EXTRACTOR_DESCRIPTION:
-        #768 vector model
+        # 768 vector model
         return create_embedding(get_job_details(text)) + create_embedding(get_skills_required(text))
     elif model == Model.EXTRACTOR_REQUEST:
         return create_embedding(get_suggested_job(text)) + create_embedding(get_candidate_skills(text))
@@ -66,6 +72,7 @@ def process_data(text, model):
         return create_embedding(text)
     else:
         raise Exception("Unknown model")
+
 
 # Do locql summary and embedding
 DEV_LOCAL = True
@@ -130,6 +137,7 @@ def get_job_details(description):
     else:
         raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
+
 def get_candidate_skills(request):
     json_single_data = json.dumps(request)
     summary_response = requests.post(ADDRESS + "get_candidate_skills", data=json_single_data, headers=HEADERS)
@@ -138,7 +146,6 @@ def get_candidate_skills(request):
         return summary
     else:
         raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
-
 
 
 def get_suggested_job(request):
@@ -151,12 +158,11 @@ def get_suggested_job(request):
         raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
-
 def create_embedding(description):
     if DEV_LOCAL:
         embedding = embedder.encode([description])
         embedding_normalised = embedding / \
-            np.linalg.norm(embedding, axis=1, keepdims=True)
+                               np.linalg.norm(embedding, axis=1, keepdims=True)
         return embedding_normalised[0].tolist()
 
     json_single_data = json.dumps(description)
@@ -175,7 +181,7 @@ def bulk_create_embeddings(descriptions):
     if DEV_LOCAL:
         embeddings = embedder.encode(descriptions)
         embeddings_normalised = embeddings / \
-            np.linalg.norm(embeddings, axis=1, keepdims=True)
+                                np.linalg.norm(embeddings, axis=1, keepdims=True)
         return list(map(lambda e: e.tolist(), embeddings_normalised))
 
     json_many_data = json.dumps(descriptions)
