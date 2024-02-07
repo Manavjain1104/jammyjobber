@@ -310,13 +310,13 @@ def wrapper_evaluate_model(model, query, paths_to_csv, noisy=False):
     accuracy, precisions, recalls, f1, top_n_accuracy = evaluate(
         paths_to_csv, query, model, noisy)
 
-    # print(f"Accuracy : {accuracy}")
-    # print(f'{"Percisions per class":22}: {precisions}')
-    # print(f'{"Recalls per class":22}: {recalls}')
-    # print(f'{"F1-measures per class":22}: {f1}')
-    # print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
+    print(f"Accuracy : {accuracy}")
+    print(f'{"Percisions per class":22}: {precisions}')
+    print(f'{"Recalls per class":22}: {recalls}')
+    print(f'{"F1-measures per class":22}: {f1}')
+    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
 
-    # return add_points_to_datbase(paths_to_csv)
+    return add_points_to_datbase(paths_to_csv)
 
 
 if __name__ == "__main__":
@@ -351,24 +351,24 @@ if __name__ == "__main__":
     for model in models:
         print(f"========== MODEL {model} ==========\n\n")
 
-        print("\n========== METRIC 1 ==========")
-        print("3qs with signal".center(30))
-        evaluate_many([[path_to_signalA], [path_to_signalB],
-                       [path_to_signalC]], [queryA, queryB, queryC], model)
-
-        print("\n========== METRIC 2 ==========")
-        print("3qs with noise".center(30))
-        evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
-                      queryA, queryB, queryC], model, True)
+        # print("\n========== METRIC 1 ==========")
+        # print("3qs with signal".center(30))
+        # evaluate_many([[path_to_signalA], [path_to_signalB],
+        #                [path_to_signalC]], [queryA, queryB, queryC], model)
+        #
+        # print("\n========== METRIC 2 ==========")
+        # print("3qs with noise".center(30))
+        # evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
+        #               queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 3 ==========")
         print("3qs with mixed".center(30))
         evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
                      path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
 
-        print("\n========== METRIC 4 ==========")
-        print("extended q with signal".center(30))
-        path_to_csv = "evaluation/teacher_ben.csv"
+        # print("\n========== METRIC 4 ==========")
+        # print("extended q with signal".center(30))
+        # path_to_csv = "evaluation/teacher_ben.csv"
 
         # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
         # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
