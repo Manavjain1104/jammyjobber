@@ -163,9 +163,11 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
             true_ranking = []
             keywords = []
 
+            keyword_idx = 7 if not noisy else 6
+
             # Populate the semaDB (we do not need to create the sqlite)
             for row in csv_reader:
-                if row[5] == 'TRUE':
+                if row[5] == 'TRUE' and not noisy:
                     true_ranking.append((i, row[6]))
                 true_labels.append(row[5])  # true or false
 
@@ -322,7 +324,7 @@ if __name__ == "__main__":
         print("3qs with mixed".center(30))
         # TODO: CHANGE HERE
         evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
-                      path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model)
+                      path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 4 ==========")
         print("extended q with signal".center(30))
