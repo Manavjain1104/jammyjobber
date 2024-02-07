@@ -311,7 +311,6 @@ def wrapper_evaluate_model(model, query, paths_to_csv, noisy=False):
         print(f'{"Recalls per class":22}: {recalls}')
         print(f'{"F1-measures per class":22}: {f1}')
         print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
-        print(f'{"Error":22}: {errors}')
 
     return accuracy, precisions, recalls, f1, top_n_accuracy
 
