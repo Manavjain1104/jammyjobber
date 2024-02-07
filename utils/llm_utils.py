@@ -4,9 +4,10 @@ import json
 from enum import Enum
 from huggingface_hub import InferenceClient
 import numpy as np
-from enum import Enum
-from huggingface_hub import InferenceClient
-import numpy as np
+from dotenv import load_dotenv
+
+# Get variables from the environment
+load_dotenv()
 
 ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
 TOKEN = os.getenv('INFERENCE_API_TOKEN')
@@ -53,7 +54,7 @@ SUMMARISER = 'Falconsai/text_summarization'
 
 
 # Do locql summary and embedding
-DEV_LOCAL = True
+DEV_LOCAL = False
 
 if DEV_LOCAL:
     from transformers import pipeline

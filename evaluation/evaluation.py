@@ -144,6 +144,14 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
 
 def add_points_to_datbase(paths_to_csv, noisy=False):
     i = 0
+
+    true_labels = []
+    job_summaries = []
+    true_ranking = []
+    keywords = []
+    keyword_labels = []
+    job_embeddings = []
+
     for path_to_csv in paths_to_csv:
         with open(path_to_csv, 'r') as csv_file:
             csv_reader = reader(csv_file, delimiter=',')
@@ -157,12 +165,6 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
             if not noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'rank', 'keyword']:
                 raise Exception(
                     "csv file should contain title, company, location, description, link, relevant, rank, keyword (order matters)")
-
-            true_labels = []
-            job_summaries = []
-            true_ranking = []
-            keywords = []
-            keyword_labels = []
 
             keyword_idx = 7 if not noisy else 6
 
@@ -186,9 +188,9 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
                 if len(job_summary) > MIN_LEN:
                     job_summary = create_summary(job_summary)
                 job_summaries.append(job_summary)
-                i += 1
 
-    job_embeddings = bulk_create_embeddings(job_summaries)
+                job_embeddings.append(process_data(job_summary, model))
+                i += 1
 
     true_ranking = [idx for idx, _ in sorted(
         true_ranking, key=lambda x: int(x[1]))]
@@ -326,20 +328,21 @@ if __name__ == "__main__":
     path_to_noiseB = "evaluation/noise_sustainability.csv"
     path_to_noiseC = "evaluation/noise_biologist.csv"
 
-    models = [Model.SUMMARISER, Model.EXTRACTOR_DESCRIPTION,
+    # Model.SUMMARISER,
+    models = [Model.EXTRACTOR_DESCRIPTION,
               Model.NONE, Model.KEYWORD]
     for model in models:
         print(f"========== MODEL {model} ==========\n\n")
 
         print("\n========== METRIC 1 ==========")
         print("3qs with signal".center(30))
-        # evaluate_many([[path_to_signalA], [path_to_signalB],
-        #               [path_to_signalC]], [queryA, queryB, queryC], model)
+        evaluate_many([[path_to_signalA], [path_to_signalB],
+                       [path_to_signalC]], [queryA, queryB, queryC], model)
 
         print("\n========== METRIC 2 ==========")
-        # print("3qs with noise".center(30))
-        # evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
-        #              queryA, queryB, queryC], model, True)
+        print("3qs with noise".center(30))
+        evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
+                      queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 3 ==========")
         print("3qs with mixed".center(30))
@@ -349,19 +352,19 @@ if __name__ == "__main__":
 
         print("\n========== METRIC 4 ==========")
         print("extended q with signal".center(30))
-        path_to_csv = "evaluation/teacher_ben.csv"
+        # path_to_csv = "evaluation/teacher_ben.csv"
 
         # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
         # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
         # Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
         # """
-        query = """
-        I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16. 
-        In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare. 
-        Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
-        I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects. 
-        I am personable and adept at handling workplace conflicts.
-        Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution. 
-        A reasonably good pay scale would be a welcome addition to the overall package.
-        """
-        wrapper_evaluate_model(model, query, path_to_csv)
+        # query = """
+        # I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
+        # In my day-to-day role, I want to teach a variety of STEM subjects (math, science, computing), attend every weekday, participate in lunch duty, and be involved in monitoring the general community behavior and welfare.
+        # Additionally, I aim to have time for lesson planning, marking work, and personal time in the evening.
+        # I bring to the table experience working with early teenagers, a strong background in math and computer programming, and a six-year focus on STEM subjects.
+        # I am personable and adept at handling workplace conflicts.
+        # Ideally, I am looking for a school close to public transport, with positive reviews, possibly an Ofsted-rated institution.
+        # A reasonably good pay scale would be a welcome addition to the overall package.
+        # """
+        # wrapper_evaluate_model(model, query, [path_to_csv])
