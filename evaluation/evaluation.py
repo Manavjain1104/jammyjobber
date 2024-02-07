@@ -236,7 +236,7 @@ def evaluate_many(paths_to_csv, query_lst, model):
         raise Exception("Number of elements of both should be the same")
 
     for i in range(len(query_lst)):
-        evaluate(paths_to_csv[i], query_lst, model)
+        wrapper_evaluate_model(model, query_lst, paths_to_csv[i])
 
 
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
