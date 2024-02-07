@@ -37,7 +37,7 @@
   publicDeploy:
     stage: publicDeploy    # deploy to heroku
     script:
-      - dpl --provider=heroku --app=jammy-jobber --api-key=d9b9ae82-676d-4f77-8e44-a2825b126b9f
+      - dpl --provider=heroku --app=jammy-jobber --api-key=6102191c-0cac-4ca7-8348-21098038e5e9
     rules:
       - if: $CI_COMMIT_BRANCH == "master"
 
