@@ -11,7 +11,7 @@
     image: ubuntu:latest
     before_script:
       - apt install -y python3-pip
-      - apt autoremove
+      - apt autoremove -y
       - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
       - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
       - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
