@@ -2,7 +2,7 @@ from csv import reader
 import numpy as np
 from numpy.linalg import norm
 from numpy.linalg import norm
-from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings
+from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings, process_data
 
 
 # ------- HELPER --------
@@ -235,6 +235,7 @@ def add_points_to_datbase(path_to_csv):
         true_labels = []
         job_summaries = []
         true_ranking = []
+
         i = 0
 
         # Populate the semaDB (we do not need to create the sqlite)
@@ -295,7 +296,7 @@ def add_points_to_datbase(path_to_csv):
     return (true_labels, true_ranking, job_summaries, job_embeddings)
 
 
-def evaluate(path_to_csv, query):
+def evaluate(path_to_csv, query, model):
     """Evaluates the decision tree against the testing data,
     prints the overall accuracy, and the percision, recalls,
     and f1 measures per class
@@ -310,7 +311,7 @@ def evaluate(path_to_csv, query):
         path_to_csv)
 
     # Process query into embeddings
-    request_embedding = create_embedding(query)
+    request_embedding = process_data(query, model)
 
     distances = [cosine_dist(request_embedding, entry_embedding)
                  for entry_embedding in job_embeddings]  # in order
@@ -352,16 +353,58 @@ def evaluate_many(paths_to_csv, query_lst):
 
     for i in range(len(query_lst)):
         evaluate(paths_to_csv[i], query_lst)
-        ...
+
+    
 
 
 def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
     """Wrapper function to evaluate the model
     """
-    ...
+    accuracy, precisions, recalls, f1, top_n_accuracy = evaluate(
+        path_to_csv, query, model)
+    
+    print(f"Accuracy : {accuracy}")
+    print(f'{"Percisions per class":22}: {precisions}')
+    print(f'{"Recalls per class":22}: {recalls}')
+    print(f'{"F1-measures per class":22}: {f1}')
+    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
 
     with open(path_to_csv, 'r') as csv_file:
-        ...
+        csv_reader = reader(csv_file, delimiter=',')
+        csv_header = next(csv_reader)
+
+        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking', 'keyword']:
+            raise Exception(
+                "csv file should contain title, company, location, description, link, want to get, ranking, keyword (order matters)")
+
+        true_labels = []
+        job_summaries = []
+        true_ranking = []
+        keywords = []
+        i = 0
+
+        # Populate the semaDB (we do not need to create the sqlite)
+        for row in csv_reader:
+            if row[5] == 'TRUE':
+                true_ranking.append((i, row[6]))
+            true_labels.append(row[5])  # true or false
+
+            # Assuming that header start as {title, company, location, description}
+            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
+
+            if len(job_summary) > MIN_LEN:
+                job_summary = create_summary(job_summary)
+            job_summaries.append(job_summary)
+            i += 1
+
+    job_embeddings = bulk_create_embeddings(job_summaries)
+
+    true_ranking = [idx for idx, _ in sorted(
+        true_ranking, key=lambda x: int(x[1]))]
+
+    return (true_labels, true_ranking, job_summaries, job_embeddings)
+
+        
 
 
 if __name__ == "__main__":
