@@ -110,6 +110,9 @@ def calculate_f1_measures(conf_matrix):
     recalls = calculate_recalls(conf_matrix)
     f1_measures = []
     for precision, recall in zip(precisions, recalls):
+        if (precision + recall) == 0:
+            print('DIV ZERO')
+            return 0
         f1 = 2 * (precision * recall) / (precision + recall)
         f1_measures.append(f1)
     return f1_measures
@@ -193,10 +196,10 @@ def add_points_to_datbase(paths_to_csv, noisy=False):
                 i += 1
 
     true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
+        true_ranking, key=lambda x: -int(x[1]))]
 
     keyword_ranking = [idx for idx, _ in sorted(
-        keywords, key=lambda x: int(x[1]))]
+        keywords, key=lambda x: -int(x[1]))]
 
     return true_labels, true_ranking, keyword_labels, keyword_ranking, job_summaries, job_embeddings
 
