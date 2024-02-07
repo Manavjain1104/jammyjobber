@@ -1,8 +1,7 @@
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
-from numpy.linalg import norm
-from utils.llm_utils import create_summary, create_embedding, bulk_create_embeddings, process_data
+from utils.llm_utils import create_summary, bulk_create_embeddings, process_data, Model
 
 
 # ------- HELPER --------
@@ -55,36 +54,10 @@ def calculate_error(desired_job, recommended_jobs):
     return acc
 
 
-def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
-    """Calculates the top n accuracy of the recommendations"""
-    top_n_predictions = desired_jobs[:n]
-    correct_predictions = set(
-        top_n_predictions).intersection(set(recommended_jobs[:n]))
-    accuracy = len(correct_predictions) / min(n, len(recommended_jobs[:n]))
-    return accuracy
-
-
 def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
     """Calculates the hit rate of the recommendations"""
     # initial implementation: we have some way of accessing all desired jobs
     # we compute proportion of top n jobs that are actually desired by user
-    hits = 0
-    seen = set()
-
-    # we only have a hit if the job is in the top n recommendations and we haven't seen it before
-    for desired_job in desired_jobs:
-        if desired_job in recommended_jobs and desired_job not in seen:
-            hits += 1
-            seen.add(desired_job)
-
-    return hits / len(recommended_jobs)
-
-
-def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
-    """Calculates the hit rate of the recommendations"""
-    # initial implementation: we have some way of accessing all desired jobs
-    # we compute proportion of top n jobs that are actually desired by user
-
     hits = 0
     seen = set()
 
@@ -159,216 +132,11 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
             expand_distance.append((i, distances[i]))
 
     ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
-    return (labels, ranking)
+    return labels, ranking
 
-
-def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
-        csv_header = next(csv_reader)
-
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
-            raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
-
-        true_labels = []
-        job_summaries = []
-        true_ranking = []
-        i = 0
-
-        # Populate the semaDB (we do not need to create the sqlite)
-        for row in csv_reader:
-            if row[5] == 'TRUE':
-                true_ranking.append((i, row[6]))
-            true_labels.append(row[5])  # true or false
-
-            # Assuming that header start as {title, company, location, description}
-            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
-
-            if len(job_summary) > MIN_LEN:
-                job_summary = create_summary(job_summary)
-            job_summaries.append(job_summary)
-            i += 1
-
-    job_embeddings = bulk_create_embeddings(job_summaries)
-
-    true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
-
-    return (true_labels, true_ranking, job_summaries, job_embeddings)
-
-
-def find_dynamic_cutoff(distances, sensitivity=2.0):
-    mean_distance = np.mean(distances)
-    std_distance = np.std(distances)
-
-    # Detect outliers using the Z-score
-    z_scores = [(dist - mean_distance) / std_distance for dist in distances]
-
-    # Identify the index where a sudden change occurs (assuming a single cluster of distances)
-    change_index = np.argmax(np.abs(np.diff(z_scores)) > sensitivity)
-
-    # Use the detected change point as the dynamic threshold
-    dynamic_threshold = distances[change_index +
-                                  1] if change_index < len(distances) - 1 else distances[-1]
-
-    labels = [str(dist <= dynamic_threshold).upper() for dist in distances]
-
-    expand_distance = []
-    for i in range(len(labels)):
-        if labels[i] == 'TRUE':
-            expand_distance.append((i, distances[i]))
-
-    ranking = [idx for idx, _ in sorted(expand_distance, key=lambda x: x[1])]
-    return (labels, ranking)
 
 
 def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
-        csv_header = next(csv_reader)
-
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
-            raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
-
-        true_labels = []
-        job_summaries = []
-        true_ranking = []
-
-        i = 0
-
-        # Populate the semaDB (we do not need to create the sqlite)
-        for row in csv_reader:
-            if row[5] == 'TRUE':
-                true_ranking.append((i, row[6]))
-            true_labels.append(row[5])  # true or false
-
-            # Assuming that header start as {title, company, location, description}
-            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
-
-            if len(job_summary) > MIN_LEN:
-                job_summary = create_summary(job_summary)
-            job_summaries.append(job_summary)
-            i += 1
-
-    job_embeddings = bulk_create_embeddings(job_summaries)
-
-    true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
-
-    return (true_labels, true_ranking, job_summaries, job_embeddings)
-
-
-def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
-        csv_header = next(csv_reader)
-
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking']:
-            raise Exception(
-                "csv file should contain title, company, location, description, link (order matters)")
-
-        true_labels = []
-        job_summaries = []
-        true_ranking = []
-        i = 0
-
-        # Populate the semaDB (we do not need to create the sqlite)
-        for row in csv_reader:
-            if row[5] == 'TRUE':
-                true_ranking.append((i, row[6]))
-            true_labels.append(row[5])  # true or false
-
-            # Assuming that header start as {title, company, location, description}
-            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
-
-            if len(job_summary) > MIN_LEN:
-                job_summary = create_summary(job_summary)
-            job_summaries.append(job_summary)
-            i += 1
-
-    job_embeddings = bulk_create_embeddings(job_summaries)
-
-    true_ranking = [idx for idx, _ in sorted(
-        true_ranking, key=lambda x: int(x[1]))]
-
-    return (true_labels, true_ranking, job_summaries, job_embeddings)
-
-
-def evaluate(path_to_csv, query, model):
-    """Evaluates the decision tree against the testing data,
-    prints the overall accuracy, and the percision, recalls,
-    and f1 measures per class
-
-    Args:
-        path_to_csv(str): path to the csv file
-    """
-    # In case the information in collection needs to be flushed
-
-    # Process the csv and extract the jobs and qualifications
-    true_labels, true_ranking, job_summaries, job_embeddings = add_points_to_datbase(
-        path_to_csv)
-
-    # Process query into embeddings
-    request_embedding = process_data(query, model)
-
-    distances = [cosine_dist(request_embedding, entry_embedding)
-                 for entry_embedding in job_embeddings]  # in order
-
-    predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
-
-    print(true_ranking)
-    print(predicted_ranking)
-
-    labels = ["TRUE", "FALSE"]
-
-    # Create a confusion matrix based on the labels
-    conf_matrix = confusion_matrix(
-        true_labels, predicted_labels, labels)
-
-    # Caluclate the measures and print them out
-    accuracy = calculate_accuracy(conf_matrix)  # aka hit rate
-    precisions = calculate_precisions(conf_matrix)
-    recalls = calculate_recalls(conf_matrix)
-    f1 = calculate_f1_measures(conf_matrix)
-
-    top_n_accuracy = calculate_top_n_accuracy(
-        true_ranking, predicted_ranking, 10)
-
-    print()
-    print(f"Accuracy : {accuracy}")
-    print(f'{"Percisions per class":22}: {precisions}')
-    print(f'{"Recalls per class":22}: {recalls}')
-    print(f'{"F1-measures per class":22}: {f1}')
-
-    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
-
-    return accuracy, precisions, recalls, f1, top_n_accuracy
-
-
-def evaluate_many(paths_to_csv, query_lst):
-    if len(paths_to_csv) != len(query_lst):
-        raise Exception("Number of elements of both should be the same")
-
-    for i in range(len(query_lst)):
-        evaluate(paths_to_csv[i], query_lst)
-
-    
-
-
-def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
-    """Wrapper function to evaluate the model
-    """
-    accuracy, precisions, recalls, f1, top_n_accuracy = evaluate(
-        path_to_csv, query, model)
-    
-    print(f"Accuracy : {accuracy}")
-    print(f'{"Percisions per class":22}: {precisions}')
-    print(f'{"Recalls per class":22}: {recalls}')
-    print(f'{"F1-measures per class":22}: {f1}')
-    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
-
     with open(path_to_csv, 'r') as csv_file:
         csv_reader = reader(csv_file, delimiter=',')
         csv_header = next(csv_reader)
@@ -409,9 +177,82 @@ def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
     keywords = [idx for idx, _ in sorted(
         keywords, key=lambda x: int(x[1]))]
 
-    if keywords:
-        return true_labels, true_ranking, keywords, job_summaries, job_embeddings
-    return true_labels, true_ranking, job_summaries, job_embeddings
+    return true_labels, true_ranking, keywords, job_summaries, job_embeddings
+
+
+def evaluate(path_to_csv, query, model):
+    """Evaluates the decision tree against the testing data,
+    prints the overall accuracy, and the percision, recalls,
+    and f1 measures per class
+
+    Args:
+        path_to_csv(str): path to the csv file
+    """
+    # In case the information in collection needs to be flushed
+
+    # Process the csv and extract the jobs and qualifications
+    true_labels, true_ranking, keywords, job_summaries, job_embeddings = add_points_to_datbase(
+        path_to_csv)
+
+    # Process query into embeddings
+    request_embedding = process_data(query, model)
+
+    distances = [cosine_dist(request_embedding, entry_embedding)
+                 for entry_embedding in job_embeddings]  # in order
+
+    predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
+
+    print(true_ranking)
+    print(predicted_ranking)
+
+    labels = ["TRUE", "FALSE"]
+
+    # Create a confusion matrix based on the labels
+    conf_matrix = confusion_matrix(
+        true_labels, predicted_labels, labels)
+
+    # Caluclate the measures and print them out
+    accuracy = calculate_accuracy(conf_matrix)  # aka hit rate
+    precisions = calculate_precisions(conf_matrix)
+    recalls = calculate_recalls(conf_matrix)
+    f1 = calculate_f1_measures(conf_matrix)
+
+    top_n_accuracy = calculate_top_n_accuracy(
+        true_ranking, predicted_ranking, 10)
+
+    print()
+    print(f"Accuracy : {accuracy}")
+    print(f'{"Percisions per class":22}: {precisions}')
+    print(f'{"Recalls per class":22}: {recalls}')
+    print(f'{"F1-measures per class":22}: {f1}')
+
+    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
+
+    return accuracy, precisions, recalls, f1, top_n_accuracy
+
+
+def evaluate_many(paths_to_csv, query_lst, model):
+    if len(paths_to_csv) != len(query_lst):
+        raise Exception("Number of elements of both should be the same")
+
+    for i in range(len(query_lst)):
+        evaluate(paths_to_csv[i], query_lst, model)
+
+
+def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
+    """Wrapper function to evaluate the model
+    """
+    accuracy, precisions, recalls, f1, top_n_accuracy = evaluate(
+        path_to_csv, query, model)
+    
+    print(f"Accuracy : {accuracy}")
+    print(f'{"Percisions per class":22}: {precisions}')
+    print(f'{"Recalls per class":22}: {recalls}')
+    print(f'{"F1-measures per class":22}: {f1}')
+    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
+
+    return add_points_to_datbase(path_to_csv)
+
 
         
 
@@ -443,23 +284,27 @@ if __name__ == "__main__":
     path_to_signalB = "evaluation/noise_sustainability.csv"
     path_to_signalC = "evaluation/noise_biologist.csv"
 
-    print("\n========== METRIC 1 ==========")
-    print("3qs with signal".center(30))
-    evaluate_many([[path_to_signalA], [path_to_signalB],
-                  [path_to_signalC]], [queryA, queryB, queryC])
+    models = [Model.SUMMARISER, Model.EXTRACTOR_DESCRIPTION, Model.NONE]
+    for model in models:
+        print(f"========== MODEL {model} ==========\n\n")
 
-    print("\n========== METRIC 2 ==========")
-    print("3qs with noise".center(30))
-    evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
-                  queryA, queryB, queryC])
+        print("\n========== METRIC 1 ==========")
+        print("3qs with signal".center(30))
+        evaluate_many([[path_to_signalA], [path_to_signalB],
+                      [path_to_signalC]], [queryA, queryB, queryC], model)
 
-    print("\n========== METRIC 3 ==========")
-    print("3qs with mixed".center(30))
-    evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
-                  path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC])
+        print("\n========== METRIC 2 ==========")
+        print("3qs with noise".center(30))
+        evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
+                      queryA, queryB, queryC], model)
 
-    print("\n========== METRIC 4 ==========")
-    print("extended q with signal".center(30))
+        print("\n========== METRIC 3 ==========")
+        print("3qs with mixed".center(30))
+        evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
+                      path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model)
+
+        print("\n========== METRIC 4 ==========")
+        print("extended q with signal".center(30))
     path_to_csv = "evaluation/teacher_ben.csv"
 
     # query = """I am seeking a permanent teaching position in a secondary school in London, specializing in STEM subjects for students aged 11-16.
@@ -476,4 +321,6 @@ if __name__ == "__main__":
     A reasonably good pay scale would be a welcome addition to the overall package.
     """
 
-    evaluate(path_to_csv, query)
+    for model in models:
+        print(f"========== MODEL {model} ==========\n\n")
+        wrapper_evaluate_model(model, query, path_to_csv)
