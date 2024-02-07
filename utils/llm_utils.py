@@ -83,7 +83,7 @@ if DEV_LOCAL:
     import numpy as np
     from typing import List
 
-    MAX_LEN = 1000
+    MAX_LEN = 200
     MIN_LEN = 30
 
     summariser = pipeline(
@@ -100,7 +100,8 @@ def create_summary(text: str) -> str:
         return summary
 
     json_single_data = json.dumps(text)
-    summary_response = requests.post(ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
+    summary_response = requests.post(
+        ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()['summary']
         return summary
@@ -120,49 +121,57 @@ def create_summary(text: str) -> str:
 
 def get_skills_required(description):
     json_single_data = json.dumps(description)
-    summary_response = requests.post(ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS)
+    summary_response = requests.post(
+        ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()['answer']
         return summary
     else:
-        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+        raise Exception(
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_job_details(description):
     json_single_data = json.dumps(description)
-    summary_response = requests.post(ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS)
+    summary_response = requests.post(
+        ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()['answer']
         return summary
     else:
-        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+        raise Exception(
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_candidate_skills(request):
     json_single_data = json.dumps(request)
-    summary_response = requests.post(ADDRESS + "get_candidate_skills", data=json_single_data, headers=HEADERS)
+    summary_response = requests.post(
+        ADDRESS + "get_candidate_skills", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()['answer']
         return summary
     else:
-        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+        raise Exception(
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_suggested_job(request):
     json_single_data = json.dumps(request)
-    summary_response = requests.post(ADDRESS + "get_suggested_job", data=json_single_data, headers=HEADERS)
+    summary_response = requests.post(
+        ADDRESS + "get_suggested_job", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()['answer']
         return summary
     else:
-        raise Exception(f"Error: {summary_response.status_code}, {summary_response.json()}")
+        raise Exception(
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def create_embedding(description):
     if DEV_LOCAL:
         embedding = embedder.encode([description])
         embedding_normalised = embedding / \
-                               np.linalg.norm(embedding, axis=1, keepdims=True)
+            np.linalg.norm(embedding, axis=1, keepdims=True)
         return embedding_normalised[0].tolist()
 
     json_single_data = json.dumps(description)
@@ -181,7 +190,7 @@ def bulk_create_embeddings(descriptions):
     if DEV_LOCAL:
         embeddings = embedder.encode(descriptions)
         embeddings_normalised = embeddings / \
-                                np.linalg.norm(embeddings, axis=1, keepdims=True)
+            np.linalg.norm(embeddings, axis=1, keepdims=True)
         return list(map(lambda e: e.tolist(), embeddings_normalised))
 
     json_many_data = json.dumps(descriptions)

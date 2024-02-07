@@ -1,6 +1,7 @@
 from csv import reader
 import numpy as np
 from numpy.linalg import norm
+from context import utils
 from utils.llm_utils import create_summary, bulk_create_embeddings, process_data, Model
 
 
@@ -47,11 +48,17 @@ def calculate_top_n_accuracy(desired_jobs, recommended_jobs, n):
 def calculate_error(desired_job, recommended_jobs):
     # list with the indexes from the most relevant to least
     assert (len(desired_job) == len(recommended_jobs))
+
     acc = 0
+    not_in = 0
     for i in range(len(desired_job)):
-        acc += abs(i - recommended_jobs.index(desired_job[i]))
+        if (desired_job[i] in recommended_jobs):
+            acc += abs(i - recommended_jobs.index(desired_job[i]))
+        else:
+            not_in += 1
     err = acc / len(desired_job)
-    return acc
+
+    return acc  # , not_in
 
 
 def calculate_hit_rate(desired_jobs, recommended_jobs) -> float:
@@ -135,39 +142,44 @@ def find_dynamic_cutoff(distances, sensitivity=2.0):
     return labels, ranking
 
 
+def add_points_to_datbase(paths_to_csv, noisy=False):
+    i = 0
+    for path_to_csv in paths_to_csv:
+        with open(path_to_csv, 'r') as csv_file:
+            csv_reader = reader(csv_file, delimiter=',')
+            csv_header = next(csv_reader)
 
-def add_points_to_datbase(path_to_csv):
-    with open(path_to_csv, 'r') as csv_file:
-        csv_reader = reader(csv_file, delimiter=',')
-        csv_header = next(csv_reader)
+            # Check that the headers is correct
+            if noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'keyword']:
+                raise Exception(
+                    "noisy csv file should contain title, company, location, description, link, relevant, keyword (order matters)")
 
-        if csv_header != ["title", "company", "location", "description", "link", 'want to get', 'ranking', 'keyword']:
-            raise Exception(
-                "csv file should contain title, company, location, description, link, want to get, ranking, keyword (order matters)")
+            if not noisy and csv_header != ["title", "company", "location", "description", "link", 'relevant', 'rank', 'keyword']:
+                raise Exception(
+                    "csv file should contain title, company, location, description, link, relevant, rank, keyword (order matters)")
 
-        true_labels = []
-        job_summaries = []
-        true_ranking = []
-        keywords = []
-        i = 0
+            true_labels = []
+            job_summaries = []
+            true_ranking = []
+            keywords = []
 
-        # Populate the semaDB (we do not need to create the sqlite)
-        for row in csv_reader:
-            if row[5] == 'TRUE':
-                true_ranking.append((i, row[6]))
-            true_labels.append(row[5])  # true or false
+            # Populate the semaDB (we do not need to create the sqlite)
+            for row in csv_reader:
+                if row[5] == 'TRUE':
+                    true_ranking.append((i, row[6]))
+                true_labels.append(row[5])  # true or false
 
-            # handle keyword value
-            if int(row[7]) > 0:
-                keywords.append((i, row[7]))
+                # handle keyword value
+                if int(row[7]) > 0:
+                    keywords.append((i, row[7]))
 
-            # Assuming that header start as {title, company, location, description}
-            job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
+                # Assuming that header start as {title, company, location, description}
+                job_summary = f"The job title is {row[0]}. The company name is {row[1]}, located at {row[2]}. {row[3]}"
 
-            if len(job_summary) > MIN_LEN:
-                job_summary = create_summary(job_summary)
-            job_summaries.append(job_summary)
-            i += 1
+                if len(job_summary) > MIN_LEN:
+                    job_summary = create_summary(job_summary)
+                job_summaries.append(job_summary)
+                i += 1
 
     job_embeddings = bulk_create_embeddings(job_summaries)
 
@@ -180,19 +192,19 @@ def add_points_to_datbase(path_to_csv):
     return true_labels, true_ranking, keywords, job_summaries, job_embeddings
 
 
-def evaluate(path_to_csv, query, model):
+def evaluate(paths_to_csv, query, model, noisy=False):
     """Evaluates the decision tree against the testing data,
     prints the overall accuracy, and the percision, recalls,
     and f1 measures per class
 
     Args:
-        path_to_csv(str): path to the csv file
+        paths_to_csv(lst): path to the csv file
     """
     # In case the information in collection needs to be flushed
 
     # Process the csv and extract the jobs and qualifications
     true_labels, true_ranking, keywords, job_summaries, job_embeddings = add_points_to_datbase(
-        path_to_csv)
+        paths_to_csv, noisy)
 
     # Process query into embeddings
     request_embedding = process_data(query, model)
@@ -200,7 +212,16 @@ def evaluate(path_to_csv, query, model):
     distances = [cosine_dist(request_embedding, entry_embedding)
                  for entry_embedding in job_embeddings]  # in order
 
-    predicted_labels, predicted_ranking = find_dynamic_cutoff(distances)
+    n = len(true_ranking)
+    distance_cut_off = sorted(distances)[n-1]
+    predicted_labels = [str(dist <= distance_cut_off).upper()
+                        for dist in distances]
+    expand_distance = []
+    for i in range(len(predicted_labels)):
+        if predicted_labels[i] == 'TRUE':
+            expand_distance.append((i, distances[i]))
+    predicted_ranking = [idx for idx, _ in sorted(
+        expand_distance, key=lambda x: x[1])]
 
     print(true_ranking)
     print(predicted_ranking)
@@ -217,6 +238,7 @@ def evaluate(path_to_csv, query, model):
     recalls = calculate_recalls(conf_matrix)
     f1 = calculate_f1_measures(conf_matrix)
 
+    errors = calculate_error(true_ranking, predicted_ranking)
     top_n_accuracy = calculate_top_n_accuracy(
         true_ranking, predicted_ranking, 10)
 
@@ -227,34 +249,32 @@ def evaluate(path_to_csv, query, model):
     print(f'{"F1-measures per class":22}: {f1}')
 
     print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
+    print(f'{"Error":22}: {errors}')
 
     return accuracy, precisions, recalls, f1, top_n_accuracy
 
 
-def evaluate_many(paths_to_csv, query_lst, model):
+def evaluate_many(paths_to_csv, query_lst, model, noisy=False):
     if len(paths_to_csv) != len(query_lst):
         raise Exception("Number of elements of both should be the same")
 
     for i in range(len(query_lst)):
-        wrapper_evaluate_model(model, query_lst, paths_to_csv[i])
+        wrapper_evaluate_model(model, query_lst[i], paths_to_csv[i], noisy)
 
 
-def wrapper_evaluate_model(model, query, path_to_csv, reset=False):
+def wrapper_evaluate_model(model, query, paths_to_csv, noisy=False):
     """Wrapper function to evaluate the model
     """
     accuracy, precisions, recalls, f1, top_n_accuracy = evaluate(
-        path_to_csv, query, model)
-    
-    print(f"Accuracy : {accuracy}")
-    print(f'{"Percisions per class":22}: {precisions}')
-    print(f'{"Recalls per class":22}: {recalls}')
-    print(f'{"F1-measures per class":22}: {f1}')
-    print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
+        paths_to_csv, query, model, noisy)
 
-    return add_points_to_datbase(path_to_csv)
+    # print(f"Accuracy : {accuracy}")
+    # print(f'{"Percisions per class":22}: {precisions}')
+    # print(f'{"Recalls per class":22}: {recalls}')
+    # print(f'{"F1-measures per class":22}: {f1}')
+    # print(f'{"Top-n accuracy":22}: {top_n_accuracy}')
 
-
-        
+    # return add_points_to_datbase(paths_to_csv)
 
 
 if __name__ == "__main__":
@@ -277,12 +297,12 @@ if __name__ == "__main__":
     What jobs are right for me?"""
     keywordC = "Biologist"
 
-    path_to_noiseA = "evaluation/accountant.csv"
-    path_to_noiseB = "evaluation/sustainability.csv"
-    path_to_noiseC = "evaluation/biologist.csv"
-    path_to_signalA = "evaluation/noise_accountant.csv"
-    path_to_signalB = "evaluation/noise_sustainability.csv"
-    path_to_signalC = "evaluation/noise_biologist.csv"
+    path_to_signalA = "evaluation/accountant.csv"
+    path_to_signalB = "evaluation/sustainability.csv"
+    path_to_signalC = "evaluation/biologist.csv"
+    path_to_noiseA = "evaluation/noise_accountant.csv"
+    path_to_noiseB = "evaluation/noise_sustainability.csv"
+    path_to_noiseC = "evaluation/noise_biologist.csv"
 
     models = [Model.SUMMARISER, Model.EXTRACTOR_DESCRIPTION, Model.NONE]
     for model in models:
@@ -290,16 +310,17 @@ if __name__ == "__main__":
 
         print("\n========== METRIC 1 ==========")
         print("3qs with signal".center(30))
-        evaluate_many([[path_to_signalA], [path_to_signalB],
-                      [path_to_signalC]], [queryA, queryB, queryC], model)
+        # evaluate_many([[path_to_signalA], [path_to_signalB],
+        #               [path_to_signalC]], [queryA, queryB, queryC], model)
 
         print("\n========== METRIC 2 ==========")
         print("3qs with noise".center(30))
         evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
-                      queryA, queryB, queryC], model)
+                      queryA, queryB, queryC], model, True)
 
         print("\n========== METRIC 3 ==========")
         print("3qs with mixed".center(30))
+        # TODO: CHANGE HERE
         evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
                       path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model)
 
