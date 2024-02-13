@@ -11,8 +11,8 @@
 <body>
 
     <header>
-        <h1>🍓 Welcome to JammyJobber! 🍓</h1>
-        <p class="catchline">Let's find your jam</p>
+        <h1>🍓JammyJobber🍓</h1>
+        <p class="catchline">Let's find your jam!</p>
     </header>
     
     <div class="main-page">
@@ -59,6 +59,17 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var colors = ['#3498db', '#f1c40f', '#e91e63', '#2ecc71']; // Blue, Yellow, Pink, Green
+            var jobListings = document.querySelectorAll('.job-listing');
+        
+            jobListings.forEach(function(jobListing) {
+                var randomColor = colors[Math.floor(Math.random() * colors.length)];
+                jobListing.style.backgroundColor = randomColor;
+            });
+        });
+        </script>
 </body>
 </html>
 

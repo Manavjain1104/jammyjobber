@@ -5,19 +5,51 @@ body, header,h1, h2, p, ul, li {
     font-family: 'Roboto', Arial, sans-serif;
 }
 
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', Arial, sans-serif;
+    height: 100%;
+    background: (to right, #b6fbff, #83a4d4); /* Adjusted to blue gradient */
+}
+
+.job-listings, .job-listing, .main-page, header, and any other specific sections {
+    background-color: transparent; /* Make specific sections transparent */
+    /* If any section should specifically use the gradient, you can repeat the gradient here */
+}
+
 /* Apply a basic styling to the body */
 body {
     font-family: Arial, sans-serif;
-    background-color: #efd1a3;
+    background: linear-gradient(to right, #b6fbff, #83a4d4);
 }
 
 /* Style the header section */
 header {
-    background-color: #6b003a;
+    /* background-color: #6b003a;
     color: #fff;
     padding: 40px 20px;
     text-align: center;
-    background: linear-gradient(to right, #6b003a, #6c7b8a)
+    background: linear-gradient(to right, #6b003a, #6c7b8a); */
+    color: #fff;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: transparent; /* Make header background transparent */
+}
+
+header h1 {
+    font-size: 3.5em; /* Increase the size */
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Montserrat', sans-serif; 
+    background: -webkit-linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4); 
+    -webkit-background-clip: text;
+    /* -webkit-text-fill-color: transparent;  */
+    margin-bottom: 0.5em; /* Adjust bottom margin */
+    letter-spacing: 0.05em; /* Add letter spacing */
+    font-weight: 900; /* Make it bold */
+    /* text-transform: uppercase; */
+    text-align: center; /* Ensure it's centered */
 }
 
 h1 {
@@ -28,9 +60,20 @@ h1 {
 
 
 .catchline {
+    /* font-size: 1.4em;
+    color: white;
+    font-style: italic; */
     font-size: 1.4em;
     color: white;
     font-style: italic;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Adds depth with a subtle shadow */
+    background: -webkit-linear-gradient(45deg, #ff6ec4, #7873f5); /* Gradient text effect */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* Makes the text color transparent to show the gradient */
+    margin-bottom: 20px; /* Adds more space below the catchline for a cleaner look */
+    font-weight: bold; /* Makes the catchline more prominent */
+    letter-spacing: 0.05em; /* Slightly increases spacing between letters for readability */
+    text-transform: uppercase; 
 }
 
 .main-page {
@@ -104,6 +147,10 @@ h1 {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.active-description {
+    color: #000; /* Set text color to black */
+}
+
 .search-box input[type="text"]:hover,
 .search-box input[type="text"]:focus,
 .add-cv input[type="file"]:hover,
@@ -117,6 +164,16 @@ h1 {
     list-style-type: none;
     margin: 20px auto;
     width: 70%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px; 
+    margin: 20px auto;
+    width: 70%; 
+}
+
+
+.job-listing a {
+    text-decoration: none; /* Remove underline */
 }
 
 .job-listing {
