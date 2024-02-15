@@ -1,4 +1,5 @@
 import sqlite3
+from uuid import uuid4
 
 job_listing_db = "job_listing.db"
 
@@ -10,7 +11,7 @@ def create_table(connection):
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS job_listings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             title TEXT NOT NULL,
             company TEXT NOT NULL,
             location TEXT,
@@ -26,26 +27,19 @@ def create_table(connection):
 def create_job_listing(connection, title, company, location, description, link):
     cursor = connection.cursor()
 
+    new_uuid = str(uuid4())
+
     # Returns the id of the new job listing created
     cursor.execute(
         """
-            INSERT INTO job_listings (title, company, location, description, link)
+            INSERT INTO job_listings (id, title, company, location, description, link)
             VALUES (?, ?, ?, ?, ?)
         """,
-        (title, company, location, description, link),
+        (new_uuid, title, company, location, description, link),
     )
     connection.commit()
 
-    return find_job(
-        connection,
-        {
-            "title": title,
-            "company": company,
-            "location": location,
-            "description": description,
-            "link": link,
-        },
-    )[0][0]
+    return new_uuid
 
 
 def read_job_listings(connection):
@@ -113,11 +107,20 @@ def reset_table(connection):
     connection.commit()
 
 
+def delete_table(connection):
+    """Hard delete the table"""
+    cursor = connection.cursor()
+
+    cursor.execute("DROP TABLE job_listings;")
+    connection.commit()
+
+
 def bulk_delete_job_listing(connection, job_ids):
     cursor = connection.cursor()
 
     placeholders = ",".join(["?"] * len(job_ids))
-    cursor.execute(f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
+    cursor.execute(
+        f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
     connection.commit()
 
 
@@ -189,5 +192,9 @@ def test_job_listing_database():
 
 
 connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-print(len(read_job_listings(connection)))
+# print(len(read_job_listings(connection)))
 connection.close()
+
+if __name__ == "__main__":
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    connection.close()
