@@ -25,6 +25,8 @@ def csv_into_database(collection, path_to_file, csv_delimiter=",", use_api=False
     """
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
 
+    reset_table(connection)
+
     with open(path_to_file, "r") as csv_file:
         csv_reader = reader(csv_file, delimiter=csv_delimiter)
         csv_header = next(csv_reader)
@@ -43,17 +45,18 @@ def csv_into_database(collection, path_to_file, csv_delimiter=",", use_api=False
             job_summary = create_summary(job_info)
             job_summaries.append(job_summary)
 
-            # Assuming that header goes as {title, company, location, description}
-            job_id = create_job_listing(connection, *tuple(row + [job_summary]))
+            # Assuming that header goes as {title, company, location, (description), link}
+            job_id = create_job_listing(
+                connection, *tuple([row[0], row[1], row[2]] + [job_summary] + [row[4]]))
             job_ids.append(job_id)
 
     connection.close()
-    job_embeddings = bulk_create_embeddings(job_summaries)
 
+    job_embeddings = bulk_create_embeddings(job_summaries)
     bulk_add_points(collection, job_embeddings, job_ids)
 
     os.remove(path_to_file)
 
 
 if __name__ == "__main__":
-    csv_into_database(COLLECTION_NAME, "general.csv")
+    csv_into_database(COLLECTION_NAME, "scraper_output/accountant.csv")

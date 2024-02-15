@@ -33,7 +33,7 @@ def create_job_listing(connection, title, company, location, description, link):
     cursor.execute(
         """
             INSERT INTO job_listings (id, title, company, location, description, link)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
         """,
         (new_uuid, title, company, location, description, link),
     )
