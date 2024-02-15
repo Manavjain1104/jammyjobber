@@ -59,4 +59,5 @@ def csv_into_database(collection, path_to_file, csv_delimiter=",", use_api=False
 
 
 if __name__ == "__main__":
-    csv_into_database(COLLECTION_NAME, "scraper_output/accountant.csv")
+    # csv_into_database(COLLECTION_NAME, "scraper_output/accountant.csv")
+    ...
