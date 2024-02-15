@@ -38,7 +38,7 @@ header {
 }
 
 header h1 {
-    font-size: 3.5em; /* Increase the size */
+    font-size: 6em; /* Increase the size */
     color: #ffffff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     font-family: 'Montserrat', sans-serif; 
@@ -76,30 +76,60 @@ h1 {
     text-transform: uppercase; 
 }
 
+
+.content-wrapper {
+    display: flex;
+    flex-direction: row; /* Ensures items are laid out in a row */
+    justify-content: flex-end; /* Aligns items to the end of the container */
+    align-items: start; /* Aligns items at the start of the cross axis */
+    width: 100%; /
+}
+
+.image-section {
+    margin-left: auto; /* Pushes the image section to the right */
+    margin-top: 200px; /* Keeps the image lower as per previous adjustment */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.image-section img {
+    object-fit: fill;
+    margin-left: 350px;
+    width: 500%; /* Makes the image responsive within its container. You might want to set a max-width */
+    max-width: 1000px; /* Example max-width; adjust as needed */
+}
+
 .main-page {
+    flex: 2;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
+    margin-left: 225px;
 }
 .search-box, .add-cv {
     width : 70%;
     margin: 2em auto;
     display: flex;
+    font-size: 1.5em;
     flex-direction: column;
+    font-family: 'Roboto', Arial, sans-serif; 
 }
 
 .search-box label, .add-cv label{
     display: block;
     margin-bottom: 10px;
     color: #555;
-    font-size: 1.5em;
+    /* font-size: 16px; */
+    font-size: 25px;
     align-self: flex-start;
 }
 
 .search-box label {
     display: block;
-    font-size: 16px;
+    font-size: 25px;
     margin-bottom: 5px;
 }
 
@@ -112,7 +142,7 @@ h1 {
     margin-bottom: 15px;
 }
 
- .search-box button, .add-cv button {
+.search-box button, .add-cv button {
     margin-top: 1em;
     padding: 15px 30px;
     background: linear-gradient(to right, #ec407a, #d81b60);
@@ -225,4 +255,21 @@ h1 {
     .search-box, .job-listings {
         width: 90%;
     }
+
+    .content-wrapper {
+        flex-direction: column; /* Stack image and content vertically on smaller screens */
+    }
+
+    .image-section, .main-page {
+        flex: none; /* Reset flex sizing for responsive design */
+    }
+
+    .image-section img {
+        max-width: 100%; /* Ensure the image is fully responsive on smaller screens */
+    }
+
+    /* .main-page {
+        margin-left: 0; /* Removes the left margin on smaller screens */
+    } */
+
 }
