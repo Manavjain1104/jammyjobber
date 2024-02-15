@@ -20,22 +20,19 @@
 
 
   stages:
-    # - test
-    - publicDeploy
+    - test
+    - deploy
 
-  # unit-test:
-  #   stage: test
-  #   tags: 
-  #     - cloud-vm-41-89
-  #   script:
-  #     - pip install pipenv
-  #     - pip install Django
+  unit-test:
+    stage: test
+    script:
+      - pip install Django
 
-  #     - python3 -m pipenv install
-  #     - python3 -m pipenv run python -m unittest discover test/
+      - pip install -r requirements.txt
+      - python3 -m unittest discover test/
 
-  publicDeploy:
-    stage: publicDeploy    # deploy to heroku
+  deploy:
+    stage: deploy    # deploy to heroku
     script:
       - dpl --provider=heroku --app=jammy-jobber --api-key=6102191c-0cac-4ca7-8348-21098038e5e9
     rules:
