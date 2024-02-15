@@ -1,8 +1,6 @@
 import requests
 import os
 from dotenv import load_dotenv
-from llm_utils import create_embedding
-from uuid import uuid4
 
 base_url = "https://semadb.p.rapidapi.com/collections"
 
