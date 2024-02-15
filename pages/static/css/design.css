@@ -40,9 +40,10 @@ header {
 
 header h1 {
     font-size: 6em; /* Increase the size */
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    font-family: 'Montserrat', sans-serif; 
+    color: #d6fffe;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 5);
+    /* font-family: 'Brush Script MT', sans-serif; */
+    font-family: 'Marker Felt', sans-serif;
     background: -webkit-linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4); 
     -webkit-background-clip: text;
     /* -webkit-text-fill-color: transparent;  */
@@ -268,7 +269,7 @@ h1 {
 .job-listing a {
     text-decoration: none; /* Remove underline */
 }
-                    
+
 .job-listing {
     border: 1px solid #ddd;
     margin: 20px 0;
