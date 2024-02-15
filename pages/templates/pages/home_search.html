@@ -67,21 +67,11 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var colors = ['#3498db', '#f1c40f', '#e91e63', '#2ecc71']; // Blue, Yellow, Pink, Green
-            var jobListings = document.querySelectorAll('.job-listing');
-        
-            jobListings.forEach(function(jobListing) {
-                var randomColor = colors[Math.floor(Math.random() * colors.length)];
-                jobListing.style.backgroundColor = randomColor;
-            });
-        });
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-        <script>
         AOS.init();
-        </script>
+    </script>
 </body>
 </html>
 

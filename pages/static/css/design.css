@@ -13,8 +13,9 @@ body, html {
     background: (to right, #b6fbff, #83a4d4); /* Adjusted to blue gradient */
 }
 
-.job-listings, .job-listing, .main-page, header, and any other specific sections {
+.job-listings, .job-listing, .main-page, header {
     background-color: transparent; /* Make specific sections transparent */
+    background: (to left, #b6fbff, #83a4d4);
     /* If any section should specifically use the gradient, you can repeat the gradient here */
 }
 
@@ -245,6 +246,7 @@ h1 {
     grid-gap: 20px; 
     margin: 20px auto;
     width: 70%; 
+
 }
 
 /* .image-container {
@@ -266,14 +268,14 @@ h1 {
 .job-listing a {
     text-decoration: none; /* Remove underline */
 }
-
+                    
 .job-listing {
     border: 1px solid #ddd;
     margin: 20px 0;
     padding: 20px;
-    background-color: #f9f9f9;
+    background: linear-gradient(to right, #b6fbff, #83a4d4); /* Gradient applied here */
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle box shadow for lifted appearance */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
 
