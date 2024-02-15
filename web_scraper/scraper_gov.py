@@ -42,7 +42,8 @@ def print_to_csv(data, file_name, max_entries=None):
     if type(max_entries) == int and max_entries < len(table):
         table = table[:max_entries]
     os.makedirs(OUTPUT_PATH, exist_ok=True)
-    table.to_csv(OUTPUT_PATH / (file_name + ".csv"), index=False, encoding="utf-8")
+    table.to_csv(OUTPUT_PATH / (file_name + ".csv"),
+                 index=False, encoding="utf-8")
 
 
 def get_jobs_for_url(url, data, min_results):
@@ -81,7 +82,8 @@ def extract(url, file_name, min_results, max_results=None):
     """
 
     # Data ~= Format for the extracted data. Stores the list of information per column
-    data = {"title": [], "company": [], "location": [], "description": [], "link": []}
+    data = {"title": [], "company": [],
+            "location": [], "description": [], "link": []}
     get_jobs_for_url(url, data, min_results)
     print("No. of jobs found: " + str(len(data["title"])))
     print_to_csv(data, file_name, max_results)
@@ -92,25 +94,5 @@ if __name__ == "__main__":
     Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv
     file and min no. of jobs needed, to the EXTRACT function
     """
-    nurse_url = "https://findajob.dwp.gov.uk/search?adv=1&qwd=environment%20sustainability&qor=climate%20change%20leader%20green%20initiatives%20sustainability%20roles%20environmental%20impact&sb=relevance&sd=down"
-    extract(url=nurse_url, file_name="general", min_results=30)
-
-    recent_url = "https://findajob.dwp.gov.uk/search?q=&w="
-    extract(url=recent_url, file_name="recent", min_results=30, max_results=30)
-
-    accountant_url = "https://findajob.dwp.gov.uk/search?q=accountant&w=UK"
-    extract(url=accountant_url, file_name="accountant", min_results=10, max_results=10)
-
-    sustainability_url = "https://findajob.dwp.gov.uk/search?q=sustainability&w=UK"
-    extract(
-        url=sustainability_url,
-        file_name="sustainability",
-        min_results=10,
-        max_results=10,
-    )
-
-    biologist_url = "https://findajob.dwp.gov.uk/search?q=biologist&w=UK"
-    extract(url=biologist_url, file_name="biologist", min_results=10, max_results=10)
-
-    teacher_url = "https://findajob.dwp.gov.uk/search?q=teacher&w=UK"
-    extract(url=teacher_url, file_name="teacher", min_results=30, max_results=30)
+    accountant_url = "https://findajob.dwp.gov.uk/search?cat=1&loc=86383&sb=relevance&sd=down"
+    extract(url=accountant_url, file_name="accountant", min_results=30)

@@ -32,7 +32,8 @@ def search_url(collection):
 
 # Create a new collection of points
 def create_collection(id, vectorSize, distanceMetric="cosine"):
-    payload = {"id": id, "vectorSize": vectorSize, "distanceMetric": distanceMetric}
+    payload = {"id": id, "vectorSize": vectorSize,
+               "distanceMetric": distanceMetric}
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
@@ -52,7 +53,8 @@ def delete_collection(collection):
 # Given vector representation and SQLite id, return json representation
 # of a point
 def new_point(vector, externalId):
-    return {"vector": vector, "metadata": {"externalId": externalId}}
+    # "metadata": {"externalId": externalId}}
+    return {"id": externalId, "vector": vector}
 
 
 # Given vector representation of a point and an id used in SQLite,
@@ -65,7 +67,8 @@ def add_points(collection, points):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(points_url(collection), json=payload, headers=headers)
+    response = requests.post(points_url(collection),
+                             json=payload, headers=headers)
     return response
 
 
@@ -93,7 +96,8 @@ def search_points(collection, vector, limit=10):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(search_url(collection), json=payload, headers=headers)
+    response = requests.post(search_url(collection),
+                             json=payload, headers=headers)
 
     point_ids = []
     for point in response.json()["points"]:

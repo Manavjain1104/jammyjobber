@@ -3,7 +3,9 @@ import requests
 import json
 from enum import Enum
 import numpy as np
+from dotenv import load_dotenv
 
+load_dotenv()
 ADDRESS = os.getenv("LLM_SERVER_ADDRESS")
 TOKEN = os.getenv("INFERENCE_API_TOKEN")
 TOKEN = os.getenv("INFERENCE_API_TOKEN")

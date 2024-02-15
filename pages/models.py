@@ -8,7 +8,7 @@ class Job(models.Model):
     company = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     description = models.TextField()
-    summary = models.TextField()
+    # summary = models.TextField()
     link = models.CharField(max_length=255)
 
     def __str__(self):
