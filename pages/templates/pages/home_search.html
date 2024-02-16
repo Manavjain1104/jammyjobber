@@ -44,6 +44,10 @@
     </div>
 
     <ul class="job-listings">
+        <button class="expand-btn" onclick="toggleSuggested(this)">Why were these jobs suggested?</button>
+        <div id="whysuggested" class="job-description">
+        <p id="suggested"></p>
+        </div>
         {% for job in job_list %}
             <li class="job-listing">
                 <a href=" {{ job.link }} "><h3>{{ job.title }}</h3></a>
@@ -59,6 +63,43 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>
+    <script type="module">
+        import { pipeline, AutoModel, AutoTokenizer } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.15.0';
+            
+        window.toggleSuggested = async function toggleSuggested(button) { 
+            let pipe = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-783M');
+            let jobs = {{ json_list|safe }};
+            let job = jobs[0];
+            let job_query = {{ query|safe }};
+            let out = await pipe("Candidate said: " + job_query + " The job suggested was: " + job + "Give 4 bulletpoints explaining why the suggested job was a good fit for you or a bad fit.", {
+                max_new_tokens: 1000,
+              });
+            let text = out[0].generated_text
+            console.log(text)
+            
+            // Find the index of the 4th dash
+            let fourthDashIndex = -1;
+            for (let i = 0, count = 0; i < text.length; i++) {
+                if (text[i] === '-') {
+                    count++;
+                    if (count === 5) {
+                        fourthDashIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // If the 4th dash was found, manipulate the string accordingly
+            if (fourthDashIndex !== -1) {
+                text = text.substring(0, fourthDashIndex).replace(/-/g, '<br>-');
+            } else {
+                text = text.replace(/-/g, '<br>-')
+            }
+            $(button).siblings(`#whysuggested`).toggle();
+            document.getElementById("suggested").innerHTML = text;
+        }
+    </script>
+ 
 </body>
 </html>
 

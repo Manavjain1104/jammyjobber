@@ -19,6 +19,8 @@ def home_page_view(request):
     # Assuming Job model has title and description fields
     job_instances = get_listings()
     job_list = job_instances
+    
+    query = ""
 
     if "query" in request.GET and request.GET.get("query"):
         query = request.GET["query"]
@@ -49,13 +51,17 @@ def home_page_view(request):
         if form.is_valid():
             instance = form.save()
             text = extract_text(instance.pdf.path)
+            query = text
             os.remove(instance.pdf.path)
 
             request_embedding = process_data(text, model=model_used)
             closest = search_points(collection_used, request_embedding, 5)
             job_list = [job for job in job_instances if job.job_id in closest]
+            
+    job_list_json = json.dumps([process_data(job_list[0].description, Model.SUMMARY_ONLY)])
+    query = json.dumps(query)
 
-    return render(request, "pages/home_search.html", {"job_list": job_list})
+    return render(request, "pages/home_search.html", {"job_list": job_list, "query": query, "json_list": job_list_json})
 
 
 def get_listings():
@@ -78,24 +84,3 @@ def get_listings():
     connection.close()
     return job_instances
 
-
-def job_search(request):
-    jobs = [
-        "This is a Software Engineering job.",
-        "You will be a receptionist at our clinic.",
-        "We are looking for a python developer. We can offer a competetive salary",
-        "Charity worker needed.",
-        "Dog sitter job in Manchester",
-    ]
-
-    if "query" in request.GET:
-        query = request.GET["query"]
-
-        request_embedding = process_data(query, model_used)
-        closest = search_points(collection_used, request_embedding, 1)
-        job_list = jobs[closest[0]]
-
-    else:
-        job_list = jobs
-
-    return render(request, "pages/home_search.html", {"job_list": job_list})
