@@ -58,6 +58,12 @@ def csv_into_database(collection, path_to_file, csv_delimiter=",", use_api=False
     os.remove(path_to_file)
 
 
+def clear_and_reset_ll_database_stuff():
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    reset_table(connection)
+    connection.close()
+
+
 if __name__ == "__main__":
     # csv_into_database(COLLECTION_NAME, "scraper_output/accountant.csv")
     ...

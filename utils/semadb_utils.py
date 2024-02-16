@@ -101,6 +101,10 @@ def search_points(collection, vector, limit=10):
 
     point_ids = []
     for point in response.json()["points"]:
-        point_ids.append(point["metadata"]["externalId"])
+        point_ids.append(point["id"])
 
     return point_ids
+
+
+if __name__ == '__main__':
+    print(get_collection(COLLECTION_NAME))
