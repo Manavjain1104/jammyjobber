@@ -2,18 +2,17 @@ import os
 import requests
 import json
 from enum import Enum
+from huggingface_hub import InferenceClient
 import numpy as np
 from dotenv import load_dotenv
 
+# Get variables from the environment
 load_dotenv()
-ADDRESS = os.getenv("LLM_SERVER_ADDRESS")
-TOKEN = os.getenv("INFERENCE_API_TOKEN")
-TOKEN = os.getenv("INFERENCE_API_TOKEN")
-HEADERS = {"Content-Type": "application/json"}
-ANSWERER_MODEL = "deepset/roberta-base-squad2"
-FACEBOOk_MODEL = "facebook/bart-large-cnn"
-EMBEDDER = "sentence-transformers/all-MiniLM-L12-v2"
-SUMMARISER = "Falconsai/text_summarization"
+from enum import Enum
+from huggingface_hub import InferenceClient
+import numpy as np
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter
+
 
 
 class Model(Enum):
@@ -22,6 +21,7 @@ class Model(Enum):
     EXTRACTOR_DESCRIPTION = 3
     FACEBOOK_SUMMARISER = 4
     NONE = 5
+    KEYWORD = 6
 
 
 def process_data(text, model):
@@ -30,9 +30,7 @@ def process_data(text, model):
         return embedding
     elif model == Model.EXTRACTOR_DESCRIPTION:
         # 768 vector model
-        return create_embedding(get_job_details(text)) + create_embedding(
-            get_skills_required(text)
-        )
+        return create_embedding(get_job_details(text)) + create_embedding(get_skills_required(text))
     elif model == Model.EXTRACTOR_REQUEST:
         return create_embedding(get_suggested_job(text)) + create_embedding(
             get_candidate_skills(text)
@@ -41,50 +39,54 @@ def process_data(text, model):
     #     return create_embedding(create_summary_facebook_model(text))
     elif model == Model.NONE:
         return create_embedding(text)
+    elif model == Model.KEYWORD:
+        return None
     else:
         raise Exception("Unknown model")
 
 
-ANSWERER_MODEL = "deepset/roberta-base-squad2"
-FACEBOOk_MODEL = "facebook/bart-large-cnn"
-EMBEDDER = "sentence-transformers/all-MiniLM-L12-v2"
-SUMMARISER = "Falconsai/text_summarization"
+ANSWERER_MODEL = 'deepset/roberta-base-squad2'
+FACEBOOk_MODEL = 'facebook/bart-large-cnn'
+EMBEDDER = 'sentence-transformers/all-MiniLM-L12-v2'
+SUMMARISER = 'Falconsai/text_summarization'
 
 
-class Model(Enum):
-    SUMMARISER = 1
-    EXTRACTOR_REQUEST = 2
-    EXTRACTOR_DESCRIPTION = 3
-    FACEBOOK_SUMMARISER = 4
-    NONE = 5
+# Do locql summary and embedding
+DEV_LOCAL = False
 
+if DEV_LOCAL:
+    from transformers import pipeline
+    from sentence_transformers import SentenceTransformer
+    import numpy as np
+    from typing import List
 
-def process_data(text, model):
-    if model == Model.SUMMARISER:
-        embedding = create_embedding(create_summary(text))
-        return embedding
-    elif model == Model.EXTRACTOR_DESCRIPTION:
-        # 768 vector model
-        return create_embedding(get_job_details(text)) + create_embedding(
-            get_skills_required(text)
-        )
-    elif model == Model.EXTRACTOR_REQUEST:
-        return create_embedding(get_suggested_job(text)) + create_embedding(
-            get_candidate_skills(text)
-        )
-    # elif model == Model.FACEBOOK_SUMMARISER:
-    #     return create_embedding(create_summary_facebook_model(text))
-    elif model == Model.NONE:
-        return create_embedding(text)
-    else:
-        raise Exception("Unknown model")
+    MAX_LEN = 200
+    MIN_LEN = 30
 
+    summariser = pipeline(
+        "summarization", model="Falconsai/text_summarization", )
+    embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
+    splitter = SentenceTransformersTokenTextSplitter(chunk_overlap=50)
 
 def create_summary(text: str) -> str:
+    if DEV_LOCAL:
+        chunks = splitter.split_text(text)
+        summary = ""
+        for chunk in chunks:
+            summariser_output = summariser(
+                chunk, max_length=MAX_LEN // len(chunks), min_length=MIN_LEN // len(chunks), do_sample=False
+            )
+            summary += summariser_output[0]['summary_text']
+        return summary
+        # summariser_output = summariser(
+        #     text, max_length=MAX_LEN, min_length=MIN_LEN, do_sample=False
+        # )
+        # summary = summariser_output[0]['summary_text']
+        # return summary
+
     json_single_data = json.dumps(text)
     summary_response = requests.post(
-        ADDRESS + "get_summary", data=json_single_data, headers=HEADERS
-    )
+        ADDRESS + "get_summary", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()["summary"]
         return summary
@@ -107,60 +109,58 @@ def create_summary(text: str) -> str:
 def get_skills_required(description):
     json_single_data = json.dumps(description)
     summary_response = requests.post(
-        ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS
-    )
+        ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()["answer"]
         return summary
     else:
         raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_job_details(description):
     json_single_data = json.dumps(description)
     summary_response = requests.post(
-        ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS
-    )
+        ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()["answer"]
         return summary
     else:
         raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_candidate_skills(request):
     json_single_data = json.dumps(request)
     summary_response = requests.post(
-        ADDRESS + "get_candidate_skills", data=json_single_data, headers=HEADERS
-    )
+        ADDRESS + "get_candidate_skills", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()["answer"]
         return summary
     else:
         raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def get_suggested_job(request):
     json_single_data = json.dumps(request)
     summary_response = requests.post(
-        ADDRESS + "get_suggested_job", data=json_single_data, headers=HEADERS
-    )
+        ADDRESS + "get_suggested_job", data=json_single_data, headers=HEADERS)
     if summary_response.status_code == 200:
         summary = summary_response.json()["answer"]
         return summary
     else:
         raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+            f"Error: {summary_response.status_code}, {summary_response.json()}")
 
 
 def create_embedding(description):
+    if DEV_LOCAL:
+        embedding = embedder.encode([description])
+        embedding_normalised = embedding / \
+            np.linalg.norm(embedding, axis=1, keepdims=True)
+        return embedding_normalised[0].tolist()
+
     json_single_data = json.dumps(description)
     embedding_response = requests.post(
         ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS
@@ -176,6 +176,12 @@ def create_embedding(description):
 
 # create a list of vector embeddings given a list of descriptions
 def bulk_create_embeddings(descriptions):
+    if DEV_LOCAL:
+        embeddings = embedder.encode(descriptions)
+        embeddings_normalised = embeddings / \
+            np.linalg.norm(embeddings, axis=1, keepdims=True)
+        return list(map(lambda e: e.tolist(), embeddings_normalised))
+
     json_many_data = json.dumps(descriptions)
     bulk_embedding_response = requests.post(
         ADDRESS + "get_embeddings", data=json_many_data, headers=HEADERS
