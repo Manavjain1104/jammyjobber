@@ -47,7 +47,8 @@ def csv_into_database(collection, path_to_file, csv_delimiter=",", use_api=False
 
             # Assuming that header goes as {title, company, location, (description), link}
             job_id = create_job_listing(
-                connection, *tuple([row[0], row[1], row[2]] + [job_summary] + [row[4]]))
+                connection, *tuple([row[0], row[1], row[2]] + [job_summary] + [row[4]])
+            )
             job_ids.append(job_id)
 
     connection.close()

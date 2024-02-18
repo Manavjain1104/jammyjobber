@@ -32,8 +32,7 @@ def search_url(collection):
 
 # Create a new collection of points
 def create_collection(id, vectorSize, distanceMetric="cosine"):
-    payload = {"id": id, "vectorSize": vectorSize,
-               "distanceMetric": distanceMetric}
+    payload = {"id": id, "vectorSize": vectorSize, "distanceMetric": distanceMetric}
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
@@ -67,8 +66,7 @@ def add_points(collection, points):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(points_url(collection),
-                             json=payload, headers=headers)
+    response = requests.post(points_url(collection), json=payload, headers=headers)
     return response
 
 
@@ -89,26 +87,24 @@ def get_collection(collection):
 
 # Given a vector representation of a point, search for limit nearest points
 # in the database. Returns a list of job ids, used in SQLite
-def search_points(collection, vector, limit=10, get_dist= False):
+def search_points(collection, vector, limit=10):
     payload = {"vector": vector, "limit": limit}
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(search_url(collection),
-                             json=payload, headers=headers)
+    response = requests.post(search_url(collection), json=payload, headers=headers)
 
     point_ids = []
+    dists = []
+
     for point in response.json()["points"]:
         point_ids.append(point["id"])
+        dists.append(point["distance"])
 
-    if get_dist:
-        for point in response.json()["points"]:
-            point_ids.append((point["id"], point["distance"]))
-
-    return point_ids
+    return (point_ids, dists)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(get_collection(COLLECTION_NAME))

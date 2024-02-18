@@ -119,8 +119,7 @@ def bulk_delete_job_listing(connection, job_ids):
     cursor = connection.cursor()
 
     placeholders = ",".join(["?"] * len(job_ids))
-    cursor.execute(
-        f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
+    cursor.execute(f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
     connection.commit()
 
 

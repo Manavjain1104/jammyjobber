@@ -7,7 +7,7 @@ from utils.address_utils import *
 from .models import Job
 from .forms import CVForm
 from pdfminer.high_level import extract_text
-
+import statistics
 
 # Create your views here.
 
@@ -18,18 +18,14 @@ collection_used = COLLECTION_NAME
 def home_page_view(request):
     # Assuming Job model has title and description fields
     job_instances = get_listings()
+    significant_threshold = get_siginificant_data()
     job_list = job_instances
-    
+
     query = ""
 
     if "query" in request.GET and request.GET.get("query"):
         query = request.GET["query"]
-        request_embedding = process_data(query, model=model_used)
-        closest = search_points(collection_used, request_embedding, 5, False)
-        print(closest)
-        print([job.job_id for job in job_instances])
-        job_list = [job for job in job_instances if job.job_id in closest]
-        print("JOB LIST", job_list)
+        job_list, _ = get_similar(query, 5)
 
     if "location_query" in request.GET:
         location_query = request.GET["location_query"]
@@ -39,12 +35,8 @@ def home_page_view(request):
 
     if "id" in request.GET:
         id = request.GET["id"]
-        job_summary = [
-            job.description for job in job_instances if job.job_id == id
-        ][0]
-        request_embedding = process_data(job_summary, model=model_used)
-        closest = search_points(collection_used, request_embedding, 6, False)
-        job_list = [job for job in job_instances if job.job_id in closest][1:]
+        job_summary = [job.description for job in job_instances if job.job_id == id][0]
+        job_list, _ = get_similar(job_summary, 6)
 
     if request.method == "POST":
         form = CVForm(request.POST, request.FILES)
@@ -53,22 +45,24 @@ def home_page_view(request):
             text = extract_text(instance.pdf.path)
             query = text
             os.remove(instance.pdf.path)
+            job_list, _ = get_similar(text, 5)
+            print(job_list)
 
-            request_embedding = process_data(text, model=model_used)
-            closest = search_points(collection_used, request_embedding, 5, False)
-            job_list = [job for job in job_instances if job.job_id in closest]
-            
-    job_list_json = json.dumps([process_data(job_list[0].description, Model.SUMMARY_ONLY)])
+    job_list_json = json.dumps(
+        [process_data(job_list[0].description, Model.SUMMARY_ONLY)]
+    )
     query = json.dumps(query)
 
-    return render(request, "pages/home_search.html", {"job_list": job_list, "query": query, "json_list": job_list_json})
+    return render(
+        request,
+        "pages/home_search.html",
+        {"job_list": job_list, "query": query, "json_list": job_list_json},
+    )
 
 
 def get_listings():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
-
     jobs = read_job_listings(connection)
-
     # Assuming Job model has title and description fields
     job_instances = [
         Job(
@@ -84,3 +78,20 @@ def get_listings():
     connection.close()
     return job_instances
 
+
+def get_similar(query, number: int):
+    job_instances = get_listings()
+    request_embedding = process_data(query, model=model_used)
+    closest, dists = search_points(collection_used, request_embedding, number)
+    job_list = [job for job in job_instances if job.job_id in closest]
+    return job_list, dists
+
+
+def get_siginificant_data():
+    jobs_tech, dist1 = get_similar("tech", 10)
+    jobs_nurse, dist2 = get_similar("nurse", 10)
+    jobs_teacher, dist3 = get_similar("teacher", 10)
+    dist = dist1 + dist2 + dist3
+    avg = statistics.mean(dist)
+    print(avg)
+    return avg * 0.9

@@ -31,6 +31,7 @@ def calculate_recall(desired_jobs, recommended_jobs) -> float:
 
     return hits / len(desired_jobs)
 
+
 def create_embeddings(model, paths_to_csv):
     job_summaries = []
     job_embeddings = []
@@ -38,8 +39,11 @@ def create_embeddings(model, paths_to_csv):
     hit_job_embeddings = []
 
     for path_to_csv in paths_to_csv:
-        with open(path_to_csv, 'r') as csv_file:
-            csv_reader = read_csv_columns(csv_file, ["title", "company", "location", "description", "link", 'relevant'])
+        with open(path_to_csv, "r") as csv_file:
+            csv_reader = read_csv_columns(
+                csv_file,
+                ["title", "company", "location", "description", "link", "relevant"],
+            )
 
             for row in csv_reader:
                 job_summary = f"The job title is {row['title']}. The company name is {row['company']}, located at {row['location']}. {row['description']}"
@@ -52,22 +56,26 @@ def create_embeddings(model, paths_to_csv):
                 job_embedding = process_data(job_summary, model)
                 job_embeddings.append(job_embedding)
 
-                if row['relevant'] == 'TRUE':
+                if row["relevant"] == "TRUE":
                     hit_job_embeddings.append(job_embedding)
                     hit_job_summaries.append(job_summary)
 
     return job_summaries, job_embeddings, hit_job_embeddings
 
+
 # PRE: the relevant file is already open
 def read_csv_columns(file, columns):
-    csv_reader = csv.DictReader(file, delimiter=',')
+    csv_reader = csv.DictReader(file, delimiter=",")
     headers = next(csv_reader)  # Read the header row to get column names
 
     # Check if all columns provided are in the headers
     if not all(col in headers.keys() for col in columns):
-        raise ValueError("One or more columns provided are not found in the CSV headers.")
+        raise ValueError(
+            "One or more columns provided are not found in the CSV headers."
+        )
 
     return csv_reader
+
 
 def evaluate(model, query, paths_to_csv):
     """Evaluates the decision tree against the testing data,
@@ -80,7 +88,9 @@ def evaluate(model, query, paths_to_csv):
     # In case the information in collection needs to be flushed
 
     # Process the csv and extract the jobs and qualifications
-    job_summaries, job_embeddings, hit_job_embeddings = create_embeddings(model, paths_to_csv)
+    job_summaries, job_embeddings, hit_job_embeddings = create_embeddings(
+        model, paths_to_csv
+    )
 
     # Process query into embeddings
     request_embedding = process_data(query, model)
@@ -107,6 +117,7 @@ def evaluate(model, query, paths_to_csv):
 
     print(f"Recall: {recall}")
     return recall
+
 
 def evaluate_many(paths_to_csv, query_lst, model, noisy=False):
     if len(paths_to_csv) != len(query_lst):
@@ -146,25 +157,39 @@ if __name__ == "__main__":
     path_to_noiseB = "evaluation/noise_sustainability.csv"
     path_to_noiseC = "evaluation/noise_biologist.csv"
 
-    models = [Model.EXTRACTOR_DESCRIPTION,
-              Model.NONE, Model.KEYWORD, Model.SUMMARISER]
+    models = [Model.EXTRACTOR_DESCRIPTION, Model.NONE, Model.KEYWORD, Model.SUMMARISER]
     for model in models:
         print(f"========== MODEL {model} ==========\n\n")
 
         print("\n========== METRIC 1 ==========")
         print("3qs with signal".center(30))
-        evaluate_many([[path_to_signalA], [path_to_signalB],
-                       [path_to_signalC]], [queryA, queryB, queryC], model)
+        evaluate_many(
+            [[path_to_signalA], [path_to_signalB], [path_to_signalC]],
+            [queryA, queryB, queryC],
+            model,
+        )
 
         print("\n========== METRIC 2 ==========")
         print("3qs with noise".center(30))
-        evaluate_many([[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]], [
-                      queryA, queryB, queryC], model, True)
+        evaluate_many(
+            [[path_to_noiseA], [path_to_noiseB], [path_to_noiseC]],
+            [queryA, queryB, queryC],
+            model,
+            True,
+        )
 
         print("\n========== METRIC 3 ==========")
         print("3qs with mixed".center(30))
-        evaluate_many([[path_to_noiseA, path_to_signalA], [path_to_noiseB, path_to_signalB], [
-                     path_to_noiseC, path_to_signalC]], [queryA, queryB, queryC], model, True)
+        evaluate_many(
+            [
+                [path_to_noiseA, path_to_signalA],
+                [path_to_noiseB, path_to_signalB],
+                [path_to_noiseC, path_to_signalC],
+            ],
+            [queryA, queryB, queryC],
+            model,
+            True,
+        )
 
         print("\n========== METRIC 4 ==========")
         print("extended q with signal".center(30))

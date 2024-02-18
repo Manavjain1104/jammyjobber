@@ -23,7 +23,6 @@ class Model(Enum):
     FACEBOOK_SUMMARISER = 4
     SUMMARY_ONLY = 5
     NONE = 6
-    
 
 
 def process_data(text, model):
