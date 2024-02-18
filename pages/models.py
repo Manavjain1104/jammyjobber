@@ -14,6 +14,9 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def significant(self):
+        self.is_significant = True
 
 
 class CV(models.Model):

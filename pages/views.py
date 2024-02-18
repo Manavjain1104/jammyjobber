@@ -18,7 +18,6 @@ collection_used = COLLECTION_NAME
 def home_page_view(request):
     # Assuming Job model has title and description fields
     job_instances = get_listings()
-    significant_threshold = get_siginificant_data()
     job_list = job_instances
 
     query = ""
@@ -26,6 +25,7 @@ def home_page_view(request):
     if "query" in request.GET and request.GET.get("query"):
         query = request.GET["query"]
         job_list, _ = get_similar(query, 5)
+        print(job_list)
 
     if "location_query" in request.GET:
         location_query = request.GET["location_query"]
@@ -63,7 +63,6 @@ def home_page_view(request):
 def get_listings():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
     jobs = read_job_listings(connection)
-    # Assuming Job model has title and description fields
     job_instances = [
         Job(
             job_id=job[0],
@@ -71,7 +70,7 @@ def get_listings():
             company=job[2],
             location=job[3],
             description=job[4],
-            link=job[5],
+            link=job[5],  
         )
         for job in jobs
     ]
@@ -81,17 +80,21 @@ def get_listings():
 
 def get_similar(query, number: int):
     job_instances = get_listings()
+    t = 0.73
     request_embedding = process_data(query, model=model_used)
     closest, dists = search_points(collection_used, request_embedding, number)
     job_list = [job for job in job_instances if job.job_id in closest]
+    for job in job_list:
+        if job.is_significant < t:
+            job.significant()
+            print("YESSSS")
     return job_list, dists
 
 
 def get_siginificant_data():
-    jobs_tech, dist1 = get_similar("tech", 10)
-    jobs_nurse, dist2 = get_similar("nurse", 10)
-    jobs_teacher, dist3 = get_similar("teacher", 10)
+    _, dist2 = get_similar("nurse", 10)
+    _, dist3 = get_similar("teacher", 10)
+    _, dist1 = get_similar("tech", 10)
     dist = dist1 + dist2 + dist3
     avg = statistics.mean(dist)
-    print(avg)
     return avg * 0.9
