@@ -25,7 +25,7 @@ def home_page_view(request):
     if "query" in request.GET and request.GET.get("query"):
         query = request.GET["query"]
         request_embedding = process_data(query, model=model_used)
-        closest = search_points(collection_used, request_embedding, 5)
+        closest = search_points(collection_used, request_embedding, 5, False)
         print(closest)
         print([job.job_id for job in job_instances])
         job_list = [job for job in job_instances if job.job_id in closest]
@@ -43,7 +43,7 @@ def home_page_view(request):
             job.description for job in job_instances if job.job_id == id
         ][0]
         request_embedding = process_data(job_summary, model=model_used)
-        closest = search_points(collection_used, request_embedding, 6)
+        closest = search_points(collection_used, request_embedding, 6, False)
         job_list = [job for job in job_instances if job.job_id in closest][1:]
 
     if request.method == "POST":
@@ -55,7 +55,7 @@ def home_page_view(request):
             os.remove(instance.pdf.path)
 
             request_embedding = process_data(text, model=model_used)
-            closest = search_points(collection_used, request_embedding, 5)
+            closest = search_points(collection_used, request_embedding, 5, False)
             job_list = [job for job in job_instances if job.job_id in closest]
             
     job_list_json = json.dumps([process_data(job_list[0].description, Model.SUMMARY_ONLY)])

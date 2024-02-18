@@ -89,7 +89,7 @@ def get_collection(collection):
 
 # Given a vector representation of a point, search for limit nearest points
 # in the database. Returns a list of job ids, used in SQLite
-def search_points(collection, vector, limit=10):
+def search_points(collection, vector, limit=10, get_dist= False):
     payload = {"vector": vector, "limit": limit}
     headers = {
         "content-type": "application/json",
@@ -102,6 +102,10 @@ def search_points(collection, vector, limit=10):
     point_ids = []
     for point in response.json()["points"]:
         point_ids.append(point["id"])
+
+    if get_dist:
+        for point in response.json()["points"]:
+            point_ids.append((point["id"], point["distance"]))
 
     return point_ids
 
