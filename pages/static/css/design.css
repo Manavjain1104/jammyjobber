@@ -337,3 +337,26 @@ h1 {
     } */
 
 }
+
+/* @keyframes fade-inout {
+    0%{ opacity: 1;}
+    100%{ opacity: 0;}
+}
+.fade-in-fade-out{
+    animation: fade-inout 5s infinite alternate;
+} */
+
+.fade {
+    opacity: 0; /* Start with the element invisible */
+    transition: opacity 1.5s; /* Transition effect for the opacity change */
+}
+
+.rotating-question {
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+/* Define a class that represents the visible state with full opacity */
+.visible {
+    opacity: 1;
+}
