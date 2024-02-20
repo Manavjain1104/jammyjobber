@@ -4,7 +4,7 @@ import json
 from enum import Enum
 import numpy as np
 
-ADDRESS = os.getenv("LLM_SERVER_ADDRESS")
+ADDRESS = "http://178.128.166.242:5000/" 
 TOKEN = os.getenv("INFERENCE_API_TOKEN")
 TOKEN = os.getenv("INFERENCE_API_TOKEN")
 HEADERS = {"Content-Type": "application/json"}
@@ -77,19 +77,35 @@ def process_data(text, model):
     else:
         raise Exception("Unknown model")
 
+MAX_LEN = 250
+MIN_LEN = 30
+
+from transformers import pipeline
+from sentence_transformers import SentenceTransformer
+from typing import List
+import numpy as np
+
+summariser = pipeline("summarization", model="Falconsai/text_summarization")
+embedder = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
+
 
 def create_summary(text: str) -> str:
-    json_single_data = json.dumps(text)
-    summary_response = requests.post(
-        ADDRESS + "get_summary", data=json_single_data, headers=HEADERS
+    summariser_output = summariser(
+        text, min_length=MIN_LEN, do_sample=False
     )
-    if summary_response.status_code == 200:
-        summary = summary_response.json()["summary"]
-        return summary
-    else:
-        raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+    summary = summariser_output[0]['summary_text']
+    return summary
+    # json_single_data = json.dumps(text)
+    # summary_response = requests.post(
+    #     ADDRESS + "get_summary", data=json_single_data, headers=HEADERS
+    # )
+    # if summary_response.status_code == 200:
+    #     summary = summary_response.json()["summary"]
+    #     return summary
+    # else:
+    #     raise Exception(
+    #         f"Error: {summary_response.status_code}, {summary_response.json()}"
+    #     )
 
 
 # def create_summary_facebook_model(text):
@@ -101,33 +117,57 @@ def create_summary(text: str) -> str:
 # create one vector embedding given a description in form of a string
 # example: create_embedding("some job")
 
+from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+
+answerer = "deepset/roberta-base-squad2"
+
 
 def get_skills_required(description):
-    json_single_data = json.dumps(description)
-    summary_response = requests.post(
-        ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS
-    )
-    if summary_response.status_code == 200:
-        summary = summary_response.json()["answer"]
-        return summary
-    else:
-        raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+    # json_single_data = json.dumps(description)
+    # summary_response = requests.post(
+    #     ADDRESS + "get_skills_required", data=json_single_data, headers=HEADERS
+    # )
+    # if summary_response.status_code == 200:
+    #     summary = summary_response.json()["answer"]
+    #     return summary
+    # else:
+    #     raise Exception(
+    #         f"Error: {summary_response.status_code}, {summary_response.json()}"
+    #     )
+    qa_pipeline = pipeline('question-answering', model=answerer, tokenizer=answerer)
+    input = {
+        'question': "What skills are required?",
+        'context': description
+    }
+    print(input)
+    res = qa_pipeline(input)['answer']
+
+    return res
+
 
 
 def get_job_details(description):
-    json_single_data = json.dumps(description)
-    summary_response = requests.post(
-        ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS
-    )
-    if summary_response.status_code == 200:
-        summary = summary_response.json()["answer"]
-        return summary
-    else:
-        raise Exception(
-            f"Error: {summary_response.status_code}, {summary_response.json()}"
-        )
+    # json_single_data = json.dumps(description)
+    # summary_response = requests.post(
+    #     ADDRESS + "get_job_details", data=json_single_data, headers=HEADERS
+    # )
+    # if summary_response.status_code == 200:
+    #     summary = summary_response.json()["answer"]
+    #     return summary
+    # else:
+    #     raise Exception(
+    #         f"Error: {summary_response.status_code}, {summary_response.json()}"
+    #     )
+    qa_pipeline = pipeline('question-answering', model=answerer, tokenizer=answerer)
+    input = {
+        'question': "What are the job details?",
+        'context': description
+    }
+    print(input)
+    res = qa_pipeline(input)['answer']
+
+    return res
+
 
 
 def get_candidate_skills(request):
@@ -159,17 +199,21 @@ def get_suggested_job(request):
 
 
 def create_embedding(description):
-    json_single_data = json.dumps(description)
-    embedding_response = requests.post(
-        ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS
-    )
-    if embedding_response.status_code == 200:
-        embedding = embedding_response.json()["embedding"]
-        return embedding
-    else:
-        raise Exception(
-            f"Error: {embedding_response.status_code}, {embedding_response.json()}"
-        )
+    embedding = embedder.encode([description])
+    embedding_normalised = embedding / \
+            np.linalg.norm(embedding, axis=1, keepdims=True)
+    return embedding_normalised[0].tolist()
+    # json_single_data = json.dumps(description)
+    # embedding_response = requests.post(
+    #     ADDRESS + "get_embedding", data=json_single_data, headers=HEADERS
+    # )
+    # if embedding_response.status_code == 200:
+    #     embedding = embedding_response.json()["embedding"]
+    #     return embedding
+    # else:
+    #     raise Exception(
+    #         f"Error: {embedding_response.status_code}, {embedding_response.json()}"
+    #     )
 
 
 # create a list of vector embeddings given a list of descriptions

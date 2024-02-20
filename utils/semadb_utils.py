@@ -52,6 +52,7 @@ def delete_collection(collection):
 # Given vector representation and SQLite id, return json representation
 # of a point
 def new_point(vector, externalId):
+    # return {"vector": vector, "metadata": {"externalId": externalId}}
     return {"vector": vector, "metadata": {"externalId": externalId}}
 
 
@@ -66,7 +67,7 @@ def add_points(collection, points):
         "X-RapidAPI-Host": HOST,
     }
     response = requests.post(points_url(collection), json=payload, headers=headers)
-    return response
+    return response.json()
 
 
 # Add points to a collection given a list of vector embeddings and their external ids

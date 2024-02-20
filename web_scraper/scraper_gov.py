@@ -92,25 +92,9 @@ if __name__ == "__main__":
     Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv
     file and min no. of jobs needed, to the EXTRACT function
     """
-    nurse_url = "https://findajob.dwp.gov.uk/search?adv=1&qwd=environment%20sustainability&qor=climate%20change%20leader%20green%20initiatives%20sustainability%20roles%20environmental%20impact&sb=relevance&sd=down"
-    extract(url=nurse_url, file_name="general", min_results=30)
+    
+    import pandas as pd
+    import os
 
-    recent_url = "https://findajob.dwp.gov.uk/search?q=&w="
-    extract(url=recent_url, file_name="recent", min_results=30, max_results=30)
-
-    accountant_url = "https://findajob.dwp.gov.uk/search?q=accountant&w=UK"
-    extract(url=accountant_url, file_name="accountant", min_results=10, max_results=10)
-
-    sustainability_url = "https://findajob.dwp.gov.uk/search?q=sustainability&w=UK"
-    extract(
-        url=sustainability_url,
-        file_name="sustainability",
-        min_results=10,
-        max_results=10,
-    )
-
-    biologist_url = "https://findajob.dwp.gov.uk/search?q=biologist&w=UK"
-    extract(url=biologist_url, file_name="biologist", min_results=10, max_results=10)
-
-    teacher_url = "https://findajob.dwp.gov.uk/search?q=teacher&w=UK"
-    extract(url=teacher_url, file_name="teacher", min_results=30, max_results=30)
+    accountant_url = "https://findajob.dwp.gov.uk/search?cat=19&loc=86383"
+    extract(url=accountant_url, file_name="sema_db_dataset", min_results=50, max_results=50)

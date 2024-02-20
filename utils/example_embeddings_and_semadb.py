@@ -1,9 +1,10 @@
-# from semadb_utils import *
-# from llm_utils import *
-# import os
-# from sqlite_utils import *
-# ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
-# from sentence_transformers import SentenceTransformer
+from semadb_utils import *
+from llm_utils import *
+import os
+from sqlite_utils import *
+ADDRESS = os.getenv('LLM_SERVER_ADDRESS')
+from sentence_transformers import SentenceTransformer
+from csv import reader
 
 
 # # create_collection("testJobs", 384, "cosine")
@@ -28,7 +29,7 @@
 # # print(jobs[closest[0]])
 
 
-# # print(create_collection(COLLECTION_NAME, 384))
+#print(create_collection("EvalJobsNoisyQA", 768))
 
 # # print(create_collection("JobAnswerer", 768))
 # # print(create_collection("JobFacebook", 384))
@@ -62,3 +63,32 @@
 # print(get_collection(COLLECTION_FACEBOOK_NAME))
 
 # # print(len(process_data("This is a cool job. No skills needed", Model.EXTRACTOR_DESCRIPTION)))
+
+# print(get_collection("EvaluationJobs"))
+vectors = []
+ids = []
+from pathlib import Path
+with open(Path("scraper_output/sema_db/combined_file_copy.csv"), "r") as csv_file:
+        csv_reader = reader(csv_file, delimiter=",")
+        csv_header = next(csv_reader)
+
+        if csv_header != [
+            "title" ,"company" ,"location" ,"description" ,"link"
+        ]:
+            raise Exception(
+                "csv file should contain title, company, location, description, link (order matters)"
+            )
+
+        i = 0
+        
+
+        # Populate the semaDB (we do not need to create the sqlite)
+        for row in csv_reader:
+            ids.append(i)
+            i += 1
+            vectors.append(process_data("Job title is " + row[0] + ". " + row[3], Model.EXTRACTOR_DESCRIPTION))
+            
+print(len(vectors))
+print(len(ids))
+
+print(bulk_add_points("EvalJobsNoisyQA", vectors, ids))
