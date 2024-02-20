@@ -14,6 +14,8 @@ COLLECTION_NAME = "JobListings"
 COLLECTION_ANSWERER_NAME = "JobAnswerer"
 COLLECTION_FACEBOOK_NAME = "JobFacebook"
 
+EMBEDDING_SIZE = 384
+
 
 # Url used to access a collection
 def collection_url(collection):
@@ -32,7 +34,8 @@ def search_url(collection):
 
 # Create a new collection of points
 def create_collection(id, vectorSize, distanceMetric="cosine"):
-    payload = {"id": id, "vectorSize": vectorSize, "distanceMetric": distanceMetric}
+    payload = {"id": id, "vectorSize": vectorSize,
+               "distanceMetric": distanceMetric}
     headers = {
         "content-type": "application/json",
         "X-RapidAPI-Key": KEY,
@@ -66,7 +69,8 @@ def add_points(collection, points):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(points_url(collection), json=payload, headers=headers)
+    response = requests.post(points_url(collection),
+                             json=payload, headers=headers)
     return response
 
 
@@ -94,7 +98,8 @@ def search_points(collection, vector, limit=10):
         "X-RapidAPI-Key": KEY,
         "X-RapidAPI-Host": HOST,
     }
-    response = requests.post(search_url(collection), json=payload, headers=headers)
+    response = requests.post(search_url(collection),
+                             json=payload, headers=headers)
 
     point_ids = []
     dists = []

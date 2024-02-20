@@ -42,7 +42,15 @@ def print_to_csv(data, file_name, max_entries=None):
     if type(max_entries) == int and max_entries < len(table):
         table = table[:max_entries]
     os.makedirs(OUTPUT_PATH, exist_ok=True)
-    table.to_csv(OUTPUT_PATH / (file_name + ".csv"), index=False, encoding="utf-8")
+
+    file_path = OUTPUT_PATH / (file_name + ".csv")
+
+    if os.path.isfile(file_path):
+        table.to_csv(file_path, mode='a', header=False,
+                     index=False, encoding="utf-8")
+    else:
+        table.to_csv(file_path,
+                     index=False, encoding="utf-8")
 
 
 def get_jobs_for_url(url, data, min_results):
@@ -81,9 +89,10 @@ def extract(url, file_name, min_results, max_results=None):
     """
 
     # Data ~= Format for the extracted data. Stores the list of information per column
-    data = {"title": [], "company": [], "location": [], "description": [], "link": []}
+    data = {"title": [], "company": [],
+            "location": [], "description": [], "link": []}
     get_jobs_for_url(url, data, min_results)
-    print("No. of jobs found: " + str(len(data["title"])))
+    print("No. of" + file_name + "jobs found: " + str(len(data["title"])))
     print_to_csv(data, file_name, max_results)
 
 
@@ -92,9 +101,18 @@ if __name__ == "__main__":
     Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv
     file and min no. of jobs needed, to the EXTRACT function
     """
-    
-    import pandas as pd
-    import os
+    # accountant_url = (
+    #     "https://findajob.dwp.gov.uk/search?cat=1&loc=86383&sb=relevance&sd=down"
+    # )
+    # extract(url=accountant_url, file_name="accountant", min_results=30)
 
-    accountant_url = "https://findajob.dwp.gov.uk/search?cat=19&loc=86383"
-    extract(url=accountant_url, file_name="sema_db_dataset", min_results=50, max_results=50)
+    # healthcare_url = (
+    #     "https://findajob.dwp.gov.uk/search?cat=12&loc=86383&sb=relevance&sd=down"
+    # )
+    # extract(url=healthcare_url,
+    #         file_name="url", min_results=10)
+
+    # general_url = (
+    #     "https://findajob.dwp.gov.uk/search?cat=19&loc=86383&sb=relevance&sd=down"
+    # )
+    # extract(url=general_url, file_name="url", min_results=10)
