@@ -92,7 +92,9 @@ if __name__ == "__main__":
     Pass the url of the |https://findajob.dwp.gov.uk/| page to scrape, along with the desired name of the output csv
     file and min no. of jobs needed, to the EXTRACT function
     """
-    accountant_url = (
-        "https://findajob.dwp.gov.uk/search?cat=1&loc=86383&sb=relevance&sd=down"
-    )
-    extract(url=accountant_url, file_name="accountant", min_results=30)
+    
+    import pandas as pd
+    import os
+
+    accountant_url = "https://findajob.dwp.gov.uk/search?cat=19&loc=86383"
+    extract(url=accountant_url, file_name="sema_db_dataset", min_results=50, max_results=50)

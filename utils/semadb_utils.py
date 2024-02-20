@@ -105,6 +105,21 @@ def search_points(collection, vector, limit=10):
 
     return (point_ids, dists)
 
+def search_ids_metadata(collection, vector, limit=10):
+    payload = {"vector": vector, "limit": limit}
+    headers = {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": KEY,
+        "X-RapidAPI-Host": HOST,
+    }
+    response = requests.post(search_url(collection), json=payload, headers=headers)
+
+    point_ids = []
+    for point in response.json()["points"]:
+        point_ids.append(point["metadata"]["externalId"])
+
+    return point_ids
+
 
 if __name__ == "__main__":
     print(get_collection(COLLECTION_NAME))
