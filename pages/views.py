@@ -21,10 +21,12 @@ def home_page_view(request):
     job_list = job_instances
 
     query = ""
+    show_suggested = False
 
     if "query" in request.GET and request.GET.get("query"):
         query = request.GET["query"]
         job_list, _ = get_similar(query, 5)
+        show_suggested = True
         print(job_list)
 
     if "location_query" in request.GET:
@@ -43,7 +45,8 @@ def home_page_view(request):
         if form.is_valid():
             instance = form.save()
             text = extract_text(instance.pdf.path)
-            query = text
+            query = process_data(text, Model.SUMMARY_ONLY)
+            show_suggested = True
             os.remove(instance.pdf.path)
             job_list, _ = get_similar(text, 5)
             print(job_list)
@@ -56,7 +59,7 @@ def home_page_view(request):
     return render(
         request,
         "pages/home_search.html",
-        {"job_list": job_list, "query": query, "json_list": job_list_json},
+        {"job_list": job_list, "query": query, "json_list": job_list_json, "show_suggested": show_suggested},
     )
 
 

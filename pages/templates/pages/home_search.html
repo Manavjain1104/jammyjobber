@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,43 +13,50 @@
 <body>
 
     <header>
-        <h1>🍓 Welcome to JammyJobber! 🍓</h1>
-        <p class="catchline">Let's find your jam</p>
+        <h1>🍓JammyJobber🍓</h1>
+        <p class="catchline">Let's find your jam!</p>
     </header>
-    
-    <div class="main-page">
-
-        <div class="search-box">
-            <label for="search-input">Enter query here</label>
-            <form action="" method="get">
-                <input type="text" name="query" placeholder="Search here...">
-                <input type="text" name="location_query" placeholder="Enter preferred location...">
-                <button type="submit">Submit</button>
-            </form>
+    <div class="content-wrapper">
+        <div class="image-section">
+            <img src="https://media.giphy.com/media/l46Cy1rHbQ92uuLXa/giphy.gif?cid=790b7611bv1pls4x9yny0se9o4piryk1p22n8jt5mu4z8kag&ep=v1_gifs_search&rid=giphy.gif&ct=g alt="Descriptive Alt Text">
         </div>
 
-        <div class="add-cv">
-            {% if submitted %}
-                Your CV was Submitted Successfully
-            {% else %}
-                <form action method ="POST" enctype = "multipart/form-data">
-                {% csrf_token %}
-                    <label for="id_pdf">Add CV to Database</label>
-                    <input type="file" name="pdf" required id="id_pdf">
-                <div class="submit-button-section">
-                    <button class="submit-button" type="submit"> Update </button>
-                </div>
+        <div class="main-page">
+
+            <div class="search-box">
+                <label for="search-input">Enter query here</label>
+                <form action="" method="get">
+                    <input type="text" name="query" placeholder="Search here...">
+                    <input type="text" name="location_query" placeholder="Enter preferred location...">
+                    <button type="submit">Submit</button>
                 </form>
-            {% endif %}
-        </div>
+            </div>
+            
+            <div class="add-cv">
+                {% if submitted %}
+                    Your CV was Submitted Successfully
+                {% else %}
+                    <form action method ="POST" enctype = "multipart/form-data">
+                    {% csrf_token %}
+                        <label for="id_pdf">Add CV to Database</label>
+                        <input type="file" name="pdf" required id="id_pdf">
+                    <div class="submit-button-section">
+                        <button class="submit-button" type="submit"> Update </button>
+                    </div>
+                    </form>
+                {% endif %}
+            </div>
 
+        </div>
     </div>
 
     <ul class="job-listings">
+        {% if show_suggested %}
         <button class="expand-btn" onclick="toggleSuggested(this)">Why were these jobs suggested?</button>
         <div id="whysuggested" class="job-description">
         <p id="suggested"></p>
         </div>
+        {% endif %}
         {% for job in job_list %}
             <li class="job-listing">
                 <a href=" {{ job.link }} "><h3>{{ job.title }}</h3></a>
@@ -57,16 +66,51 @@
 
                 {% endif %}
                 <button class="expand-btn" onclick="toggleDescription(this, '{{ job.job_id }}')">Show Description</button>
-                <button type="button" class="expand-btn" name="id" value = '{{ job.job_id }}' ><a href="/?id={{ job.job_id }}">Show Similar</a></button>
+                <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="/?id={{ job.job_id }}">Show Similar</a></button>
                 <div id="description-{{ job.job_id }}" class="job-description">
                     <p>{{ job.description }}</p>
                 </div>
             </li>
         {% endfor %}
     </ul>
+    <script src="{% static 'js/job_listing.js' %}"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="../../static/js/job_listing.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+    <script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var colors = ['#3498db', '#f1c40f', '#e91e63', '#2ecc71']; // Blue, Yellow, Pink, Green
+            var jobListings = document.querySelectorAll('.job-listing');
+
+            jobListings.forEach(function(jobListing) {
+                var randomColor = colors[Math.floor(Math.random() * colors.length)];
+                jobListing.style.backgroundColor = randomColor;
+            });
+        });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+        <script>
+        AOS.init();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const strings = ['What do you want your job to involve?', 'Where do you want to work?', 'What skills do you have?'];
+            let currentIndex = 0;
+
+            function updateText() {
+                document.getElementById('rotating-question').textContent = strings[currentIndex];
+                currentIndex = (currentIndex + 1) % strings.length;
+            }
+
+            setInterval(updateText, 4000);
+        });
+    </script>
+
+
+        </script>
     <script type="module">
         window.onload = function() {
             let jobs = {{ json_list|safe }};
@@ -79,12 +123,12 @@
                 document.getElementById("suggested").innerHTML = event.data;
             };
         };
-    
+
         window.toggleSuggested = function toggleSuggested(button) {
             $(button).siblings(`#whysuggested`).toggle();
         }
-    </script>    
- 
+    </script>
+
 </body>
 </html>
 
