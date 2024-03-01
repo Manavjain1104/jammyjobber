@@ -1,134 +1,66 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../static/css/design.css">
+    <title>JammyJobber</title>
+    <link rel="stylesheet" href="../../static/css/new_design.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&family=Open+Sans:ital,wght@0,400;0,700;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Montserrat:ital,wght@0,400;0,700;1,400&family=Nunito:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
-
-    <title>JammyJobber Search</title>
 </head>
 <body>
-
-    <header>
-        <h1>🍓JammyJobber🍓</h1>
-        <p class="catchline">Let's find your jam!</p>
-    </header>
-    <div class="content-wrapper">
-        <div class="image-section" data-aos="fade-up" data-aos-duration="1000">
-            <img src="https://media.giphy.com/media/l46Cy1rHbQ92uuLXa/giphy.gif?cid=790b7611bv1pls4x9yny0se9o4piryk1p22n8jt5mu4z8kag&ep=v1_gifs_search&rid=giphy.gif&ct=g alt="Descriptive Alt Text" style="transform: translate(250px,-90px);">
-        </div>
-
-        <div class="main-page">
-
-            <div class="search-box">
-                <label for="search-input">Enter query here</label>
-                <form action="" method="get">
-                    <input type="text" name="query" placeholder="Search here...">
-                    <input type="text" name="location_query" placeholder="Enter preferred location...">
-                    <button type="submit">Submit</button>
-                </form>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+              <h1>JammyJobber</h1>
             </div>
-            
-            <div class="add-cv">
-                {% if submitted %}
-                    Your CV was Submitted Successfully
-                {% else %}
-                    <form action method ="POST" enctype = "multipart/form-data">
-                    {% csrf_token %}
-                        <label for="id_pdf">Search with CV</label>
-                        <input type="file" name="pdf" required id="id_pdf">
-                    <div class="submit-button-section">
-                        <button class="submit-button" type="submit"> Upload </button>
-                    </div>
-                    </form>
-                {% endif %}
+            <div class="header-right">
+              <h1>Let's Find Your Dream Job Today!</h1>
+            </div>
+        </header>
+        <div class="divider"></div>
+        <main class="main">
+            <div class="text-rotation">
+              <span id="text"></span>
             </div>
 
-        </div>
-    </div>
-
-    <ul class="job-listings">
-        {% if show_suggested %}
-        <button class="expand-btn" onclick="toggleSuggested(this)">Why were these jobs suggested?</button>
-        <div id="whysuggested" class="job-description">
-        <p id="suggested"></p>
-        </div>
-        {% endif %}
-        {% for job in job_list %}
-            <li class="job-listing">
-                <a href=" {{ job.link }} "><h3>{{ job.title }}</h3></a>
-                <p>{{ job.company }} @ {{ job.location }}</p>
-                {% if job.is_significant %}
-                <p>SIGNIFICANT</p>
-
-                {% endif %}
-                <button class="expand-btn" onclick="toggleDescription(this, '{{ job.job_id }}')">Show Description</button>
-                <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="/?id={{ job.job_id }}">Show Similar</a></button>
-                <div id="description-{{ job.job_id }}" class="job-description">
-                    <p>{{ job.description }}</p>
+            <form action="" method="get">
+              <textarea name="query" 
+              placeholder="I want to teach a variety of STEM subjects in secondary school. I have lots of experience working with early teenagers, a strong background in math and computer programming, and am adept at handling workplace conflicts..."
+              rows="10"></textarea>
+              <div class="divider-container"></div>
+              <header class="lower">
+                <div class="lower-left">
+                  <input type="text" name="location_query" placeholder="Enter preferred location...">
                 </div>
-            </li>
-        {% endfor %}
-    </ul>
-    <script src="{% static 'js/job_listing.js' %}"></script>
+                <div class="lower-right">
+                  <button type="submit">Submit</button>
+                </div>
+              </header>
+            </form>
+            
+            
+        </main>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="../../static/js/job_listing.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-    <script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var colors = ['#3498db', '#f1c40f', '#e91e63', '#2ecc71']; // Blue, Yellow, Pink, Green
-            var jobListings = document.querySelectorAll('.job-listing');
-
-            jobListings.forEach(function(jobListing) {
-                var randomColor = colors[Math.floor(Math.random() * colors.length)];
-                jobListing.style.backgroundColor = randomColor;
-            });
-        });
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-        <script>
-        AOS.init();
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const strings = ['What do you want your job to involve?', 'Where do you want to work?', 'What skills do you have?'];
-            let currentIndex = 0;
-
-            function updateText() {
-                document.getElementById('rotating-question').textContent = strings[currentIndex];
-                currentIndex = (currentIndex + 1) % strings.length;
-            }
-
-            setInterval(updateText, 4000);
-        });
-    </script>
-
-
-        </script>
-    <script type="module">
-        window.onload = function() {
-            let jobs = {{ json_list|safe }};
-            let job = jobs[0];
-            let job_query = {{ query|safe }};
-            let w = new Worker("../../static/js/worker.js", { type: "module" });
-            w.postMessage([job_query, job]);
-            document.getElementById("suggested").innerHTML = "Loading... Please, wait";
-            w.onmessage = function(event) {
-                document.getElementById("suggested").innerHTML = event.data;
-            };
-        };
-
-        window.toggleSuggested = function toggleSuggested(button) {
-            $(button).siblings(`#whysuggested`).toggle();
-        }
-    </script>
-
+        <div class="add-cv">
+            {% if submitted %}
+                Your CV was Submitted Successfully
+            {% else %}
+                <form action method ="POST" enctype = "multipart/form-data">
+                {% csrf_token %}
+                    <label for="id_pdf">Search with CV</label>
+                    <input type="file" name="pdf" required id="id_pdf">
+                <div class="submit-button-section">
+                    <button type="submit"> Upload </button>
+                </div>
+                </form>
+            {% endif %}
+        </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="../../static/js/job_listing.js"></script>
+    </div>
 </body>
 </html>
 

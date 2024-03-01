@@ -1,23 +1,43 @@
 function toggleDescription(button, jobId) {
-    var descriptionElement = document.getElementById('description-' + jobId);
-      if (descriptionElement.style.display === 'none' || descriptionElement.style.display === '') {
-          descriptionElement.style.display = 'block';
-          descriptionElement.classList.add('active-description'); 
-      } else {
-          descriptionElement.style.display = 'none';
-          descriptionElement.classList.remove('active-description');
-      }
+  $(button).siblings(`#description-${jobId}`).toggle();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const textElement = document.getElementById("text");
+  const texts = ["What do you want to do day-to-day?", 
+    "Can you describe the skills or qualifications you possess?", 
+    "What industry or field are you looking to work in?",
+    "Are there particular challenges you enjoy tackling in your work?",
+    "What technical skills are you proficient in and hope to utilize?",
+    "Do you have any preferred work schedule?"]; // Your list of texts
+  let index = 0;
+
+  function changeText() {
+    textElement.textContent = texts[index];
+    index = (index + 1) % texts.length;
   }
-  
-  document.addEventListener('DOMContentLoaded', function() {
-      const strings = ['What do you want your job to involve?', 'Where do you want to work?', 'What skills do you have?'];
-      let currentIndex = 0; 
-  
-      function updateText() {
-          document.getElementById('rotating-question').textContent = strings[currentIndex];
-          currentIndex = (currentIndex + 1) % strings.length;
-      }
-  
-      setInterval(updateText, 4000);
-  });
-  
+
+  function fadeIn() {
+    textElement.style.opacity = "1";
+    textElement.style.transition = "opacity 0.5s ease-in-out"; // Add CSS transition
+  }
+
+  function fadeOut() {
+    textElement.style.opacity = "0";
+  }
+
+  // Initial text display
+  changeText(); // Display initial text
+  fadeIn(); // Fade in initially
+
+  // Start text rotation after a delay
+  setTimeout(function() {
+    setInterval(function() {
+      fadeOut(); // Fade out
+      setTimeout(function() {
+        changeText(); // Change text
+        fadeIn(); // Fade in
+      }, 500); // Delay before fading in again
+    }, 5000); // Interval for changing text (adjust as needed)
+  }, 1000); // Delay before starting text rotation (adjust as needed)
+});

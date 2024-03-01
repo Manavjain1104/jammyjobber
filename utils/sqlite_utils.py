@@ -119,11 +119,88 @@ def bulk_delete_job_listing(connection, job_ids):
     cursor = connection.cursor()
 
     placeholders = ",".join(["?"] * len(job_ids))
-    cursor.execute(f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
+    cursor.execute(
+        f"DELETE FROM job_listings WHERE id IN ({placeholders})", job_ids)
     connection.commit()
 
 
+# ========= SEARCH TITLE =========
+def group_by_job_title(connection, idx=[], use_logic=False):
+    # Group by the job title (associated with the indexes), if empty return all
+    cursor = connection.cursor()
+
+    # Prepare a comma-separated list of placeholders for the SQL query
+    placeholders = ",".join("?" * len(idx))
+
+    if idx == []:
+        cursor.execute(
+            "SELECT id, title, company, location, description, link FROM job_listings")
+    else:
+        cursor.execute(
+            f"SELECT id, title, company, location, description, link FROM job_listings WHERE id IN ({placeholders})",
+            idx
+        )
+    job_listings = cursor.fetchall()
+
+    grouped_jobs = {}
+    for job in job_listings:
+        job_id, title, company, location, description, link = job
+        if use_logic:
+            matched = False
+            for existing_title in grouped_jobs.keys():
+                if _are_titles_related(title, existing_title):
+                    grouped_jobs[existing_title].append({
+                        "id": job_id,
+                        "title": title,
+                        "company": company,
+                        "location": location,
+                        "description": description,
+                        "link": link
+                    })
+                    matched = True
+                    break
+            if not matched:
+                grouped_jobs[title] = [{
+                    "id": job_id,
+                    "title": title,
+                    "company": company,
+                    "location": location,
+                    "description": description,
+                    "link": link
+                }]
+        else:
+            if title not in grouped_jobs:
+                grouped_jobs[title] = []
+            grouped_jobs[title].append({
+                "id": job_id,
+                "title": title,
+                "company": company,
+                "location": location,
+                "description": description,
+                "link": link
+            })
+
+    return grouped_jobs
+
+
+def _are_titles_related(title1, title2):
+    # Convert both titles to lowercase for case-insensitive comparison
+    title1_lower = title1.lower()
+    title2_lower = title2.lower()
+
+    # Split titles into words and find common keywords
+    words1 = title1_lower.split()
+    words2 = title2_lower.split()
+    common_keywords = set(words1) & set(words2)
+
+    # Check if there are common keywords between titles
+    if common_keywords:
+        return True
+
+    return False
 # ========= TEST DATA ==========
+
+
 def populate_dummy_job_listing(connection):
     create_job_listing(
         connection,
@@ -196,4 +273,7 @@ connection.close()
 
 if __name__ == "__main__":
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    print(len(read_job_listings(connection)))
+    for (i, n) in group_by_job_title(connection, use_logic=True).items():
+        print(i + " " + str(len(n)))
     connection.close()

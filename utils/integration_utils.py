@@ -62,6 +62,7 @@ def csv_into_database(collection, path_to_file, csv_delimiter=","):
     os.remove(path_to_file)
 
 
+# ========= Repopulate Database ===========
 def clear_and_reset_ll_database_stuff():
     print("Resetting the sqlite")
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
@@ -79,7 +80,6 @@ def show_database_overview():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
     print(len(read_job_listings(connection)))
     connection.close()
-
     print(get_collection(COLLECTION_NAME))
 
 
@@ -220,7 +220,17 @@ def clean_and_repopulate_database():
     csv_into_database(COLLECTION_NAME, "scraper_output/repopulate.csv")
 
 
+# ======== Aggregate Database ==============
+# from the semadb get the indexes of relevent job listings (prob need to change so that the number is more)
+# go to sqlite find the corresponding jobs
+# use group by function there to get a grouping of job title to its track
+# return a
+def aggregate_job_listings():
+    ...
+
+
 if __name__ == "__main__":
+    # uncomment these to repopulate the database from scratch
     # csv_into_database(COLLECTION_NAME, "scraper_output/accountant.csv")
     # clean_and_repopulate_database()
     show_database_overview()
