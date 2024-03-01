@@ -9,14 +9,14 @@ body, html {
     padding: 0;
     font-family: 'Roboto', Arial, sans-serif;
     height: 100%;
-    background: (to right, #b6fbff, #83a4d4);
+    background: linear-gradient(to right, #b6fbff, #83a4d4);
     width: 100%;
     overflow-x: hidden;
 }
 
 .job-listings, .job-listing, .main-page, header {
     background-color: transparent;
-    background: (to left, #b6fbff, #83a4d4);
+    background: linear-gradient(to left, #b6fbff, #83a4d4);
 }
 
 body {

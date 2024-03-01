@@ -26,8 +26,9 @@
               <span id="text"></span>
             </div>
 
-            <form action="" method="get">
-              <textarea name="query" 
+            <form action="" method="POST">
+                {% csrf_token %}
+              <textarea name="query"
               placeholder="I want to teach a variety of STEM subjects in secondary school. I have lots of experience working with early teenagers, a strong background in math and computer programming, and am adept at handling workplace conflicts..."
               rows="10"></textarea>
               <div class="divider-container"></div>
@@ -40,8 +41,8 @@
                 </div>
               </header>
             </form>
-            
-            
+
+
         </main>
 
         <div class="add-cv">
