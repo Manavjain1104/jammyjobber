@@ -41,3 +41,22 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 5000); // Interval for changing text (adjust as needed)
   }, 1000); // Delay before starting text rotation (adjust as needed)
 });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  const cvLabel = document.getElementById("cvLabel");
+  const cvForm = document.getElementById("cvForm");
+  const cvInput = document.getElementById("id_pdf");
+  const submitButton = document.getElementById("submitButton");
+
+  cvLabel.addEventListener("click", function() {
+    cvForm.style.display = "block";
+    cvInput.style.display = "block";
+    cvLabel.style.display = "none";
+});
+
+  // When the file input changes (i.e., the user selects a file), submit the form
+  cvInput.addEventListener("change", function() {
+      submitButton.click(); // Trigger a click event on the submit button
+  });
+});

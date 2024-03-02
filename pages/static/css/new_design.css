@@ -5,6 +5,7 @@ body {
   background: linear-gradient(to right, #ff5757, #a5355c);
   color: white;
 }
+
 /* 
 background-color: #ff5757; */
 textarea {
@@ -118,16 +119,21 @@ h2 {
   font-size: 1.5em;
 }
 
+
+/* HOME SEARCH */
 .main {
-  padding: 30px;
   max-width: 1000px;
-  border: 3px solid #ddd;
-  border-radius: 10px;
   position: fixed;
   top: 50%;
   right: 50%;
   transform: translate(50%, -50%);
   width: 90%; /* Set a default width */
+}
+
+.search-box {
+  border: 3px solid #ddd;
+  padding: 30px;
+  border-radius: 10px;
 }
 
 .container .main .text-rotation {
@@ -157,4 +163,29 @@ button {
 
 button:hover {
   background-color: #ddd;
+}
+
+
+.add-cv {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  font-size: 20px;
+  margin-top: 20px; /* Add some space between the previous objects and the .add-cv section */
+}
+
+/* RESULT PAGE */
+.job-listings {
+  padding: 0px;
+  max-width: 1000px;
+  margin: 0 auto; /* Center horizontally */
+  right: 50%;
+  list-style: none; /* Remove default list styles */
+}
+
+.job-listing {
+  border: 3px solid #ddd;
+  border-radius: 10px;
+  padding: 20px; /* Add padding to create space between the content and border */
+  margin-bottom: 20px; /* Add margin to separate job listings */
 }

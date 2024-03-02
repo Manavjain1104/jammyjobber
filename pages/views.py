@@ -4,6 +4,8 @@ from utils.llm_utils import *
 from utils.sqlite_utils import *
 from utils.address_utils import *
 from .models import Job
+from .forms import CVForm
+from pdfminer.high_level import extract_text
 import statistics
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -25,9 +27,8 @@ def home_page_view(request):
     if "location_query" in request.POST and request.POST.get("location_query"):
         location_query = request.POST["location_query"]
 
-
     # TODO: extract cv query to pass in loading
-    '''
+
     if request.method == "POST":
         form = CVForm(request.POST, request.FILES)
         if form.is_valid():
@@ -38,7 +39,7 @@ def home_page_view(request):
             os.remove(instance.pdf.path)
             job_list, _ = get_similar(text, 5)
             print(job_list)
-    '''
+
     query = json.dumps(query)
 
     data_to_pass = {
@@ -103,7 +104,6 @@ def results_page_view(request):
             job for job in job_list if is_in_region(job.location, location_query)
         ]
 
-
     job_list_json = json.dumps(
         [process_data(job_list[0].description, Model.SUMMARY_ONLY)]
     )
@@ -111,7 +111,8 @@ def results_page_view(request):
 
     return render(request,
                   'pages/results_page.html',
-                  {"job_list": job_list, "query": query, "json_list": job_list_json, "show_suggested": show_suggested},
+                  {"job_list": job_list, "query": query,
+                      "json_list": job_list_json, "show_suggested": show_suggested},
                   )
 
 
@@ -142,7 +143,6 @@ def get_similar(query, number: int):
     for job in job_list:
         if job.is_significant < t:
             job.significant()
-            print("YESSSS")
     return job_list, dists
 
 
