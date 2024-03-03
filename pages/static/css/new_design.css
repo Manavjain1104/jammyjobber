@@ -6,6 +6,16 @@ body {
   color: white;
 }
 
+a {
+  color: white; /* Set the color to white for all anchor elements */
+  text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+
 /* 
 background-color: #ff5757; */
 textarea {
@@ -90,6 +100,14 @@ input[type="text"]::placeholder {
   text-align: right;
 }
 
+.submit-button-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px; /* Add margin between the two divs */
+}
+
+
 .lower {
   display: flex;
   justify-content: space-between;
@@ -133,7 +151,9 @@ h2 {
 .search-box {
   border: 3px solid #ddd;
   padding: 30px;
+  margin: 0 auto;
   border-radius: 10px;
+  margin: 0;
 }
 
 .container .main .text-rotation {
@@ -155,24 +175,33 @@ p {
 
 button {
   padding: 10px 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  border: 3px solid white; /* Add border to the button */
+  font-size: 20px;
+  border-radius: 10px;
   margin-right: 10px;
-  cursor: pointer;
+  background-color: transparent; /* Set initial background color */
+  color: white; /* Set text color to white */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s ease; /* Add transition for background color */
 }
 
 button:hover {
-  background-color: #ddd;
+  background-color: white; /* Change background color on hover */
+  color: #ff5757; /* Change text color on hover */
 }
 
+.a button:hover {
+  color: #ff5757;
+}
 
 .add-cv {
-  display: flex;
-  justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
+  text-align: center; /* Center text horizontally */
   font-size: 20px;
+  margin: 0 auto; /* Center horizontally */
   margin-top: 20px; /* Add some space between the previous objects and the .add-cv section */
 }
+
 
 /* RESULT PAGE */
 .job-listings {
@@ -186,6 +215,13 @@ button:hover {
 .job-listing {
   border: 3px solid #ddd;
   border-radius: 10px;
-  padding: 20px; /* Add padding to create space between the content and border */
+  padding: 10px; /* Add padding to create space between the content and border */
   margin-bottom: 20px; /* Add margin to separate job listings */
 }
+
+.job-listing h3 {
+  font-size: 24px; /* Set the font size to make the job title bigger */
+  color: white; /* Set the text color to white */
+  cursor: pointer; /* Change the cursor to pointer */
+}
+

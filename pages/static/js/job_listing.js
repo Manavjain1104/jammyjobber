@@ -53,10 +53,6 @@ document.addEventListener("DOMContentLoaded", function() {
     cvForm.style.display = "block";
     cvInput.style.display = "block";
     cvLabel.style.display = "none";
+    submitButton.style.display = "block";
 });
-
-  // When the file input changes (i.e., the user selects a file), submit the form
-  cvInput.addEventListener("change", function() {
-      submitButton.click(); // Trigger a click event on the submit button
-  });
 });

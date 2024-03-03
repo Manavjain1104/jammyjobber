@@ -15,7 +15,7 @@
     <div class="container">
         <header class="header">
             <div class="header-left">
-              <h1>JammyJobber</h1>
+              <a href="/" class="home-link"><h1>JammyJobber</h1></a>
             </div>
             <div class="header-right">
               <h1>Let's Find Your Jam!</h1>
@@ -45,7 +45,6 @@
             </form>
           </div>
             
-
           <!-- <div class="add-cv">
             {% if submitted %}
                 Your CV was Submitted Successfully
@@ -67,12 +66,15 @@
             {% else %}
                 <form id="cvForm" action method ="POST" enctype = "multipart/form-data" style="display: none;">
                     {% csrf_token %}
-                    <input type="file" name="pdf" required id="id_pdf" style="display: none;">
                     <div class="submit-button-section">
-                        <button id="submitButton" type="submit" style="display: none;"> Upload </button>
+                      <input type="file" name="pdf" required id="id_pdf" style="display: none;">
+                    </div>
+                    
+                    <div class="submit-button-section">
+                      <button id="submitButton" type="submit" > Upload </button>
                     </div>
                 </form>
-                <label id="cvLabel" for="id_pdf" style="cursor: pointer; font-style: italic; font-size: 24px">or search with CV</label>
+                <label id="cvLabel" for="id_pdf" style="cursor: pointer; font-style: italic; font-size: 24px;">or search with CV</label>
             {% endif %}
           </div>
         </main>
