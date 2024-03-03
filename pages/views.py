@@ -86,6 +86,7 @@ def results_page_view(request):
     print(data_passed["query"])
     print(data_passed["location_query"])
 
+    # TODO: delete??
     job_instances = get_listings()
     job_list = job_instances
 
@@ -94,19 +95,22 @@ def results_page_view(request):
 
     if data_passed["query"]:
         query = data_passed["query"]
-        job_list, _ = get_similar(query, 5)
+        job_titles = get_dictionary_job(query, 30)
         show_suggested = True
-        print("Job_list", job_list)
+        print("Job_list", job_titles)
 
     if data_passed["location_query"] != "":
         location_query = data_passed["location_query"]
-        job_list = [
-            job for job in job_list if is_in_region(job.location, location_query)
-        ]
+        # TODO: go though each item in dict to mark if it is in location (and chnage the job_titles)
+        # job_list = [
+        #     job for job in job_list if is_in_region(job.location, location_query)
+        # ]
 
     if "id" in request.GET:
         id = request.GET["id"]
-        job_summary = [job.description for job in job_instances if job.job_id == id][0]
+        # TODO: think about what to do here (hide the aggregation?? idk)
+        job_summary = [
+            job.description for job in job_instances if job.job_id == id][0]
         job_list, _ = get_similar(job_summary, 6)
 
     job_list_json = json.dumps(
@@ -116,7 +120,7 @@ def results_page_view(request):
 
     return render(request,
                   'pages/results_page.html',
-                  {"job_list": job_list, "query": query,
+                  {"job_titles": job_titles, "job_list": job_list, "query": query,
                       "json_list": job_list_json, "show_suggested": show_suggested},
                   )
 
@@ -137,6 +141,19 @@ def get_listings():
     ]
     connection.close()
     return job_instances
+
+
+def get_dictionary_job(query, number: int):
+    request_embedding = process_data(query, model=model_used)
+
+    # TODO: significant
+    closest, dists = search_points(collection_used, request_embedding, number)
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    dict_job = group_by_job_title(connection, idx=closest, use_logic=True)
+    connection.close()
+
+    # go though each elem in dict to see whether it is significant and modify
+    return dict_job
 
 
 def get_similar(query, number: int):

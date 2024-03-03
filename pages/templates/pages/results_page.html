@@ -24,7 +24,23 @@
         <div class="divider"></div>
         <!-- maybe a smaller one search on top -->
         
-
+        <ul class="job-titles">
+          {% for title, job_listings in job_titles.items %}
+            <button class="title-btn" onclick="toggleJobListings(this)">{{ title }}</button>
+            <ul class="job-listings" style="display: none;">
+              {% for job in job_listings %}
+                  <li class="job-listing">
+                      <a href="{{ job.link }}"><h3>{{ job.title }}</h3></a>
+                      <h4>{{ job.company }} @ {{ job.location }}</h4>
+                      <div id="description-{{ job.job_id }}" class="job-description">
+                          <p>{{ job.description }}</p>
+                      </div>
+                  </li>
+              {% endfor %}
+          </ul>
+          {% endfor %}
+        </ul>
+      
         <ul class="job-listings">
             {% if show_suggested %}
             <button class="expand-btn" onclick="toggleSuggested(this)">Why were these jobs suggested?</button>

@@ -204,6 +204,16 @@ button:hover {
 
 
 /* RESULT PAGE */
+.job-titles {
+  padding: 0px;
+  max-width: 1000px;
+  margin: 0 auto; /* Center horizontally */
+  right: 50%;
+  list-style: none; /* Remove default list styles */
+}
+
+
+
 .job-listings {
   padding: 0px;
   max-width: 1000px;

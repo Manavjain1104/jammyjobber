@@ -2,6 +2,11 @@ function toggleDescription(button, jobId) {
   $(button).siblings(`#description-${jobId}`).toggle();
 }
 
+function toggleJobListings(button) {
+  var jobListings = button.nextElementSibling;
+  jobListings.style.display = jobListings.style.display === "none" ? "block" : "none";
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   const textElement = document.getElementById("text");
   const texts = ["What do you want to do day-to-day?", 
