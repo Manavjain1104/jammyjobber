@@ -56,7 +56,17 @@
                 </li>
             {% endfor %}
         </ul>
+        <div id="jobPopup" class="popup" style="display:none;">
+            <div class="popup-content">
+                <span class="close" onclick="closePopup()">&times;</span>
+                <h3 id="popupTitle"></h3>
+                <p id="popupCompany"></p>
+                <p id="popupLocation"></p>
+                <p id="popupDescription"></p>
+            </div>
+        </div>
     </div>
+    
     
 
     
@@ -66,8 +76,8 @@
     <script src="../../static/js/job_listing.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-    <script>
-    <script>
+    
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             var colors = ['#3498db', '#f1c40f', '#e91e63', '#2ecc71']; // Blue, Yellow, Pink, Green
             var jobListings = document.querySelectorAll('.job-listing');
@@ -81,7 +91,7 @@
         <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
         <script>
         AOS.init();
-    </script>
+    </script> -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const strings = ['What do you want your job to involve?', 'Where do you want to work?', 'What skills do you have?'];
@@ -97,12 +107,12 @@
     </script>
 
 
-    </script>
+    
     <script type="module">
         window.onload = function() {
-            let jobs = {{ json_list|safe }};
+            let jobs = json_list;
             let job = jobs[0];
-            let job_query = {{ query|safe }};
+            let job_query = "{{ query|safe }}";
             let w = new Worker("../../static/js/worker.js", { type: "module" });
             w.postMessage([job_query, job]);
             document.getElementById("suggested").innerHTML = "Loading... Please, wait";
@@ -115,6 +125,31 @@
             $(button).siblings(`#whysuggested`).toggle();
         }
     </script>
+
+<script>
+    function showPopup(title, company, location, description) {
+        document.getElementById('popupTitle').innerText = title
+        document.getElementById('popupCompany').innerText = company;
+        document.getElementById('popupLocation').innerText = location;
+        document.getElementById('popupDescription').innerText = description;
+        document.getElementById('jobPopup').style.display = 'block';
+        // var description = button.getAttribute("data-description");
+    
+        // var textArea = document.createElement("textarea");
+        // textArea.innerHTML = description;
+        // var decodedDescription = textArea.value;
+
+        // var finalDescription = "Hi, " + decodedDescription;
+
+        // document.getElementById("popOutText").innerHTML = finalDescription;
+        // document.getElementById("popOutBox").style.display = "block";
+    }
+    
+    function closePopup() {
+        document.getElementById('jobPopup').style.display = 'none';
+    }
+    </script>
+    
 
 </body>
 </html>

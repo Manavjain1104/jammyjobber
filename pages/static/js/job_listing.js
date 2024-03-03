@@ -56,3 +56,20 @@ document.addEventListener("DOMContentLoaded", function() {
     submitButton.style.display = "block";
 });
 });
+
+  // When the file input changes (i.e., the user selects a file), submit the form
+cvInput.addEventListener("change", function() {
+  submitButton.click(); // Trigger a click event on the submit button
+});
+
+
+
+let popup = document.getElementById('popup')
+
+function openPopup(){
+  popup.classList.add('open-popup')
+}
+
+function closePopup(){
+  popup.classList.remove('open-popup')
+}
