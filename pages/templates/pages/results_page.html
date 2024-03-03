@@ -120,9 +120,9 @@
     
     <script type="module">
         window.onload = function() {
-            let jobs = json_list;
+            let jobs =  {{ json_list|safe }};
             let job = jobs[0];
-            let job_query = "{{ query|safe }}";
+            let job_query = {{ query|safe }};
             let w = new Worker("../../static/js/worker.js", { type: "module" });
             w.postMessage([job_query, job]);
             document.getElementById("suggested").innerHTML = "Loading... Please, wait";
