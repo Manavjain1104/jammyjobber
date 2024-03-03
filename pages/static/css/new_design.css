@@ -234,5 +234,22 @@ button:hover {
   color: white; /* Set the text color to white */
   cursor: pointer; /* Change the cursor to pointer */
 }
+.job-listing a {
+    display: block;
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the title and other elements */
+}
 
+.job-listing button.expand-btn {
+    margin-top: 10px;
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the button and other elements */
+}
+
+.job-listing details {
+    margin-top: 10px;
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the details element and other elements */
+}
+
+.job-listing p.special-text {
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the special text and other elements */
+}
 
