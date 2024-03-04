@@ -70,16 +70,30 @@
                         {% if forloop.first %}
                         <button class="expand-btn" onclick="toggleDetails(this)">My fit for the job</button>
                         {% endif %}
+                        
+                        {% if forloop.first %}
+                        <details id="details1">
+                            <summary>Why was this job suggested ?</summary>
+                            <p class="special-text" id="jobreason"></p>
+                        </details>
                     
-                        <details id="details1"{% if not forloop.first %} style="display: none;" {% endif %} onclick="whySuggested('{{job.job_id}}', '{{job.description}}')">
+                        <details id="details2">
+                            <summary>How can I enhance my CV to fit the job description? ?</summary>
+                            <p class="special-text" id="cvsuggest"></p>
+                        </details>
+                        {% endif %}
+
+                        {% if not forloop.first %}
+                        <details id="details1" onclick="whySuggested('{{job.job_id}}', '{{job.description}}')">
                             <summary>Why was this job suggested ?</summary>
                             <p class="special-text" id="jobreason-{{ job.job_id }}"></p>
                         </details>
                     
-                        <details id="details2"{% if not forloop.first %} style="display: none;" {% endif %} onclick="cvSuggest('{{job.job_id}}', '{{job.description}}')">
+                        <details id="details2" onclick="cvSuggest('{{job.job_id}}', '{{job.description}}')">
                             <summary>How can I enhance my CV to fit the job description? ?</summary>
                             <p class="special-text" id="cvsuggest-{{ job.job_id }}"></p>
                         </details>
+                        {% endif %}
                     
                         <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
                     </li>
@@ -145,7 +159,8 @@
                 document.getElementById("cvsuggest-" + elemId).innerHTML = event.data;
             };
         }
-         {% comment %} window.onload = function() {
+
+        window.onload = function() {
             let jobs =  {{ json_list|safe }};
             let job = jobs[0];
             let job_query = {{ query|safe }};
@@ -167,7 +182,7 @@
             w.onmessage = function(event) {
                 document.getElementById("cvsuggest").innerHTML = event.data;
             };
-        }; {% endcomment %}
+        };
          
          window.toggleDetails = function toggleDetails(button){
                $(button).siblings(`#details1`).toggle();
