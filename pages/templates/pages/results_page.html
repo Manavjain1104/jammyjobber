@@ -78,7 +78,7 @@
                     
                         <details id="details2"{% if not forloop.first %} style="display: none;" {% endif %}>
                             <summary>How can I enhance my CV to fit the job description? ?</summary>
-                            <p class="special-text" >TO BE DONE</p>
+                            <p class="special-text" id="cvsuggest"></p>
                         </details>
                     
                         <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
@@ -135,6 +135,18 @@
             document.getElementById("jobreason").innerHTML = "Loading... Please, wait";
             w.onmessage = function(event) {
                 document.getElementById("jobreason").innerHTML = event.data;
+            };
+        };
+
+        window.onload = function() {
+            let jobs =  {{ json_list|safe }};
+            let job = jobs[0];
+            let job_query = {{ query|safe }};
+            let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
+            w.postMessage([job_query, job]);
+            document.getElementById("cvsuggest").innerHTML = "Loading... Please, wait";
+            w.onmessage = function(event) {
+                document.getElementById("cvsuggest").innerHTML = event.data;
             };
         };
          

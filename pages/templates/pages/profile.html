@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Page</title>
+</head>
+<body>
+    <h1>{{ username }}</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="cv">
+        <button type="submit">Upload CV</button>
+    </form>
+    
+    <h3>Saved Jobs</h3>
+    <ul>
+        {% for job in saved_jobs %}
+            <li>{{ job.title }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
