@@ -36,8 +36,12 @@
                                 </li>
                             {% endfor %}
                         </ul>
+                        
                     </li>
                 {% endfor %}
+                <li>
+                <button class="title-btn" onclick="toggleJobListingsAll()">All</button>
+                </li>    
             </ul>
         </div>
     
@@ -151,6 +155,7 @@
         }
 
         window.cvSuggest = function cvSuggest(elemId, job) {
+            console.log("HELP")
             document.getElementById("cvsuggest-" + elemId).innerHTML = "Loading... Please, wait";
             let job_query = {{ query|safe }};
             let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
@@ -178,7 +183,7 @@
             let job_query = {{ query|safe }};
             let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
             w.postMessage([job_query, job]);
-            document.getElementById("cvsuggest").innerHTML = "Loading... Please, wait";
+            document.getElementById("cvsuggest").innerHTML = "Loading...";
             w.onmessage = function(event) {
                 document.getElementById("cvsuggest").innerHTML = event.data;
             };
