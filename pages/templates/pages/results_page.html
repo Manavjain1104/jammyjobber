@@ -22,54 +22,62 @@
             </div>
         </header>
         <div class="divider"></div>
-    </div>
+        <div class="sidebar">
+            <!-- Sidebar content goes here -->
+            <ul class="job-titles">
+                {% for title, job_listings in job_titles.items %}
+                    <li><button class="title-btn" onclick="toggleJobListings(this)" >{{ title }}</button></li>
+                {% endfor %}
+            </ul>
+        </div>
+    
         <!-- maybe a smaller one search on top -->
-        
-        <ul class="job-titles">
-          {% for title, job_listings in job_titles.items %}
-            <button class="title-btn" onclick="toggleJobListings(this)">{{ title }}</button>
-            <ul class="job-listings" style="display: none;">
-              {% for job in job_listings %}
-                  <li class="job-listing">
-                      <a href="{{ job.link }}"><h3>{{ job.title }}</h3></a>
-                      <h4>{{ job.company }} @ {{ job.location }}</h4>
-                      <div id="description-{{ job.job_id }}" class="job-description">
-                          <p>{{ job.description }}</p>
-                      </div>
-                  </li>
-              {% endfor %}
-          </ul>
-          {% endfor %}
-        </ul>
-      
-        <ul class="job-listings">
-            {% for job in job_list %}
-                <li class="job-listing">
-                    <a href=" {{ job.link }} "><h3> {{ job.title }}: {{ job.company }} @ {{ job.location }} </h3></a>
-                    <div id="description-{{ job.job_id }}" class="job-description">
-                        <p>{{ job.description }}</p>
-                    </div>
-                    {% if forloop.first %}
-                    <button class="expand-btn" onclick="toggleDetails(this)">My fit for the job</button>
-                    {% endif %}
-                
-                    <details id="details1"{% if not forloop.first %} style="display: none;" {% endif %}>
-                        <summary>Why was this job suggested ?</summary>
-                        <p class="special-text" id="jobreason"></p>
-                    </details>
-                
-                     <details id="details2"{% if not forloop.first %} style="display: none;" {% endif %}>
-                        <summary>How can I enhance my CV to fit the job description? ?</summary>
-                        <p class="special-text" >TO BE DONE</p>
-                    </details>
-                
-                    <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
-                </li>
+        <div class="main-content">
+            <ul class="job-titles">
+            {% for title, job_listings in job_titles.items %}
+                <!-- <button class="title-btn" onclick="toggleJobListings(this)">{{ title }}</button> -->
+                <ul class="job-listings" style="display: none;">
+                {% for job in job_listings %}
+                    <li class="job-listing">
+                        <a href="{{ job.link }}"><h3>{{ job.title }}</h3></a>
+                        <h4>{{ job.company }} @ {{ job.location }}</h4>
+                        <div id="description-{{ job.job_id }}" class="job-description">
+                            <p>{{ job.description }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
             {% endfor %}
-        </ul>
-      
+            </ul>
+        
+            <ul class="job-listings">
+                {% for job in job_list %}
+                    <li class="job-listing">
+                        <a href=" {{ job.link }} "><h3> {{ job.title }}: {{ job.company }} @ {{ job.location }} </h3></a>
+                        <div id="description-{{ job.job_id }}" class="job-description">
+                            <p>{{ job.description }}</p>
+                        </div>
+                        {% if forloop.first %}
+                        <button class="expand-btn" onclick="toggleDetails(this)">My fit for the job</button>
+                        {% endif %}
+                    
+                        <details id="details1"{% if not forloop.first %} style="display: none;" {% endif %}>
+                            <summary>Why was this job suggested ?</summary>
+                            <p class="special-text" id="jobreason"></p>
+                        </details>
+                    
+                        <details id="details2"{% if not forloop.first %} style="display: none;" {% endif %}>
+                            <summary>How can I enhance my CV to fit the job description? ?</summary>
+                            <p class="special-text" >TO BE DONE</p>
+                        </details>
+                    
+                        <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     
-    
+    </div>
     <script src="{% static 'js/job_listing.js' %}"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

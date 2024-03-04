@@ -40,6 +40,7 @@ textarea::placeholder {
   max-width: 1300px;
   margin: 0 auto;
   padding: 20px;
+  display: flex;
 }
 
 .divider {
@@ -84,12 +85,20 @@ input[type="text"]::placeholder {
   color: #ff5757; /* Change text color on hover */
 }
 
-.header {
+/* .header {
   text-align: left;
   max-width: 2000px;
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
+} */
+.header {
+  position: absolute;; 
+  z-index: 1000; /* A high value to ensure it's above other elements */
+  width: 100%; /* Ensures the header spans the full width of the viewport */
+  top: 0; /* Aligns the header at the top of the viewport */
+  left: 0; /* Aligns the header to the left side of the viewport */
+  /* background: #00FFFF; Consider a background to make text readable; adjust color as needed */
 }
 
 .header-left {
@@ -253,3 +262,19 @@ button:hover {
     margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the special text and other elements */
 }
 
+.container {
+  display: flex;
+}
+
+.sidebar {
+  flex-basis: 20%; /* Adjust width of sidebar */
+  /* background-color: #f0f0f0; Light grey background */
+  /* height: 100vh;  */
+  overflow-y: auto; /* Enable scroll if content is taller than the screen */
+  margin-top: 70px;
+}
+
+.main-content {
+  flex-grow: 1; /* Takes up the remaining space */
+  padding: 70px; /* Add padding */
+}
