@@ -97,7 +97,8 @@ def results_page_view(request):
         query = data_passed["query"]
         job_titles = get_dictionary_job(query, 30)
         show_suggested = True
-        print("Job_list", job_titles)
+        from itertools import chain
+        job_list = list(chain.from_iterable(job_titles.values()))
 
     if data_passed["location_query"] != "":
         location_query = data_passed["location_query"]
@@ -171,11 +172,8 @@ def get_dictionary_job(query, number: int):
                 break
             new_key += key + " "
             
-        print(new_key)
-            
         dict_job[new_key] = dict_job.pop(old_key)
             
-        
     return dict_job
 
 

@@ -180,7 +180,6 @@ def group_by_job_title(connection, idx=[], use_logic=False):
                 description=description,
                 link=link
             ))
-
     return grouped_jobs
 
 
