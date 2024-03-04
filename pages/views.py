@@ -153,6 +153,29 @@ def get_dictionary_job(query, number: int):
     connection.close()
 
     # go though each elem in dict to see whether it is significant and modify
+    keys = list(dict_job.keys())
+    for old_key in keys:
+        titles = dict_job[old_key]
+        from collections import defaultdict
+        temp = defaultdict(int)
+            
+        for sub in titles:
+            for wrd in sub.title.split():
+                if (wrd.isalnum()):
+                    temp[wrd] += 1
+        
+        max_cnt = max(temp.values())
+        new_key = ""
+        for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
+            if max_cnt > value:
+                break
+            new_key += key + " "
+            
+        print(new_key)
+            
+        dict_job[new_key] = dict_job.pop(old_key)
+            
+        
     return dict_job
 
 
