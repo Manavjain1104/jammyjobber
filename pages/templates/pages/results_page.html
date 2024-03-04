@@ -71,14 +71,14 @@
                         <button class="expand-btn" onclick="toggleDetails(this)">My fit for the job</button>
                         {% endif %}
                     
-                        <details id="details1"{% if not forloop.first %} style="display: none;" {% endif %}>
+                        <details id="details1"{% if not forloop.first %} style="display: none;" {% endif %} onclick="whySuggested('{{job.job_id}}', '{{job.description}}')">
                             <summary>Why was this job suggested ?</summary>
-                            <p class="special-text" id="jobreason"></p>
+                            <p class="special-text" id="jobreason-{{ job.job_id }}"></p>
                         </details>
                     
-                        <details id="details2"{% if not forloop.first %} style="display: none;" {% endif %}>
+                        <details id="details2"{% if not forloop.first %} style="display: none;" {% endif %} onclick="cvSuggest('{{job.job_id}}', '{{job.description}}')">
                             <summary>How can I enhance my CV to fit the job description? ?</summary>
-                            <p class="special-text" id="cvsuggest"></p>
+                            <p class="special-text" id="cvsuggest-{{ job.job_id }}"></p>
                         </details>
                     
                         <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
@@ -126,7 +126,26 @@
 
     
     <script type="module">
-         window.onload = function() {
+        window.whySuggested = function whySuggested(elemId, job) {
+            document.getElementById("jobreason-" + elemId).innerHTML = "Loading... Please, wait";
+            let job_query = {{ query|safe }};
+            let w = new Worker("../../static/js/worker.js", { type: "module" });
+            w.postMessage([job_query, job]);
+            w.onmessage = function(event) {
+                document.getElementById("jobreason-" + elemId).innerHTML = event.data;
+            };
+        }
+
+        window.cvSuggest = function cvSuggest(elemId, job) {
+            document.getElementById("cvsuggest-" + elemId).innerHTML = "Loading... Please, wait";
+            let job_query = {{ query|safe }};
+            let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
+            w.postMessage([job_query, job]);
+            w.onmessage = function(event) {
+                document.getElementById("cvsuggest-" + elemId).innerHTML = event.data;
+            };
+        }
+         {% comment %} window.onload = function() {
             let jobs =  {{ json_list|safe }};
             let job = jobs[0];
             let job_query = {{ query|safe }};
@@ -148,7 +167,7 @@
             w.onmessage = function(event) {
                 document.getElementById("cvsuggest").innerHTML = event.data;
             };
-        };
+        }; {% endcomment %}
          
          window.toggleDetails = function toggleDetails(button){
                $(button).siblings(`#details1`).toggle();
