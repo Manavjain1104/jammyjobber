@@ -2,9 +2,22 @@ function toggleDescription(button, jobId) {
   $(button).siblings(`#description-${jobId}`).toggle();
 }
 
-function toggleJobListings(button) {
-  var jobListings = button.nextElementSibling;
-  jobListings.style.display = jobListings.style.display === "none" ? "block" : "none";
+// function toggleJobListings(button) {
+//   var jobListings = button.nextElementSibling;
+//   jobListings.style.display = jobListings.style.display === "none" ? "block" : "none";
+// }
+
+function toggleJobListings(titleSlug) {
+  // First, hide all job listings
+  document.querySelectorAll('.main-content .job-listings').forEach(function(list) {
+      list.style.display = 'none';
+  });
+
+  // Then, show the one that corresponds to the clicked title
+  var jobListings = document.getElementById(titleSlug);
+  if (jobListings) {
+      jobListings.style.display = 'block';
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
