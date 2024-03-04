@@ -92,28 +92,38 @@ input[type="text"]::placeholder {
   display: flex;
   justify-content: space-between;
 } */
+
 .header {
   position: absolute;; 
   z-index: 1000; /* A high value to ensure it's above other elements */
   width: 100%; /* Ensures the header spans the full width of the viewport */
   top: 0; /* Aligns the header at the top of the viewport */
   left: 0; /* Aligns the header to the left side of the viewport */
-  /* background: #00FFFF; Consider a background to make text readable; adjust color as needed */
+  display: flex; /* This will lay out its children in a row */
+  justify-content: space-between; /* This will put space between the header-left and header-right */
+  align-items: center; /* This will vertically center the header-left and header-right */
+  margin-top: 20px; /* Add margin to the top of the header */
 }
 
 .header-left {
-  text-align: left;
+  /* text-align: left; */
+  display: flex;
+  align-items: center; 
+  margin-left: 60px; /* Add margin to the left of the header */
 }
 
 .header-right {
-  text-align: right;
+  /* text-align: right; */
+  display: flex;
+  align-items: center; 
+  margin-right: 130px; /* Add margin to the right of the header */ 
 }
 
 .submit-button-section {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 10px; /* Add margin between the two divs */
+  margin-bottom: 80px; /* Add margin between the two divs */
 }
 
 
