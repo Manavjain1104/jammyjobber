@@ -88,12 +88,12 @@
                         {% endif %}
 
                         {% if not forloop.first %}
-                        <details id="details1" onclick="whySuggested('{{job.job_id}}', '{{job.description}}')">
+                        <details id="details1" onclick='whySuggested("{{job.job_id}}", "{{job.description}}")'>
                             <summary>Why was this job suggested ?</summary>
                             <p class="special-text" id="jobreason-{{ job.job_id }}"></p>
                         </details>
                     
-                        <details id="details2" onclick="cvSuggest('{{job.job_id}}', '{{job.description}}')">
+                        <details id="details2" onclick='cvSuggest("{{job.job_id}}", "{{job.description}}")'>
                             <summary>How can I enhance my CV to fit the job description? ?</summary>
                             <p class="special-text" id="cvsuggest-{{ job.job_id }}"></p>
                         </details>
@@ -155,7 +155,6 @@
         }
 
         window.cvSuggest = function cvSuggest(elemId, job) {
-            console.log("HELP")
             document.getElementById("cvsuggest-" + elemId).innerHTML = "Loading... Please, wait";
             let job_query = {{ query|safe }};
             let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
@@ -169,24 +168,21 @@
             let jobs =  {{ json_list|safe }};
             let job = jobs[0];
             let job_query = {{ query|safe }};
-            let w = new Worker("../../static/js/worker.js", { type: "module" });
-            w.postMessage([job_query, job]);
+            document.getElementById("cvsuggest").innerHTML = "Loading... Please, wait";
             document.getElementById("jobreason").innerHTML = "Loading... Please, wait";
-            w.onmessage = function(event) {
-                document.getElementById("jobreason").innerHTML = event.data;
-            };
-        };
-
-        window.onload = function() {
-            let jobs =  {{ json_list|safe }};
-            let job = jobs[0];
-            let job_query = {{ query|safe }};
             let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
             w.postMessage([job_query, job]);
-            document.getElementById("cvsuggest").innerHTML = "Loading...";
             w.onmessage = function(event) {
                 document.getElementById("cvsuggest").innerHTML = event.data;
             };
+            w.terminate();
+            let w2 = new Worker("../../static/js/worker.js", { type: "module" });
+            w2.postMessage([job_query, job]);
+            w2.onmessage = function(event) {
+                document.getElementById("jobreason").innerHTML = event.data;
+            };
+            w2.terminate();
+
         };
          
          window.toggleDetails = function toggleDetails(button){
