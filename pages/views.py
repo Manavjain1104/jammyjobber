@@ -94,7 +94,6 @@ def results_page_view(request):
         if job_summary:
             job_titles = get_similar(job_summary.description, 10)
             query = job_summary.description
-            job_list = list(chain.from_iterable(job_titles.values()))
         show_suggested = True 
         template_name = 'pages/results_page.html'
     else:
@@ -102,9 +101,20 @@ def results_page_view(request):
         if data_passed["query"]:
             query = data_passed["query"]
             job_titles = get_dictionary_job(query, 20)
-            job_list = list(chain.from_iterable(job_titles.values()))
             show_suggested = True
         template_name = 'pages/results_page.html'  
+        
+    location_query = data_passed["location_query"]
+    
+    if location_query:
+        keys = list(job_titles.keys())
+        for title in keys:
+            job_titles[title] = list(filter(lambda job: is_in_region(job.location, location_query), job_titles[title]))
+            if len(job_titles[title]) == 0:
+                job_titles.pop(title)
+            
+            
+    job_list = list(chain.from_iterable(job_titles.values()))
 
     job_list_json = json.dumps([job.description for job in job_list])
     query_json = json.dumps(query)
