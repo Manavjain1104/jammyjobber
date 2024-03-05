@@ -50,37 +50,23 @@
             <ul class="job-titles">
             {% for title, job_listings in job_titles.items %}
                 <!-- <button class="title-btn" onclick="toggleJobListings(this)">{{ title }}</button> -->
-                <ul class="job-listings" id="{{ title|slugify }}" style="display: none;">
+                <ul class="job-listings" id="{{ title|slugify }}">
                 {% for job in job_listings %}
                     <li class="job-listing">
-                        <a href="{{ job.link }}"><h3>{{ job.title }}</h3></a>
-                        <h4>{{ job.company }} @ {{ job.location }}</h4>
-                        <div id="description-{{ job.job_id }}" class="job-description">
-                            <p>{{ job.description }}</p>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endfor %}
-            </ul>
-        
-            <ul class="job-listings">
-                {% for job in job_list %}
-                    <li class="job-listing">
-                        <a href=" {{ job.link }} "><h3> {{ job.title }}: {{ job.company }} @ {{ job.location }} </h3></a>
+                          <a href=" {{ job.link }} "><h3> {{ job.title }}: {{ job.company }} @ {{ job.location }} </h3></a>
                         <div id="description-{{ job.job_id }}" class="job-description">
                             <p>{{ job.description }}</p>
                         </div>
                         {% if forloop.first %}
                         <button class="expand-btn" onclick="toggleDetails(this)">My fit for the job</button>
                         {% endif %}
-                        
+
                         {% if forloop.first %}
                         <details id="details1">
                             <summary>Why was this job suggested ?</summary>
                             <p class="special-text" id="jobreason"></p>
                         </details>
-                    
+
                         <details id="details2">
                             <summary>How can I enhance my CV to fit the job description? ?</summary>
                             <p class="special-text" id="cvsuggest"></p>
@@ -92,16 +78,18 @@
                             <summary>Why was this job suggested ?</summary>
                             <p class="special-text" id="jobreason-{{ job.job_id }}"></p>
                         </details>
-                    
+
                         <details id="details2" onclick='cvSuggest("{{job.job_id}}", "{{job.description}}")'>
                             <summary>How can I enhance my CV to fit the job description? ?</summary>
                             <p class="special-text" id="cvsuggest-{{ job.job_id }}"></p>
                         </details>
                         {% endif %}
-                    
+
                         <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
                     </li>
                 {% endfor %}
+            </ul>
+            {% endfor %}
             </ul>
         </div>
     
