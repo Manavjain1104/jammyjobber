@@ -38,8 +38,6 @@ def home_page_view(request):
             query = process_data(text, Model.SUMMARY_ONLY)
             show_suggested = True
             os.remove(instance.pdf.path)
-            job_list, _ = get_similar(text, 5)
-            print(job_list)
 
     query = json.dumps(query)
 
@@ -94,15 +92,16 @@ def results_page_view(request):
         job_instances = get_listings()
         job_summary = next((job for job in job_instances if str(job.job_id) == id), None)
         if job_summary:
-            job_list, _ = get_similar(job_summary.description, 6)
+            job_titles = get_similar(job_summary.description, 10)
             query = job_summary.description
+            job_list = list(chain.from_iterable(job_titles.values()))
         show_suggested = True 
-        template_name = 'pages/show_similar.html'
+        template_name = 'pages/results_page.html'
     else:
         # This is for the aggregated view based on query or location_query
         if data_passed["query"]:
             query = data_passed["query"]
-            job_titles = get_dictionary_job(query, 30)
+            job_titles = get_dictionary_job(query, 20)
             job_list = list(chain.from_iterable(job_titles.values()))
             show_suggested = True
         template_name = 'pages/results_page.html'  
@@ -176,11 +175,37 @@ def get_similar(query, number: int):
     t = 0.73
     request_embedding = process_data(query, model=model_used)
     closest, dists = search_points(collection_used, request_embedding, number)
-    job_list = [job for job in job_instances if job.job_id in closest]
-    for job in job_list:
-        if job.is_significant < t:
-            job.significant()
-    return job_list, dists
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    dict_job = group_by_job_title(connection, idx=closest, use_logic=True)
+    connection.close()
+
+    # go though each elem in dict to see whether it is significant and modify
+    keys = list(dict_job.keys())
+    for old_key in keys:
+        titles = dict_job[old_key]
+        from collections import defaultdict
+        temp = defaultdict(int)
+            
+        for sub in titles:
+            for wrd in sub.title.split():
+                if (wrd.isalnum()):
+                    temp[wrd] += 1
+        
+        max_cnt = max(temp.values())
+        new_key = ""
+        for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
+            if max_cnt > value:
+                break
+            new_key += key + " "
+            
+        dict_job[new_key] = dict_job.pop(old_key)
+        
+    for value in dict_job.values():
+        for job in value:
+            if job.is_significant < t:
+                job.significant()          
+    
+    return dict_job
 
 
 def get_siginificant_data():
