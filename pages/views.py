@@ -9,6 +9,7 @@ from pdfminer.high_level import extract_text
 import statistics
 from django.urls import reverse
 from urllib.parse import urlencode
+from itertools import chain
 
 # Create your views here.
 
@@ -78,53 +79,46 @@ def loading_page_view(request):
 
 
 def results_page_view(request):
+    job_titles = {}  
+    job_list = []  
+    show_suggested = False
+    query = ""
+    
     data_passed = {
         "query": request.GET.get("query"),
         "location_query": request.GET.get("location_query")
     }
-    print("Results page gets this information -----------")
-    print(data_passed["query"])
-    print(data_passed["location_query"])
-
-    # TODO: delete??
-    job_instances = get_listings()
-    job_list = job_instances
-
-    query = ""
-    show_suggested = False
-
-    if data_passed["query"]:
-        query = data_passed["query"]
-        job_titles = get_dictionary_job(query, 30)
-        show_suggested = True
-        from itertools import chain
-        job_list = list(chain.from_iterable(job_titles.values()))
-
-    if data_passed["location_query"] != "":
-        location_query = data_passed["location_query"]
-        # TODO: go though each item in dict to mark if it is in location (and chnage the job_titles)
-        # job_list = [
-        #     job for job in job_list if is_in_region(job.location, location_query)
-        # ]
 
     if "id" in request.GET:
         id = request.GET["id"]
-        # TODO: think about what to do here (hide the aggregation?? idk)
-        job_summary = [
-            job.description for job in job_instances if job.job_id == id][0]
-        job_list, _ = get_similar(job_summary, 6)
+        job_instances = get_listings()
+        job_summary = next((job for job in job_instances if str(job.job_id) == id), None)
+        if job_summary:
+            job_list, _ = get_similar(job_summary.description, 6)
+            query = job_summary.description
+        show_suggested = True 
+        template_name = 'pages/show_similar.html'
+    else:
+        # This is for the aggregated view based on query or location_query
+        if data_passed["query"]:
+            query = data_passed["query"]
+            job_titles = get_dictionary_job(query, 30)
+            job_list = list(chain.from_iterable(job_titles.values()))
+            show_suggested = True
+        template_name = 'pages/results_page.html'  
 
-    job_list_json = json.dumps(
-        [process_data(job_list[0].description, Model.SUMMARY_ONLY)]
-    )
-    query = json.dumps(query)
+    job_list_json = json.dumps([job.description for job in job_list])
+    query_json = json.dumps(query)
 
-    return render(request,
-                  'pages/results_page.html',
-                  {"job_titles": job_titles, "job_list": job_list, "query": query,
-                      "json_list": job_list_json, "show_suggested": show_suggested},
-                  )
+    context = {
+        "job_titles": job_titles, 
+        "job_list": job_list, 
+        "query": query_json,
+        "json_list": job_list_json, 
+        "show_suggested": show_suggested
+    }
 
+    return render(request, template_name, context)
 
 def get_listings():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
