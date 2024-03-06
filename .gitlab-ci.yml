@@ -23,12 +23,14 @@
     - test
     - deploy
 
-  test:
+  unit-test:
     image: python:3.12
     stage: test
     script:
-      - pip install -r requirements.txt
-      - python3 -m unittest discover test/
+      - pip install unittest
+      - pip install requirements.txt
+      - python3 -m unittest discover test/   
+
 
   deploy:
     stage: deploy    # deploy to heroku
