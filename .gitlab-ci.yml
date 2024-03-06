@@ -23,12 +23,12 @@
     - test
     - deploy
 
-  # test:
-  #   stage: test
-  #   script:
-  #     - pip install Django
-  #     - pip install -r requirements.txt
-  #     - python3 -m unittest discover test/
+  test:
+    stage: test
+    script:
+      - pip install Django
+      - pip install -r requirements.txt
+      - python3 -m unittest discover test/
 
   deploy:
     stage: deploy    # deploy to heroku

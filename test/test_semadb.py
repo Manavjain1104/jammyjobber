@@ -5,8 +5,7 @@ import utils.semadb_utils as semadb
 import unittest
 from unittest.mock import Mock, patch
 from nose.tools import assert_is_not_none
-from unittest.mock import Mock, patch
-from nose.tools import assert_is_not_none
+
 
 test_collection = "test_collection"
 
@@ -31,10 +30,10 @@ class SemaDBTestCase(unittest.TestCase):
 
     def test_points_generation(self):
         vector = [1.0, 1.0]
-        externalId = 1
-        assert semadb.new_point(vector, externalId) == {
-            "vector": vector,
-            "metadata": {"externalId": externalId},
+        id = 1
+        assert semadb.new_point(vector, id) == {
+            "id": id,
+            "vector": vector
         }
         with self.assertRaises(Exception):
             semadb.new_point()
@@ -150,11 +149,11 @@ class SemaDBTestCase(unittest.TestCase):
         mock_post.return_value.ok = True
         mock_post.return_value.json.return_value = {
             "points": [
-                {"id": "point_id", "distance": 1, "metadata": {"externalId": 1284}}
+                {"id": 1284, "distance": 1}
             ]
         }
         response = semadb.search_points(test_collection, [1, 1], 1)
-        assert response == [1284]
+        assert response == ([1284], [1])
 
 
 if __name__ == "__main__":
