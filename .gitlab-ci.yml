@@ -7,36 +7,36 @@
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
 
-  default:
-    image: ubuntu:latest
-    before_script:
-      - apt install -y python3-pip
-      - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
-      - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
-      - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
-      - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
+default:
+  before_script:
+    - apt install -y python3-pip
+    - echo RAPID_API_KEY="$RAPID_API_KEY" >> .env
+    - echo RAPID_API_HOST="$RAPID_API_KEY" >> .env
+    - echo LLM_SERVER_ADDRESS="$LLM_SERVER_ADDRESS" >> .env
+    - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/dist-packages/
 
 
 
 
-  stages:
-    - test
-    - deploy
+stages:
+  - test
+  - deploy
 
-  unit-test:
-    image: python:3.12
-    stage: test
-    script:
-      - pip install unittest
-      - pip install requirements.txt
-      - python3 -m unittest discover test/   
+unit-test:
+  image: python:3.12
+  stage: test
+  script:
+    - pip install unittest
+    - pip install requirements.txt
+    - python3 -m unittest discover test/   
 
 
-  deploy:
-    stage: deploy    # deploy to heroku
-    script:
-      - dpl --provider=heroku --app=jammy-jobber --api-key=6102191c-0cac-4ca7-8348-21098038e5e9
-    rules:
-      - if: $CI_COMMIT_BRANCH == "master"
+deploy:
+  image: ubuntu:latest
+  stage: deploy    # deploy to heroku
+  script:
+    - dpl --provider=heroku --app=jammy-jobber --api-key=6102191c-0cac-4ca7-8348-21098038e5e9
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
 
 
