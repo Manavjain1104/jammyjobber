@@ -28,14 +28,13 @@ def home_page_view(request):
     if "location_query" in request.POST and request.POST.get("location_query"):
         location_query = request.POST["location_query"]
 
-    # TODO: extract cv query to pass in loading
-
-    if request.method == "POST":
+    if 'pdf' in request.FILES:
         form = CVForm(request.POST, request.FILES)
+        print("herewkjafksjnf")
         if form.is_valid():
             instance = form.save()
             text = extract_text(instance.pdf.path)
-            query = process_data(text, Model.SUMMARY_ONLY)
+            query += process_data(text, Model.SUMMARY_ONLY)
             show_suggested = True
             os.remove(instance.pdf.path)
 
@@ -77,11 +76,11 @@ def loading_page_view(request):
 
 
 def results_page_view(request):
-    job_titles = {}  
-    job_list = []  
+    job_titles = {}
+    job_list = []
     show_suggested = False
     query = ""
-    
+
     data_passed = {
         "query": request.GET.get("query"),
         "location_query": request.GET.get("location_query")
@@ -90,11 +89,12 @@ def results_page_view(request):
     if "id" in request.GET:
         id = request.GET["id"]
         job_instances = get_listings()
-        job_summary = next((job for job in job_instances if str(job.job_id) == id), None)
+        job_summary = next(
+            (job for job in job_instances if str(job.job_id) == id), None)
         if job_summary:
             job_titles = get_similar(job_summary.description, 10)
             query = job_summary.description
-        show_suggested = True 
+        show_suggested = True
         template_name = 'pages/results_page.html'
     else:
         # This is for the aggregated view based on query or location_query
@@ -102,32 +102,33 @@ def results_page_view(request):
             query = data_passed["query"]
             job_titles = get_dictionary_job(query, 20)
             show_suggested = True
-        template_name = 'pages/results_page.html'  
-        
+        template_name = 'pages/results_page.html'
+
     location_query = data_passed["location_query"]
-    
+
     if location_query:
         keys = list(job_titles.keys())
         for title in keys:
-            job_titles[title] = list(filter(lambda job: is_in_region(job.location, location_query), job_titles[title]))
+            job_titles[title] = list(filter(lambda job: is_in_region(
+                job.location, location_query), job_titles[title]))
             if len(job_titles[title]) == 0:
                 job_titles.pop(title)
-            
-            
+
     job_list = list(chain.from_iterable(job_titles.values()))
 
     job_list_json = json.dumps([job.description for job in job_list])
     query_json = json.dumps(query)
 
     context = {
-        "job_titles": job_titles, 
-        "job_list": job_list, 
+        "job_titles": job_titles,
+        "job_list": job_list,
         "query": query_json,
-        "json_list": job_list_json, 
+        "json_list": job_list_json,
         "show_suggested": show_suggested
     }
 
     return render(request, template_name, context)
+
 
 def get_listings():
     connection = sqlite3.connect(job_listing_db, check_same_thread=False)
@@ -162,21 +163,21 @@ def get_dictionary_job(query, number: int):
         titles = dict_job[old_key]
         from collections import defaultdict
         temp = defaultdict(int)
-            
+
         for sub in titles:
             for wrd in sub.title.split():
                 if (wrd.isalnum()):
                     temp[wrd] += 1
-        
+
         max_cnt = max(temp.values())
         new_key = ""
         for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
             if max_cnt > value:
                 break
             new_key += key + " "
-            
+
         dict_job[new_key] = dict_job.pop(old_key)
-            
+
     return dict_job
 
 
@@ -195,26 +196,26 @@ def get_similar(query, number: int):
         titles = dict_job[old_key]
         from collections import defaultdict
         temp = defaultdict(int)
-            
+
         for sub in titles:
             for wrd in sub.title.split():
                 if (wrd.isalnum()):
                     temp[wrd] += 1
-        
+
         max_cnt = max(temp.values())
         new_key = ""
         for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
             if max_cnt > value:
                 break
             new_key += key + " "
-            
+
         dict_job[new_key] = dict_job.pop(old_key)
-        
+
     for value in dict_job.values():
         for job in value:
             if job.is_significant < t:
-                job.significant()          
-    
+                job.significant()
+
     return dict_job
 
 

@@ -54,6 +54,7 @@ textarea::placeholder {
 .divider-container {
   height: 3px;
   background-color: #ddd; 
+  margin-top: 20px;
   margin-bottom: 20px;
   border-radius: 3px; /* Adjust the value to control the roundness */
 }

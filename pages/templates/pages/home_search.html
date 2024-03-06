@@ -28,19 +28,23 @@
               <span id="text"></span>
             </div>
 
-            <form action="" method="POST">
-                {% csrf_token %}
-              <textarea name="query"
-              placeholder="I want to teach a variety of STEM subjects in secondary school. I have lots of experience working with early teenagers, a strong background in math and computer programming, and am adept at handling workplace conflicts..."
-              rows="10"></textarea>
+            <form action="" method="POST" id="mainForm" enctype = "multipart/form-data">
+              {% csrf_token %}
+              <textarea name="query" placeholder="Enter your query..." rows="10"></textarea>
+          
+              <div class="add-cv" style="margin-bottom: 20px;">
+                <input type="file" name="pdf" style="display: none; align-items: center;" required id="id_pdf">
+                <label id="cvLabel" for="id_pdf" style="cursor: pointer; font-style: italic; font-size: 24px;">or search with CV</label>
+              </div>
+          
               <div class="divider-container"></div>
               <header class="lower">
-                <div class="lower-left">
-                  <input type="text" name="location_query" placeholder="Enter preferred location...">
-                </div>
-                <div class="lower-right">
-                  <button type="submit">Submit</button>
-                </div>
+                  <div class="lower-left">
+                      <input type="text" name="location_query" placeholder="Enter preferred location...">
+                  </div>
+                  <div class="lower-right">
+                      <button type="submit">Submit</button>
+                  </div>
               </header>
             </form>
           </div>
@@ -59,24 +63,6 @@
                 </form>
             {% endif %}
           </div> -->
-
-          <div class="add-cv">
-            {% if submitted %}
-                Your CV was Submitted Successfully
-            {% else %}
-                <form id="cvForm" action method ="POST" enctype = "multipart/form-data" style="display: none;">
-                    {% csrf_token %}
-                    <div class="submit-button-section">
-                      <input type="file" name="pdf" required id="id_pdf" style="display: none;">
-                    </div>
-                    
-                    <div class="submit-button-section">
-                      <button id="submitButton" type="submit" > Upload </button>
-                    </div>
-                </form>
-                <label id="cvLabel" for="id_pdf" style="cursor: pointer; font-style: italic; font-size: 24px;">or search with CV</label>
-            {% endif %}
-          </div>
         </main>
 
        
