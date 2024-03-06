@@ -287,4 +287,5 @@ button:hover {
 .main-content {
   flex-grow: 1; /* Takes up the remaining space */
   padding: 70px; /* Add padding */
+  margin-left: 20%;
 }
