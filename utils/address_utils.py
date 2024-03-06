@@ -20,21 +20,15 @@ def is_in_region(address, region):
         return (
             is_postcode_in_region(address, region)
             if is_postcode(address)
-            else region.lower() in address.lower()
-        )
-    except Exception as e:
-        return False
-    try:
-        return (
-            is_postcode_in_region(address, region)
-            if is_postcode(address)
-            else region.lower() in address.lower()
+            else region.lower() in address.lower() or address.lower() in region.lower()
         )
     except Exception as e:
         return False
 
 
 def is_postcode_in_region(postcode, region):
+    if postcode.lower() == region.lower():
+        return True
     postcode_response = requests.get(postcode_url(postcode))
     if postcode_response.status_code == 200:
         return any(
