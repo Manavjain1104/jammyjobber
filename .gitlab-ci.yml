@@ -26,6 +26,8 @@
   test:
     stage: test
     script:
+      - python3 -m pip install pip --upgrade
+      - pip install pyopenssl --upgrade
       - pip install -r requirements.txt
       - python3 -m unittest discover test/
 
