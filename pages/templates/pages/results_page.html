@@ -28,7 +28,7 @@
                 {% for title, job_listings in job_titles.items %}
                     <li>
                         <!-- The button is immediately followed by the ul element -->
-                        <button class="title-btn" style="width: 95%; margin-bottom: 1px;" onclick="toggleJobListings('{{ title|slugify }}')">{{ title }}</button>
+                        <button class="title-btn" style="width: 95%; margin-bottom: 5px;" onclick="toggleJobListings('{{ title|slugify }}')">{{ title }}</button>
                         <ul class="job-listings" style="display: none;">
                             {% for job in job_listings %}
                                 <li class="job-listing">
@@ -40,8 +40,8 @@
                     </li>
                 {% endfor %}
                 <li>
-                <button class="title-btn" style="width: 95%; margin-bottom: 1px;" onclick="toggleJobListingsAll()">All</button>
-                <button class="title-btn" style="width: 95%; margin-bottom: 1px;" onclick="window.location.href = '/'">Go to Search Page</button>
+                <button class="title-btn" style="width: 95%; margin-bottom: 30px;" onclick="toggleJobListingsAll()">All</button>
+                <button class="func-title-btn" style="width: 95%; margin-bottom: 5px;" onclick="window.location.href = '/'">Go to Search Page</button>
                 </li>    
             </ul>
         </div>

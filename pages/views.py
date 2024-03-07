@@ -11,6 +11,9 @@ from django.urls import reverse
 from urllib.parse import urlencode
 from itertools import chain
 
+SURPRISE_VIDEO = "https://www.youtube.com/watch?v=8Seuzk3-HrI"
+SURPRISE_QUERY = "cherri cherri lady"
+
 # Create your views here.
 
 model_used = Model.SUMMARISER
@@ -30,7 +33,6 @@ def home_page_view(request):
 
     if 'pdf' in request.FILES:
         form = CVForm(request.POST, request.FILES)
-        print("herewkjafksjnf")
         if form.is_valid():
             instance = form.save()
             text = extract_text(instance.pdf.path)
@@ -48,6 +50,10 @@ def home_page_view(request):
     print("Home page gets this information -----------")
     print(data_to_pass["query"])
     print(data_to_pass["location_query"])
+
+    if query.lower().strip('"') == SURPRISE_QUERY:
+        # Redirect to YouTube link for "cherri cherri lady"
+        return redirect(SURPRISE_VIDEO)
 
     # Construct URL with parameters
     url = reverse('loading_page') + '?' + urlencode(data_to_pass)

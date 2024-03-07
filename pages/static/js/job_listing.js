@@ -77,15 +77,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
   cvLabel.addEventListener("click", function() {
       idPdf.style.display = "block";
+      idPdf.style.justifyContent = "center";
       cvLabel.style.display = "none";
-  });
-
-  // Prevent the main form from being submitted when the CV upload form is submitted
-  cvForm.addEventListener("submit", function(event) {
-      event.preventDefault();
-      // Your CV upload logic here...
-      // Once the CV is uploaded, you can optionally show a success message
-      alert("CV uploaded successfully!");
   });
 });
 
