@@ -2,6 +2,34 @@ function toggleDescription(button, jobId) {
   $(button).siblings(`#description-${jobId}`).toggle();
 }
 
+// function toggleJobListings(button) {
+//   var jobListings = button.nextElementSibling;
+//   jobListings.style.display = jobListings.style.display === "none" ? "block" : "none";
+// }
+
+function toggleJobListings(titleSlug) {
+  // First, hide all job listings
+  document.querySelectorAll('.main-content .job-listings').forEach(function(list) {
+      list.style.display = 'none';
+  });
+
+  // Then, show the one that corresponds to the clicked title
+  var jobListings = document.getElementById(titleSlug);
+  if (jobListings) {
+      jobListings.style.display = 'block';
+  }
+}
+
+function toggleJobListingsAll() {
+  document.querySelectorAll('.main-content .job-listings').forEach(function(list) {
+    list.style.display = 'none';
+  });
+
+    document.querySelectorAll('.main-content .job-listings').forEach(function(list) {
+    list.style.display = 'block';
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   const textElement = document.getElementById("text");
   const texts = ["What do you want to do day-to-day?", 
@@ -41,3 +69,26 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 5000); // Interval for changing text (adjust as needed)
   }, 1000); // Delay before starting text rotation (adjust as needed)
 });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  const cvLabel = document.getElementById("cvLabel");
+  const idPdf = document.getElementById("id_pdf");
+
+  cvLabel.addEventListener("click", function() {
+      idPdf.style.display = "block";
+      idPdf.style.justifyContent = "center";
+      cvLabel.style.display = "none";
+  });
+});
+
+
+let popup = document.getElementById('popup')
+
+function openPopup(){
+  popup.classList.add('open-popup')
+}
+
+function closePopup(){
+  popup.classList.remove('open-popup')
+}

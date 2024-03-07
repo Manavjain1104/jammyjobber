@@ -134,5 +134,5 @@ class SqliteTestCase(unittest.TestCase):
         self.assertEqual(len(jobs), 0)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,6 @@
 import sqlite3
 from uuid import uuid4
+from pages.models import Job
 
 job_listing_db = "job_listing.db"
 
@@ -149,37 +150,36 @@ def group_by_job_title(connection, idx=[], use_logic=False):
             matched = False
             for existing_title in grouped_jobs.keys():
                 if _are_titles_related(title, existing_title):
-                    grouped_jobs[existing_title].append({
-                        "id": job_id,
-                        "title": title,
-                        "company": company,
-                        "location": location,
-                        "description": description,
-                        "link": link
-                    })
+                    grouped_jobs[existing_title].append(Job(
+                        job_id=job_id,
+                        title=title,
+                        company=company,
+                        location=location,
+                        description=description,
+                        link=link
+                    ))
                     matched = True
                     break
             if not matched:
-                grouped_jobs[title] = [{
-                    "id": job_id,
-                    "title": title,
-                    "company": company,
-                    "location": location,
-                    "description": description,
-                    "link": link
-                }]
+                grouped_jobs[title] = [Job(
+                    job_id=job_id,
+                    title=title,
+                    company=company,
+                    location=location,
+                    description=description,
+                    link=link
+                )]
         else:
             if title not in grouped_jobs:
                 grouped_jobs[title] = []
-            grouped_jobs[title].append({
-                "id": job_id,
-                "title": title,
-                "company": company,
-                "location": location,
-                "description": description,
-                "link": link
-            })
-
+            grouped_jobs[title].append(Job(
+                job_id=job_id,
+                title=title,
+                company=company,
+                location=location,
+                description=description,
+                link=link
+            ))
     return grouped_jobs
 
 

@@ -78,11 +78,15 @@ h1 {
     margin-left: auto;
     margin-top: 200px;
     display: flex;
+    flex-direction: column; /* Change to column layout */
     justify-content: center;
     align-items: center;
     flex: 1;
 }
 
+.image-section h1 {
+    display: block; /* Make h1 a block-level element */
+}
 
 .image-section img {
     object-fit: cover;

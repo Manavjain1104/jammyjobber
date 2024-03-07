@@ -5,60 +5,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JammyJobber</title>
     <link rel="stylesheet" href="../../static/css/new_design.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&family=Open+Sans:ital,wght@0,400;0,700;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Montserrat:ital,wght@0,400;0,700;1,400&family=Nunito:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
+
+    <title>Job Search</title>
 </head>
 <body>
     <div class="container">
         <header class="header">
             <div class="header-left">
-              <h1>JammyJobber</h1>
+              <a href="/" class="home-link"><h1>JammyJobber</h1></a>
             </div>
             <div class="header-right">
-              <h1>Let's Find Your Dream Job Today!</h1>
+              <h1>Let's Find Your Jam!</h1>
             </div>
         </header>
-        <div class="divider"></div>
+
         <main class="main">
+          <div class="search-box">
             <div class="text-rotation">
               <span id="text"></span>
             </div>
 
-            <form action="" method="POST">
-                {% csrf_token %}
-              <textarea name="query"
-              placeholder="I want to teach a variety of STEM subjects in secondary school. I have lots of experience working with early teenagers, a strong background in math and computer programming, and am adept at handling workplace conflicts..."
-              rows="10"></textarea>
+            <form action="" method="POST" id="mainForm" enctype = "multipart/form-data">
+              {% csrf_token %}
+              <textarea name="query" placeholder="Enter your query..." rows="10"></textarea>
+          
+              <div class="add-cv" style="margin-bottom: 20px;">
+                <input type="file" name="pdf" style="display: none; justify-content: center; " id="id_pdf">
+                <label id="cvLabel" for="id_pdf" style="cursor: pointer; font-style: italic; font-size: 24px;">or search with CV</label>
+              </div>
+          
               <div class="divider-container"></div>
-              <header class="lower">
-                <div class="lower-left">
-                  <input type="text" name="location_query" placeholder="Enter preferred location...">
+              <div class="lower">
+                  <div class="lower-left">
+                      <input type="text" name="location_query" placeholder="Enter preferred location...">
+                  </div>
+                  <div class="lower-right">
+                      <button type="submit">Submit</button>
+                  </div>
                 </div>
-                <div class="lower-right">
-                  <button type="submit">Submit</button>
-                </div>
-              </header>
             </form>
-
-
-        </main>
-
-        <div class="add-cv">
+          </div>
+            
+          <!-- <div class="add-cv">
             {% if submitted %}
                 Your CV was Submitted Successfully
             {% else %}
                 <form action method ="POST" enctype = "multipart/form-data">
                 {% csrf_token %}
-                    <label for="id_pdf">Search with CV</label>
+                    <label for="id_pdf">or search with CV</label>
                     <input type="file" name="pdf" required id="id_pdf">
                 <div class="submit-button-section">
                     <button type="submit"> Upload </button>
                 </div>
                 </form>
             {% endif %}
-        </div>
+          </div> -->
+        </main>
+
+       
+        
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script src="../../static/js/job_listing.js"></script>
     </div>

@@ -4,9 +4,15 @@ from utils.llm_utils import *
 from utils.sqlite_utils import *
 from utils.address_utils import *
 from .models import Job
+from .forms import CVForm
+from pdfminer.high_level import extract_text
 import statistics
 from django.urls import reverse
 from urllib.parse import urlencode
+from itertools import chain
+
+SURPRISE_VIDEO = "https://www.youtube.com/watch?v=8Seuzk3-HrI"
+SURPRISE_QUERY = "cherri cherri lady"
 
 # Create your views here.
 
@@ -25,20 +31,15 @@ def home_page_view(request):
     if "location_query" in request.POST and request.POST.get("location_query"):
         location_query = request.POST["location_query"]
 
-
-    # TODO: extract cv query to pass in loading
-    '''
-    if request.method == "POST":
+    if 'pdf' in request.FILES:
         form = CVForm(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save()
             text = extract_text(instance.pdf.path)
-            query = process_data(text, Model.SUMMARY_ONLY)
+            query += process_data(text, Model.SUMMARY_ONLY)
             show_suggested = True
             os.remove(instance.pdf.path)
-            job_list, _ = get_similar(text, 5)
-            print(job_list)
-    '''
+
     query = json.dumps(query)
 
     data_to_pass = {
@@ -49,6 +50,10 @@ def home_page_view(request):
     print("Home page gets this information -----------")
     print(data_to_pass["query"])
     print(data_to_pass["location_query"])
+
+    if query.lower().strip('"') == SURPRISE_QUERY:
+        # Redirect to YouTube link for "cherri cherri lady"
+        return redirect(SURPRISE_VIDEO)
 
     # Construct URL with parameters
     url = reverse('loading_page') + '?' + urlencode(data_to_pass)
@@ -77,42 +82,58 @@ def loading_page_view(request):
 
 
 def results_page_view(request):
+    job_titles = {}
+    job_list = []
+    show_suggested = False
+    query = ""
+
     data_passed = {
         "query": request.GET.get("query"),
         "location_query": request.GET.get("location_query")
     }
-    print("Results page gets this information -----------")
-    print(data_passed["query"])
-    print(data_passed["location_query"])
 
-    job_instances = get_listings()
-    job_list = job_instances
-
-    query = ""
-    show_suggested = False
-
-    if data_passed["query"]:
-        query = data_passed["query"]
-        job_list, _ = get_similar(query, 5)
+    if "id" in request.GET:
+        id = request.GET["id"]
+        job_instances = get_listings()
+        job_summary = next(
+            (job for job in job_instances if str(job.job_id) == id), None)
+        if job_summary:
+            job_titles = get_similar(job_summary.description, 10)
+            query = job_summary.description
         show_suggested = True
-        print("Job_list", job_list)
+        template_name = 'pages/results_page.html'
+    else:
+        # This is for the aggregated view based on query or location_query
+        if data_passed["query"]:
+            query = data_passed["query"]
+            job_titles = get_dictionary_job(query, 20)
+            show_suggested = True
+        template_name = 'pages/results_page.html'
 
-    if data_passed["location_query"] != "":
-        location_query = data_passed["location_query"]
-        job_list = [
-            job for job in job_list if is_in_region(job.location, location_query)
-        ]
+    location_query = data_passed["location_query"]
 
+    if location_query:
+        keys = list(job_titles.keys())
+        for title in keys:
+            job_titles[title] = list(filter(lambda job: is_in_region(
+                job.location, location_query), job_titles[title]))
+            if len(job_titles[title]) == 0:
+                job_titles.pop(title)
 
-    job_list_json = json.dumps(
-        [process_data(job_list[0].description, Model.SUMMARY_ONLY)]
-    )
-    query = json.dumps(query)
+    job_list = list(chain.from_iterable(job_titles.values()))
 
-    return render(request,
-                  'pages/results_page.html',
-                  {"job_list": job_list, "query": query, "json_list": job_list_json, "show_suggested": show_suggested},
-                  )
+    job_list_json = json.dumps([job.description for job in job_list])
+    query_json = json.dumps(query)
+
+    context = {
+        "job_titles": job_titles,
+        "job_list": job_list,
+        "query": query_json,
+        "json_list": job_list_json,
+        "show_suggested": show_suggested
+    }
+
+    return render(request, template_name, context)
 
 
 def get_listings():
@@ -133,17 +154,75 @@ def get_listings():
     return job_instances
 
 
+def get_dictionary_job(query, number: int):
+    request_embedding = process_data(query, model=model_used)
+
+    # TODO: significant
+    closest, dists = search_points(collection_used, request_embedding, number)
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    dict_job = group_by_job_title(connection, idx=closest, use_logic=True)
+    connection.close()
+
+    # go though each elem in dict to see whether it is significant and modify
+    keys = list(dict_job.keys())
+    for old_key in keys:
+        titles = dict_job[old_key]
+        from collections import defaultdict
+        temp = defaultdict(int)
+
+        for sub in titles:
+            for wrd in sub.title.split():
+                if (wrd.isalnum()):
+                    temp[wrd] += 1
+
+        max_cnt = max(temp.values())
+        new_key = ""
+        for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
+            if max_cnt > value:
+                break
+            new_key += key + " "
+
+        dict_job[new_key] = dict_job.pop(old_key)
+
+    return dict_job
+
+
 def get_similar(query, number: int):
     job_instances = get_listings()
     t = 0.73
     request_embedding = process_data(query, model=model_used)
     closest, dists = search_points(collection_used, request_embedding, number)
-    job_list = [job for job in job_instances if job.job_id in closest]
-    for job in job_list:
-        if job.is_significant < t:
-            job.significant()
-            print("YESSSS")
-    return job_list, dists
+    connection = sqlite3.connect(job_listing_db, check_same_thread=False)
+    dict_job = group_by_job_title(connection, idx=closest, use_logic=True)
+    connection.close()
+
+    # go though each elem in dict to see whether it is significant and modify
+    keys = list(dict_job.keys())
+    for old_key in keys:
+        titles = dict_job[old_key]
+        from collections import defaultdict
+        temp = defaultdict(int)
+
+        for sub in titles:
+            for wrd in sub.title.split():
+                if (wrd.isalnum()):
+                    temp[wrd] += 1
+
+        max_cnt = max(temp.values())
+        new_key = ""
+        for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
+            if max_cnt > value:
+                break
+            new_key += key + " "
+
+        dict_job[new_key] = dict_job.pop(old_key)
+
+    for value in dict_job.values():
+        for job in value:
+            if job.is_significant < t:
+                job.significant()
+
+    return dict_job
 
 
 def get_siginificant_data():

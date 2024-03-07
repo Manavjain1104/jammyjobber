@@ -5,6 +5,17 @@ body {
   background: linear-gradient(to right, #ff5757, #a5355c);
   color: white;
 }
+
+a {
+  color: white; /* Set the color to white for all anchor elements */
+  text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+
 /* 
 background-color: #ff5757; */
 textarea {
@@ -29,6 +40,7 @@ textarea::placeholder {
   max-width: 1300px;
   margin: 0 auto;
   padding: 20px;
+  display: flex;
 }
 
 .divider {
@@ -42,6 +54,7 @@ textarea::placeholder {
 .divider-container {
   height: 3px;
   background-color: #ddd; 
+  margin-top: 20px;
   margin-bottom: 20px;
   border-radius: 3px; /* Adjust the value to control the roundness */
 }
@@ -74,20 +87,41 @@ input[type="text"]::placeholder {
 }
 
 .header {
-  text-align: left;
-  max-width: 2000px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
+  position: fixed; 
+  z-index: 1000; /* A high value to ensure it's above other elements */
+  width: 100%; /* Ensures the header spans the full width of the viewport */
+  top: 0; /* Aligns the header at the top of the viewport */
+  left: 0; /* Aligns the header to the left side of the viewport */
+  display: flex; /* This will lay out its children in a row */
+  justify-content: space-between; /* This will put space between the header-left and header-right */
+  align-items: center; /* This will vertically center the header-left and header-right */
+  padding-bottom: 10px; 
+  padding-top: 20px;
+  background: linear-gradient(to right, #ff5757, #a5355c);
+  border-bottom: 4px solid #ddd;
 }
 
 .header-left {
-  text-align: left;
+  /* text-align: left; */
+  display: flex;
+  align-items: center; 
+  margin-left: 60px; /* Add margin to the left of the header */
 }
 
 .header-right {
-  text-align: right;
+  /* text-align: right; */
+  display: flex;
+  align-items: center; 
+  margin-right: 130px; /* Add margin to the right of the header */ 
 }
+
+.submit-button-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 80px; /* Add margin between the two divs */
+}
+
 
 .lower {
   display: flex;
@@ -118,16 +152,22 @@ h2 {
   font-size: 1.5em;
 }
 
+
+/* HOME SEARCH */
 .main {
-  padding: 30px;
   max-width: 1000px;
-  border: 3px solid #ddd;
-  border-radius: 10px;
-  position: fixed;
-  top: 50%;
-  right: 50%;
-  transform: translate(50%, -50%);
+  margin: 150px auto 20px;
+
   width: 90%; /* Set a default width */
+  padding-top: 20px; 
+}
+
+.search-box {
+  border: 3px solid #ddd;
+  padding: 30px;
+  margin: 0 auto;
+  border-radius: 10px;
+  margin: 0;
 }
 
 .container .main .text-rotation {
@@ -149,12 +189,98 @@ p {
 
 button {
   padding: 10px 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  border: 3px solid white; /* Add border to the button */
+  font-size: 20px;
+  border-radius: 10px;
   margin-right: 10px;
-  cursor: pointer;
+  background-color: transparent; /* Set initial background color */
+  color: white; /* Set text color to white */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s ease; /* Add transition for background color */
 }
 
 button:hover {
-  background-color: #ddd;
+  background-color: white; /* Change background color on hover */
+  color: #ff5757; /* Change text color on hover */
+}
+
+.a button:hover {
+  color: #ff5757;
+}
+
+.add-cv {
+  align-items: center; /* Center vertically */
+  text-align: center; /* Center text horizontally */
+  font-size: 20px;
+  margin: 0 auto; /* Center horizontally */
+  margin-top: 20px; /* Add some space between the previous objects and the .add-cv section */
+}
+
+
+/* RESULT PAGE */
+.job-titles {
+  padding: 0px;
+  max-width: 1000px;
+  margin: 0 auto; /* Center horizontally */
+  right: 50%;
+  list-style: none; /* Remove default list styles */
+}
+
+
+
+.job-listings {
+  padding: 0px;
+  max-width: 1000px;
+  margin: 0 auto; /* Center horizontally */
+  right: 50%;
+  list-style: none; /* Remove default list styles */
+}
+
+.job-listing {
+  border: 3px solid #ddd;
+  border-radius: 10px;
+  padding: 10px; /* Add padding to create space between the content and border */
+  margin-bottom: 20px; /* Add margin to separate job listings */
+}
+
+.job-listing h3 {
+  font-size: 24px; /* Set the font size to make the job title bigger */
+  color: white; /* Set the text color to white */
+  cursor: pointer; /* Change the cursor to pointer */
+}
+.job-listing a {
+    display: block;
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the title and other elements */
+}
+
+.job-listing button.expand-btn {
+    margin-top: 10px;
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the button and other elements */
+}
+
+.job-listing details {
+    margin-top: 10px;
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the details element and other elements */
+}
+
+.job-listing p.special-text {
+    margin-bottom: 5px; /* Adjust the margin bottom to control the spacing between the special text and other elements */
+}
+
+.container {
+  display: flex;
+}
+
+.sidebar {
+  flex-basis: 20%; /* Adjust width of sidebar */
+  /* background-color: #f0f0f0; Light grey background */
+  /* height: 100vh;  */
+  overflow-y: auto; /* Enable scroll if content is taller than the screen */
+  margin-top: 70px;
+}
+
+.main-content {
+  flex-grow: 1; /* Takes up the remaining space */
+  padding: 70px; /* Add padding */
+  margin-left: 20%;
 }
