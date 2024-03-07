@@ -58,7 +58,7 @@ unit-test:
   tags:
     - cloud-vm-41-89
   script:
-    - python -m pip install pip --upgrade
+    - python3 -m pip install pip --upgrade
     - pip install -U pyOpenSSL
     - pip install pyopenssl --upgrade
     - pip install pipenv
