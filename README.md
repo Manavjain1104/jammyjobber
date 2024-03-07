@@ -14,8 +14,8 @@
 
 ## About The Project
 
-![JammyJobber website][images/page-jome.png]
-![Check out the website](https://jammy-jobber-0a37e91b6b51.herokuapp.com/)
+<img src="images/page-home.png" alt="home-page" width="400" height="300">
+[Check out the website](https://jammy-jobber-0a37e91b6b51.herokuapp.com/)
 
 Welcome to JammyJobber, the next generation of job search powered by language models! In this project, we aim to address the limitations of traditional keyword-based job search methods and provide a more effective and intuitive way for job seekers to find relevant opportunities.
 
@@ -90,20 +90,19 @@ TODO:
   pip install -r requirements.txt
 ```
 
-3. Git clone the LLM server and Make them run
+3. Git clone the LLM server and Host the server
 
 ```sh
   TODO:
   git clone https://github.com/your_username_/Project-Name.git
 ```
 
-4. Create a .env file with your secret key for
+4. Create a .env file with your secret keys
 
 ```
-RAPID_API_KEY=<your rapid api key>
+RAPID_API_KEY=<your rapid api key (your semaDB host)>
 RAPID_API_HOST="semadb.p.rapidapi.com"
 LLM_SERVER_ADDRESS=<where you host the llm server>
-INFERENCE_API_TOKEN=<inference api token>
 ```
 
 5. Populate the job listing into databases (SemaDB and SQLite)
@@ -134,24 +133,38 @@ Tell people where they can go to for help. It can be any combination of an issue
 
 ## Roadmap
 
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Our future plans for JammyJobber include:
+
+- Use more fine-tuned models for job search and consider using larger (paid) models
+- Automate job scraping and migrate to another database
+- Switch to other (non-free) resources, which is easy due to the modularity of our codebase
 
 ## Contributing
 
-State if you are open to contributions and what your requirements are for accepting them.
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+1. Fork the Project
+2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit your Changes (git commit -m 'Add some AmazingFeature')
+4. Push to the Branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
 
 ## Authors and acknowledgment
 
-Show your appreciation to those who have contributed to the project.
+This project was created as part of third year group project SEGP in Computing, Imperial College London
+
+- Manav Jain (mj921)
+- Krish Maha (krm221)
+- Shruti Pradhan (sp1521)
+- Max Stupple (mes21)
+- Tina Wang (tw1720)
+- Kristina Zimina (kz1021)
 
 ## License
 
-For open source projects, say how it is licensed.
+Distributed under the MIT License
 
-## Project status
+## Acknowledgments
 
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Special thanks to our supervisor, Nuri Cingillioglu, and all contributors who helped make JammyJobber possible!
+We couldn't have done it without you!
