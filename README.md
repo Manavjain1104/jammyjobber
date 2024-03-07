@@ -12,10 +12,11 @@
   </p>
 </div>
 
+[Check out the website](https://jammy-jobber-0a37e91b6b51.herokuapp.com/)
+
 ## About The Project
 
-<img src="images/page-home.png" alt="home-page" width="400" height="300">
-[Check out the website](https://jammy-jobber-0a37e91b6b51.herokuapp.com/)
+<img src="images/page-home.png" alt="home-page">
 
 Welcome to JammyJobber, the next generation of job search powered by language models! In this project, we aim to address the limitations of traditional keyword-based job search methods and provide a more effective and intuitive way for job seekers to find relevant opportunities.
 
@@ -37,7 +38,7 @@ We store job embeddings in SemaDB and metadata in SQLite databases. Keeping them
 
 ## Evaluation
 
-<img src="images/eval.png" alt="Evaluation" width="400" height="300">
+<img src="images/eval.png" alt="Evaluation">
 
 We evaluated our project by comparing the results of several searches against keyword search to ensure that our search performs at least as well as searching by keywords. Additionally, we manually reviewed the results of each search to identify jobs surfaced by our search that were good matches for the query but were not found by keyword search.
 
