@@ -58,6 +58,12 @@ We compared the performance of three different language models for processing jo
 2. Summarization Model: A straightforward model that summarizes the text before embedding.
 3. Question and Answer Model: We ask the model to describe the main skills and interests mentioned in the query.
 
+#### Models used
+
+1. Sentence-transformers/all-minilm-L12-V2 · hugging face [Internet]. [cited 2024 Feb 28]. Available from: https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2 
+2. Falconsai/text_summarization · hugging face [Internet]. [cited 2024 Feb 28]. Available from: https://huggingface.co/Falconsai/text_summarization 
+3. Deepset/Roberta-base-squad2 · hugging face [Internet]. [cited 2024 Feb 28]. Available from: https://huggingface.co/deepset/roberta-base-squad2 
+
 ### Results
 
 Our evaluation demonstrates that our search tool performs comparably to keyword search and provides additional benefits, such as surfacing relevant jobs not found by traditional methods. With further refinement and development, our search tool has the potential to revolutionize the job search process for users.
@@ -68,13 +74,16 @@ To get started with JammyJobber, follow the instructions below.
 
 ### Prerequisites
 
-TODO:
-
-- Python (version X.X)
-- Django (version X.X)
+- Python (version 3.8 or higher (3.11 not recommended yet))
+- Django (version 4.1 or higher)
 - JavaScript
-- RESTful APIs
-- Transformers.js
+- See requirements.txt for the full list of dependencies
+- Browser supporting Transformer.js (see the documentation for more details: 
+  https://huggingface.co/docs/transformers.js/en/index)
+- RapidAPI account with semaDB subscription (see the documentation for more details:
+  https://rapidapi.com/semafind-semadb/api/semadb/details)
+- Running LLM-server (see the link for more details: 
+  )
 
 ### Installation
 
@@ -91,38 +100,41 @@ TODO:
   pip install -r requirements.txt
 ```
 
-3. Git clone the LLM server and Host the server
-
-```sh
-  TODO:
-  git clone https://github.com/your_username_/Project-Name.git
-```
-
 4. Create a .env file with your secret keys
 
 ```
-RAPID_API_KEY=<your rapid api key (your semaDB host)>
-RAPID_API_HOST="semadb.p.rapidapi.com"
-LLM_SERVER_ADDRESS=<where you host the llm server>
+RAPID_API_KEY=<your rapid api key (with your semaDB subscription, see the semaDB link above for more details)>
+RAPID_API_HOST="semadb.p.rapidapi.com" 
+LLM_SERVER_ADDRESS=<your LLM-server host>
 ```
 
-5. Populate the job listing into databases (SemaDB and SQLite)
+5. Create a semaDB collection to store job embeddings
+
+```python
+  python -c 'from utils.semadb_utils import *; create_collection(COLLECTION_NAME, EMBEDDING_SIZE)'
+```
+
+6. Populate the job listing into databases (SemaDB and SQLite) 
+   (Note: some code in main utils/integration_utils.py needs to be uncommented to populate the database from scratch)
 
 ```python
   python utils/integration_utils.py
 ```
 
-6. Run Django server
+7. Run Django server
 
 ```python
   python manage.py runserver
 ```
 
-7. Visit the website
+8. Visit the website
 
 ```
 http://127.0.0.1:8000/
 ```
+
+9. Add more jobs, using web_scraper/scraper_gov.py and utils/integration_utils.py to scrape more jobs from
+   https://findajob.dwp.gov.uk
 
 ## Usage
 
@@ -130,7 +142,7 @@ JammyJobber provides a user-friendly interface for job seekers to search for rel
 
 ## Support
 
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Email kz1021@ic.ac.uk for support and any questions
 
 ## Roadmap
 
