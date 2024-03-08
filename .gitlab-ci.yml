@@ -23,7 +23,7 @@ deploy:
   image: ubuntu:latest
   stage: deploy    # deploy to heroku
   script:
-    - dpl --provider=heroku --app=jammy-jobber --api-key=6102191c-0cac-4ca7-8348-21098038e5e9
+    - dpl --provider=heroku --app=jammy-jobber --api-key=4da2ba9a-7284-4881-8249-cb4bb640f9ef
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
 
