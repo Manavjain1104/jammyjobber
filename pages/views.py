@@ -98,7 +98,7 @@ def results_page_view(request):
         job_summary = next(
             (job for job in job_instances if str(job.job_id) == id), None)
         if job_summary:
-            job_titles = get_similar(job_summary.description, 10)
+            job_titles, job_list = get_similar(job_summary.description, 10)
             query = job_summary.description
         show_suggested = True
         template_name = 'pages/results_page.html'
@@ -106,7 +106,7 @@ def results_page_view(request):
         # This is for the aggregated view based on query or location_query
         if data_passed["query"]:
             query = data_passed["query"]
-            job_titles = get_dictionary_job(query, 20)
+            job_titles, job_list = get_dictionary_job(query, 20)
             show_suggested = True
         template_name = 'pages/results_page.html'
 
@@ -119,8 +119,8 @@ def results_page_view(request):
                 job.location, location_query), job_titles[title]))
             if len(job_titles[title]) == 0:
                 job_titles.pop(title)
-
-    job_list = list(chain.from_iterable(job_titles.values()))
+        job_list = filter(lambda job: is_in_region(
+                job.location, location_query), job_list)
 
     job_list_json = json.dumps([job.description for job in job_list])
     query_json = json.dumps(query)
@@ -130,7 +130,7 @@ def results_page_view(request):
         "job_list": job_list,
         "query": query_json,
         "json_list": job_list_json,
-        "show_suggested": show_suggested
+        "show_suggested": show_suggested,
     }
 
     return render(request, template_name, context)
@@ -155,6 +155,7 @@ def get_listings():
 
 
 def get_dictionary_job(query, number: int):
+    job_instances = get_listings()
     request_embedding = process_data(query, model=model_used)
 
     # TODO: significant
@@ -175,16 +176,21 @@ def get_dictionary_job(query, number: int):
                 if (wrd.isalnum()):
                     temp[wrd] += 1
 
-        max_cnt = max(temp.values())
-        new_key = ""
-        for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
-            if max_cnt > value:
-                break
-            new_key += key + " "
+        try:
+            max_cnt = max(temp.values())
+            new_key = ""
+            for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
+                if max_cnt > value:
+                    break
+                new_key += key + " "
+        except:
+            new_key = "Other"
 
         dict_job[new_key] = dict_job.pop(old_key)
 
-    return dict_job
+    job_list = [job for job in job_instances if job.job_id in closest]
+
+    return dict_job, job_list
 
 
 def get_similar(query, number: int):
@@ -208,12 +214,15 @@ def get_similar(query, number: int):
                 if (wrd.isalnum()):
                     temp[wrd] += 1
 
-        max_cnt = max(temp.values())
-        new_key = ""
-        for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
-            if max_cnt > value:
-                break
-            new_key += key + " "
+        try:
+            max_cnt = max(temp.values())
+            new_key = ""
+            for key, value in sorted(temp.items(), key=lambda kv: kv[1], reverse=True):
+                if max_cnt > value:
+                    break
+                new_key += key + " "
+        except:
+            new_key = "other"
 
         dict_job[new_key] = dict_job.pop(old_key)
 
@@ -222,7 +231,9 @@ def get_similar(query, number: int):
             if job.is_significant < t:
                 job.significant()
 
-    return dict_job
+    job_list = [job for job in job_instances if job.job_id in closest]
+
+    return dict_job, job_list
 
 
 def get_siginificant_data():

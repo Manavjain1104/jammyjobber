@@ -20,16 +20,6 @@ function toggleJobListings(titleSlug) {
   }
 }
 
-function toggleJobListingsAll() {
-  document.querySelectorAll('.main-content .job-listings').forEach(function(list) {
-    list.style.display = 'none';
-  });
-
-    document.querySelectorAll('.main-content .job-listings').forEach(function(list) {
-    list.style.display = 'block';
-  });
-}
-
 document.addEventListener("DOMContentLoaded", function() {
   const textElement = document.getElementById("text");
   const texts = ["What do you want to do day-to-day?", 
