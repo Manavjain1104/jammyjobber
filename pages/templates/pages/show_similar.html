@@ -149,7 +149,7 @@
             let w = new Worker("../../static/js/worker.js", { type: "module" });
             w.postMessage([job_query, job]);
             w.onmessage = function(event) {
-                document.getElementById("jobreason-" + elemId).innerHTML = event.data;
+                document.getElementById("jobreason-" + elemId).innerHTML = event.data.replaceAll(/[0-9]\./g, '-');
                 w.terminate();
             };
         }
@@ -160,7 +160,7 @@
             let w = new Worker("../../static/js/worker-cv.js", { type: "module" });
             w.postMessage([job_query, job]);
             w.onmessage = function(event) {
-                document.getElementById("cvsuggest-" + elemId).innerHTML = event.data;
+                document.getElementById("cvsuggest-" + elemId).innerHTML = event.data.replaceAll(/[0-9]\./g, '-');
                 w.terminate();
             };
         }
