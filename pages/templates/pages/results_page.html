@@ -78,18 +78,18 @@
                 {% for job in job_list %}
                     <li class="job-listing">
                           <a href=" {{ job.link }} "><h3> {{ job.title }}: {{ job.company }} @ {{ job.location }} </h3></a>
-                        <div id="description-{{ job.job_id }}" class="job-description">
+                        <div id="description-all-{{ job.job_id }}" class="job-description">
                             <p>{{ job.description }}</p>
                         </div>
                         
-                        <details id="details1" onclick='whySuggested("{{job.job_id}}", "{{job.description}}")'>
+                        <details id="details1" onclick='whySuggested("all-{{job.job_id}}", "{{job.description}}")'>
                             <summary>Why was this job suggested ?</summary>
-                            <p class="special-text" id="jobreason-{{ job.job_id }}"></p>
+                            <p class="special-text" id="jobreason-all-{{ job.job_id }}"></p>
                         </details>
 
-                        <details id="details2" onclick='cvSuggest("{{job.job_id}}", "{{job.description}}")'>
+                        <details id="details2" onclick='cvSuggest("all-{{job.job_id}}", "{{job.description}}")'>
                             <summary>How can I enhance my CV to fit the job description?</summary>
-                            <p class="special-text" id="cvsuggest-{{ job.job_id }}"></p>
+                            <p class="special-text" id="cvsuggest-all-{{ job.job_id }}"></p>
                         </details>
 
                         <button class="expand-btn" type="button" name="id" value = '{{ job.job_id }}' ><a href="{% url 'results_page' %}?id={{ job.job_id }}">Show Similar</a></button>
