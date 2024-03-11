@@ -12,7 +12,7 @@ from urllib.parse import urlencode
 from itertools import chain
 
 SURPRISE_VIDEO = "https://www.youtube.com/watch?v=8Seuzk3-HrI"
-SURPRISE_QUERY = "cherri cherri lady"
+SURPRISE_QUERY = "cheri cheri lady"
 
 # Create your views here.
 
