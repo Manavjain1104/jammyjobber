@@ -12,8 +12,10 @@ onmessage = async function(e) {
 
     // Find the index of the 4th dash
     let fourthDashIndex = -1;
-    for (let i = 0, count = 0; i < text.length; i++) {
-        if (text[i] === '-' && text[i + 1] === ' ') {
+    let l = text.length;
+    for (let i = 0, count = 0; i < l; i++) {
+        if (text[i] >= '1' && text[i] <= '4' && text[i + 1] === '.') {
+            text = text.substring(0, i) + "- " + text.substring(i + 2)
             count++;
             if (count === 5) {
                 fourthDashIndex = i;

@@ -24,9 +24,9 @@ onmessage = async function(e) {
 
     // If the 4th dash was found, manipulate the string accordingly
     if (fourthDashIndex !== -1) {
-        text = text.substring(0, fourthDashIndex).replaceAll("- ", '<br>-');
+        text = text.substring(0, fourthDashIndex).replaceAll("- ", "<br>- ");
     } else {
-        text = text.replaceAll("- ", '<br>-')
+        text = text.replaceAll("- ", "<br>- ")
     }
     self.postMessage(text);
 };

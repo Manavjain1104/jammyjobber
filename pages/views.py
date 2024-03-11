@@ -119,8 +119,7 @@ def results_page_view(request):
                 job.location, location_query), job_titles[title]))
             if len(job_titles[title]) == 0:
                 job_titles.pop(title)
-        job_list = filter(lambda job: is_in_region(
-                job.location, location_query), job_list)
+        job_list = list(filter(lambda job: is_in_region(job.location, location_query), job_list))
 
     job_list_json = json.dumps([job.description for job in job_list])
     query_json = json.dumps(query)
