@@ -139,10 +139,6 @@ http://127.0.0.1:8000/
 
 JammyJobber provides a user-friendly interface for job seekers to search for relevant job opportunities based on their skills and experience.
 
-## Support
-
-Email kristinaz2682@gmail.com for support and any questions
-
 ## Roadmap
 
 Our future plans for JammyJobber include:
